@@ -1,0 +1,164 @@
+        STAR is a multi-user game written by Chris Caldwell
+with considerable input from Roger Long and some Macro-10
+assembly coding by Robert Kenney at the University of New Hampshire.  
+
+To run the game under Tops10, type in:
+
+        .R GAM:STAR -switch /switch /switch . . .
+
+where "switch" may be any of the following options:
+
+  A terminal type:
+    ADDS580         for use on ADDS580 terminals
+    ADM3A           for use on ADM3A terminals
+    VT52            for use on DEC scopes
+    ISC             for use on the ISC graphic terminal
+    ISCBIG          for use with A7 mode on the ISC graphics terminal
+    PE550           for use on PERKINS ELMER terminals
+    ADDS980         for use on ADDS980 terminals
+    ACTV            for use on ACT-V terminals
+    ADVANT          for use with North Star ADVANTage terminals
+    ANSI            for use on any ANSI terminal (now with color!)
+                    When in doubt, use ANSI.
+
+  NAME              let user choose ship name
+  OLDANG            use 0"=East, 90"=North, 180"=West, 270"=South
+  		    Otherwise 0"=North, 90"=East, 180"=South, 270"=West
+
+If you don't specify a terminal type, you will be prompted for one.
+If you don't specify /OLDANG, the normal compass rose of 0"-means-
+North will be used instead of the old (incorrect) 0"-means-East
+system.
+
+                            NOTE
+
+               This game can only be run when
+               system use is light (under 85%
+               of LOGMAX).
+
+If you specify the switch /NAME, the computer will  ask  for
+your ship's name.  Otherwise, your LOGIN name will be used.
+
+You will then  be  asked  for  your  scan  character.   This
+character will represent your ship in the short-range sensor
+scan (see below).  The character must not already be in  use
+and must be alphabetic.
+
+
+The game has now begun.
+
+The galaxy is divided into 100 quadrants (10  x  10).   Each
+quadrant is divided further into 100 sectors (10 x 10).  The
+galaxy contains  stars,  starbases,  ion  storms  and  black
+holes.  There also may be an opponent or two.
+
+There are several pieces of information continually  updated
+on  the  screen.   The  large  box  in the upper left of the
+screen is the short-range sensor scan.
+
+        *               represents a star
+        +               represents a starbase
+        -               represents an ion particle
+        .               represents a photon torpedo
+
+In addition to these things, you will also see at least  one
+letter.   The  letter  in the middle of the scan is you.  If
+there are any other letters in  the  scan,  they  are  other
+spaceships.   A  list  of  scan  characters,  the ships they
+represent and the number  of  victories  they  have  had  is
+displayed  in  the lower right of the screen.  There will be
+at least one pair of arrows on the sides of the s.r.  sensor
+scan box.  These represent the end of the quadrants.
+
+(If you should perhaps see an ion storm with a blank in  the
+middle of it, it may be a black hole.  Black holes are fun!)
+
+In the upper right of the screen, there is a box  containing
+numbers.   This  is  the  long-range  scan  display for your
+quadrant  and  the  quadrants  surrounding   it.    Galactic
+information should appear as follows:
+
+        Units digit              number of stars in quadrant
+        Tens digit               number of bases
+        Hundreds digit           number of black holes
+        Thousands digit          number of spaceships
+
+Below the short-range scan, there is a list of  devices, the
+amount of crew at each device and the number of minutes that
+it will take for the crew to repair that device.
+
+To the right of the short-range scan the following data  are
+displayed:
+
+        Stardate:               the current stardate
+        Energy:                 percentage of energy
+                                available
+        Sector:                 current sector
+        Quadrant:               current quadrant
+        Torpedoes:              number of torpedoes
+        Shields:                percentage of energy in
+                                shields
+        Degree:                 current heading
+        Bearing:                desired heading
+        Warp:                   current warp factor
+        To warp:                desired warp factor
+        Banks:                  energy, torpedos and crew in
+                                docking banks
+
+You may now start typing commands.  Note:  STAR  will  not  wait
+for you!
+
+        W<warp factor>          desired warp factor (0.0 to 8.0)
+                                (changes 0.047 warp/starsecond)
+        I                       impulse  drive  (at  warp  0.1):
+                                works even when warp engines are
+                                out.
+        J                       jump to or from hyperspace (This
+                                command  can  only  be  used  at
+                                speeds >= warp 1.0.   Hyperspace
+                                allows you to go through objects
+                                and   not   be    detected    on
+                                short-range scans.)
+        D<degree>               desired  heading  (changes  6.17
+                                degrees/starsecond)
+
+                                 135   90  45
+                                    \  !  /
+                                180 -------  0
+                                    /  !  \
+                                 225  270 315
+
+        S<energy%>              add energy to shields
+        S-<energy%>             remove energy from shields
+        TA                      arm torpedo tube
+        T<degree>               fire photon torpedo at  "degree"
+                                degrees   (torpedoes  travel  at
+                                warp 1 + ship's vector velocity)
+        P<character><energy%>   fire  phaser  bolt  of  "energy"
+                                unit  force  at ship represented
+                                by "character."
+                                hit = (energy)/sqrt(distance)
+        M<men><from><to>        move some men from one device to
+                                another:
+                                Device code         device
+                                1                   Warp engines
+                                2                   S.R. sensors
+                                3                   L.R. sensors
+                                4                   Photon torps
+                                5                   Phasers
+                                6                   Shields
+                                7                   Life support
+        N                       print new screen 
+        G                       gag messages from other users in
+                                monitor
+        EX                      exit from program
+        R<character><message>   send message to ship <character>
+        F<character>            find out who ship's player is
+        B<energy,torps,crew>    on  docking,  give  other   ship
+                                supplies
+        Z                       retract  supplies  from  docking
+                                banks
+
+All the laws of classical physics apply.  If you are running out
+of  energy  or torpedoes, or you need repairs badly, dock with a
+starbase at a speed of warp 0.1 or lower.

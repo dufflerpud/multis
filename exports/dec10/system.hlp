@@ -1,0 +1,234 @@
+        SYSTEM is a multi-user game written by Chris Caldwell
+with considerable input from Roger Long and some Macro-10
+assembly coding by Robert Kenney at the University of New Hampshire.  
+
+To run the game under Tops10, type in:
+
+        .R GAM:SYSTEM -switch /switch /switch . . .
+
+where "switch" is a terminal type:
+    ADDS580         for use on ADDS580 terminals
+    ADM3A           for use on ADM3A terminals
+    VT52            for use on DEC scopes
+    ISC             for use on the ISC graphic terminal
+    ISCBIG          for use with A7 mode on the ISC graphics terminal
+    PE550           for use on PERKINS ELMER terminals
+    ADDS980         for use on ADDS980 terminals
+    ACTV            for use on ACT-V terminals
+    ADVANT          for use with North Star ADVANTage terminals
+    ANSI            for use on any ANSI terminal (now with color!)
+                    When in doubt, use ANSI.
+
+If you don't specify a terminal type, you will be prompted for one.
+
+System has two kinds of commands:
+1) Job interpreted commands - commands which are not executed
+   by units, but are used to control them.  The following are job
+   interpreted commands:
+
+	DISPLAY <DISPLAY TYPE> <UNIT NUMBER>
+	    Where display type is one of:
+		SENSOR	-	Shows information about body
+				unit is on or orbiting
+		SYSTEM	-	Shows information about star
+				system unit is in
+		STATUS	-	Shows information about unit
+				(contents, fighting capabilities)
+	    The following to not take unit numbers:
+		EDIT	-	Displays current list of commands
+		POSITI	-	Displays all positions where
+				player has a unit
+		PLAYER	-	Displays empire number, programmer
+				number, number of units, INEXTM.
+		DISPLAY UNITS <LOCATION>
+		    or
+		DISPLAY UNITS <UNIT TYPE> <LOCATION>
+				Displays all ships of unit type
+				at location.
+
+	NEW
+	    Retype the current display.
+
+	MISSION <UNIT NUMBER>
+	    Read unit number's orders into edit buffer.
+
+	CLEAR
+	    Clear edit buffer.
+
+	EXIT
+	    Exit the program.
+
+	GAG
+	    Gag the terminal from user messages.
+
+	UNGAG
+	    Ungag the terminal from user messages.
+
+	INSERT <LINE NUMBER> <UNIT COMMAND>
+	    Put unit command in edit buffer at line number.
+
+	DELETE <LINE NUMBER>,<LINE NUMBER> ...
+	    Remove line numbers' unit commands from edit buffer.
+
+	TRANSFER <LINE 1>,<LINE 2>:<LINE 3>
+	    Transfer line 2 through line 3 to line 1 (similar to
+	    SOS'S transfer command - but changes goto's and error's).
+
+	NEWTAC <ENGINE> <SHIELD> <BEAM>
+	    Prepare a tactic to be transfered to units with SENTAC
+	    command.  For example:
+		NEWTAC 2 1 1
+		SENTAC 5H, 9H, 18P
+		    Will place 2 energy units in the engines,
+		    and 1 unit in each of the shields and beams
+		    of hyperships 5 & 9 and port 18.
+
+	NEWPC <INSTRUCTION NUMBER>
+	    Prepare a pc to be transfered to unit(s) with
+	    SENPC COMMAND.  For example:
+		NEWPC 24
+		SENPC UNITS
+		    Will tell all displayed units to resume execution
+		    at PC (Instruction number) 24.
+
+	ORDER <UNIT NUMBER>,<UNIT NUMBER>, ...
+	    Send current edit buffer to unit numbers and tell them
+	    to start executing the commands
+	    or
+	ORDER UNITS
+	    Order all units last displayed on displa units.
+
+	SENTAC <UNIT NUMBER>,<UNIT NUMBER>, ...
+	    Send current tactic to unit numbers
+	    Or
+	SENTAC UNITS
+	    Send current tactic to all units last displayed.
+
+	SENPC <UNIT NUMBER>,<UNIT NUMBER>, ...
+	    Send current pc to unit numbers
+	    Or
+	SENPC UNITS
+	    Send current pc to all units last displayed.
+
+	C<UNIT NUMBER> <UNIT COMMAND>
+	    Order unit number to execute unit command when available.
+
+	WHO <PLAYER NUMBER>
+	    Provide more information about player.
+
+	<UNIT COMMAND>
+	    Order unit currently being displayed to execute command
+	    when available.
+
+
+2) Unit interpreted commands - Commands which units execute.  The
+   following are unit interpreted commands:
+
+	MOVE <LOCATION>			(For hyperships and spaceships)
+	    Where location consists of:
+		[<STAR>] [P<PLANET NUMBER>] [M<MOON NUMBER>] [<ORBIT>]
+		In that order.  If not specified, these parameters
+		take appropriate defaults - the starname of the
+		system the view point is currently in, its planet
+		number, its moon number and its orbit - Thus you
+		type what you want to be different.
+		There are 50 stars in the system - each with a maximum
+		of 10 planets - each with a maximum of 9 moons.  Each
+		body (star, planet or moon) has three "places"
+		associated with it - ground, low orbit and high orbit.
+
+	JUMP <LOCATION>			(For hyperships only)
+	    Jumping is possible only between high orbits, but requires
+	    1/764529 the time.
+
+	CREATE <UNIT TYPE> <UNIT NUMBER>
+	    Where unit type is of the following:
+		S - Spaceship (created by P's, req: 3 ore, 1 men)
+		H - Hypership (created by P's, req: 5 ore, 1 men)
+		G - Ground unit (created by P's, req: 1 ore, 3 men)
+		O - Ore processor (created by S's and H's)
+		F - Food processor (created by S's and H's, req: 1 ore)
+		L - Lux processor (created by S's and H's, req: 1 ore)
+		P - Ports (created by H's, req: 7 ore, 5 men)
+	    Create a <UNIT TYPE> and (optionally) give it the
+	    order that was given to <UNIT NUMBER>.
+
+	LOAD <AMOUNT> <COMMODITY> ON <UNIT NUMBER>
+	LOAD <AMOUNT> <COMMODITY> FROM <UNIT NUMBER>
+	    Where commodity is one of ore, food, luxury or men.
+
+	LOAD <AMOUNT> MEN FROM SURFACE
+	    Take on board <AMOUNT> men units from populated planet.
+
+	TACTIC <ENGINE> <SHIELD> <BEAM>
+	    Reset unit's tactics.
+
+	INFORM <WORD>
+	    Print out a word on users terminal when executed.
+
+	SKIP <SKIP CODE> <COMMODITY> <AMOUNT>
+	    Where skip code is any one of the following:
+		LT - Skip next instruction if unit has less
+		     COMMODITY then AMOUNT
+		LE - Skip if less than or equal
+		EQ - Equal
+		NE - Not equal
+		GE - Greater than or equal
+		GT - Greater than.
+
+	ERROR <INSTRUCTION NUMBER>
+	    After the execution of this statement, if an error
+	    is encountered, goto INSTRUCTION NUMBER
+			Or
+	ERROR STOP
+	    If an error was encountered, print out message and stop
+			Or
+	ERROR NEXT
+	    Ignore errors.
+
+	GOTO <INSTRUCTION NUMBER>
+	    Continue execution at INSTRUCTION NUMBER.
+
+	BUILD <UTILITY> <UNITS>
+	    Where utility may be any of the following:
+		ENGINE	-	Used during the "MOVE" command.
+		SHIELD	-	Used in combat.  Higher shields
+				reduce chance of being destroyed.
+		BEAM	-	Used in combat.  Higher beams
+				increase chance of destroying enemy.
+		POWER	-	Total output from energy generators.
+	    Requires one lux unit to build utility 1 capability
+	    unit.  For example:
+		BUILD ENGINES 3
+		    Allows 3 units more acceleration if given
+		    sufficient power.
+		BUILD POWER 2
+		    Allows user to channel 2 more power units
+		    to any of engines, shields or beamms.
+
+	RANDOM JUMP
+	    If not in a position to make a hyper jump, attempt
+	    to get to one.  If in such a position, make a random
+	    jump.
+
+	PRODUCE
+	    Issued to processers to start them.
+
+	CEASE PRODUCTION
+	    Issued to stop processors from producing.
+
+	SELF DESTRUCT
+	    Destroy the unit (remove it from the game).
+
+	STOP
+	    Cease execution of the program.  Null statement.
+
+Needless to say, this game is still under construction (thus the
+crypticness of its documentation).  Many of the commands may
+change, many more new commands may be added - and references
+which are now clearly nebulous (such as the tactic command)
+will be made clearer.  Meanwhile, this list is only meant as
+a guide for the few fearless (synonym for stupid) souls who
+venture into the chaotic worlds of Christopher Caldwell and
+Roger Long's rather vivid imagination.  Only the laws of nature
+have been changed to protect the programmers.

@@ -1,0 +1,129 @@
+        OCEAN is a multi-user game written by Chris Caldwell
+with considerable input from Roger Long and some Macro-10
+assembly coding by Robert Kenney at the University of New Hampshire.  
+
+To run the game under Tops10, type in:
+
+        .R GAM:OCEAN -switch /switch /switch . . .
+
+where "switch" may be any of the following options:
+
+  A terminal type:
+    ADDS580         for use on ADDS580 terminals
+    ADM3A           for use on ADM3A terminals
+    VT52            for use on DEC scopes
+    ISC             for use on the ISC graphic terminal
+    ISCBIG          for use with A7 mode on the ISC graphics terminal
+    PE550           for use on PERKINS ELMER terminals
+    ADDS980         for use on ADDS980 terminals
+    ACTV            for use on ACT-V terminals
+    ADVANT          for use with North Star ADVANTage terminals
+    ANSI            for use on any ANSI terminal (now with color!)
+                    When in doubt, use ANSI.
+
+  A ship type:
+    BATTLE	    User wishes to operate a BATTLESHIP
+    SUBMAR	    User wishes to operate a SUBMARINE
+    DESTRO	    User wishes to operate a DESTROYER
+    PT	            User wishes to operate a P.T. BOAT
+    HELICO	    User wishes to operate a HELICOPTER
+
+  Or:
+    OLDANG          use 0"=East, 90"=North, 180"=West, 270"=South
+  		    Otherwise 0"=North, 90"=East, 180"=South, 270"=West
+
+If you don't specify a terminal type, you will be prompted for one.
+If you don't specify /OLDANG, the normal compass rose of 0"-means-
+North will be used instead of the old (incorrect) 0"-means-East
+system.  If the user doesn't specify his type of ship, then
+the program will randomly chose one.
+
+The first large box contains the radar.  The radar represents
+an over view of with a range of 10 sectors on either side.
+
+Characters seen in the radar:
+
+	#		Represents land
+	-		Represents ground below water (submarine)
+	.		Bubble caused by ship moving underwater
+			when speed is 10 or better.
+	+		Mine
+	<LETTER>	Represents a ship
+	<SPACE>		Indicates that the radar cannot
+			detect the bottom
+
+
+The second box contains the sonar which is a cross section of
+the ocean taken at the scan bearing.  The scan bearing defaults
+to the current azimuth.
+
+The damage is displayed on the bottom.
+
+	O	-	Operational
+	P	-	Cannot be repaired unless at a port
+	<NUMBER>-	Number of quarter minutes until repaired
+
+Damagable things are:
+
+Symbol	Column	Device		Command			Type ship
+-----------------------------------------------------------------
+
+ENG:	1	ENGINE		(Uses "S" command)	ALL
+HLM:	2	HELM		(Uses "A" command)	B,S,D,P
+RDR:	3	RADAR					ALL
+SNR:	4	SONAR		(Uses "SC" command)	B,S,D,P
+GTR:	4	GROUND TERRAIN	(Uses "SC" command)	H
+TP1:	5	TORPEDO TUBE 1	(Uses "T" command)	S,P
+TP2:	5	TORPEDO TUBE 2	(Uses "T" command)	S,P
+COM:	5	COMPUTER	(Uses "C" command)	B
+MIS:	7	MISSILES	(Uses "M" command)	B,S,D,H
+DEP:	8	DEPTH CHARGES	(Uses "D" command)	B,D
+DCL:	8	DIVING CONTROL	(Uses "P" command)	S
+BAL:	9	BALLASTS	(Uses "B" command)	S
+MIN:	9	MINES		(Uses "L" command)	D
+LSP:	10	LIFE SUPPORT				S
+SFG:	10	SURFACE GUNS	(Uses "F" command)	B,D,P,H
+
+
+Commands	Type ship	Operation		Range
+-------------------------------------------------------------
+
+A<AZIMUTH>		ALL	Set azimuth		(0-359)
+B<BALLAST>		S	Set ballast %		(0-100)
+				0 Sets buoyancy for depth 0
+				100 Sets buoyancy for depth 17
+B			S	Set buoyancy for present level
+C<ARGUMENT>		B	Computer function
+DB<DEPTH>		B,D	Drop bow charge		(1-16)
+DS<DEPTH>		B,D	Drop stern chargE	(1-16)
+EX			ALL	Exit
+F<AZIMUTH>		B,D,P,H	Fire surface gun	(0-359)
+G			ALL	Set monitor gag
+K<KIND>			B,S,D,P	Set type at docking	(1-4)
+L			D	Lay mine on surface
+M<AZIMUTH><PITCH>	B,S,D,H	Fire missile		(0-359),(1-89)
+N			ALL	New screen
+N<SHIP NAME>		ALL	Set new ship name
+P<PITCH>		S	Set submarine pitch	(-45-45)
+P<PITCH>		H	Set helicopter pitch	(-90-90)
+R<CHARACTER>		ALL	Radio messages to ally
+S<SPEED>		ALL	Set speed		(-12-30)
+SC<AZIMUTH>		ALL	Set sonar azimuth	(0-359)
+SW<AZIMUTH><INC>	ALL	Sweep to azimuth by inc	(0-359,1-359)
+SWC<INC>		ALL	Sweep forever by inc	(0-359)
+SC			ALL	Lock sonar azimuth on ship's azimuth
+T			S,P	Fire trpedo
+W<CHARACTER>		ALL	Find out who character is
+W			ALL	Find out positions of allies
+
+(B=BATTLESHIP, S=SUBMARINE, D=DESTROYER, P=P.T. BOAT, H=HELICOPTER)
+
+
+Computer function arguments:
+
+<X,Y,ALTITUDE>	Find azimuth & elevation to fire missile at coordinate
+G		If auto fire is off, turn it on, else, turn it off
+
+*************************************************************
+******* ONLY THE CONVENIENT LAWS OF PHYSICS ARE USED ********
+*************************************************************

@@ -1,0 +1,82 @@
+      LIFE is a single-user game written by Chris Caldwell
+with some Macro-10 assembly coding by Robert Kenney at the University
+of New Hampshire.
+
+To run the game under Tops10, type in:
+
+      .R GAM:LIFE -switch
+
+where "switch" is a terminal type:
+  ADDS580         for use on ADDS580 terminals
+  ADM3A           for use on ADM3A terminals
+  VT52            for use on DEC scopes
+  ISC             for use on the ISC graphic terminal
+  ISCBIG          for use with A7 mode on the ISC graphics terminal
+  PE550           for use on PERKINS ELMER terminals
+  ADDS980         for use on ADDS980 terminals
+  ACTV            for use on ACT-V terminals
+  ADVANT          for use with North Star ADVANTage terminals
+  ANSI            for use on any ANSI terminal (now with color!)
+                  When in doubt, use ANSI.
+
+If you don't specify a terminal type, you will be prompted for one.
+
+The original game of LIFE is a simulation of cellular growth
+in a closed system.  The standard cell lives if surrounded by not
+less than 2 and not more than 3 cells.  A new cell is born if the
+space it is to occupy is surrounded by exactly 3 cells.  However,
+this version of LIFE allows the user to select the characteristics
+of the cells that he is using (minimum and maximum to live and be
+born) and allows him to have up to 26 kinds of cells (the letters of
+the alphabet) in one colony.  Also, LIFE allows the user to save and
+retrieve the files on disk.
+
+The screen will clear and the user will be put in command mode.
+Commands are:
+
+clear                     -    Destroy the existing culture
+new                       -    Reprint the screen
+exit                      -    Exit LIFE
+read foo                  -    Read the file "foo"
+save foo                  -    Save the culture on file "foo"
+delete foo                -    Delete the file "foo"
+input type, x-cood y-cood -    Put a cell of type (a letter)
+                               in position (x-cood,y-cood).
+                               If type is ommitted, the last type
+                               mentioned is used.
+
+kill type                 -    Kill off all type cells.
+kill x-cood y-cood        -    Kill cell at (x-cood,y-cood).
+center                    -    Center colony on screen
+go n                      -    Simulate growth for n generations
+go                        -    Simulate growth indefinitely.
+
+Note:
+The "go" command can be halted by typing a control-g followed
+by a control-o or if the culture stabilizes.
+
+gen n                     -    Set generation to n
+set type minliv maxliv minbrn maxbrn   -
+                               Set characteristics to cell type.
+status                    -    Print out all cell characteristics and
+                               other information.
+status type               -    Print out type characteristics.
+cross                     -    Define the crosbreed type (the result
+                               of the birth of a cell surrounded by
+                               different types of parents)
+help                      -    Print a short version of this list
+edit                      -    Enter edit mode
+
+Edit mode commands:
+
+Type           -       Input a cell of type
+0              -       Exit edit mode
+1              -       Move cell pointer down left
+2              -       Move cell pointer down
+3              -       Move cell pointer down right
+4              -       Move cell pointer left
+5              -       Kill cell
+6              -       Move cell pointer right
+7              -       Move cell pointer up left
+8              -       Move cell pointer up
+9              -       Move cell pointer up right

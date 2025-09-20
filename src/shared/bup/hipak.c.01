@@ -1,0 +1,4595 @@
+#define	DEBUG_CURSES
+#define	DEBUG_HISEG
+#undef	DEBUG_DAEMON
+#undef	DEBUG_WEBSERVER
+#define	DEBUG_IO
+#define	DEBUG_PROGRESS
+#undef	DEBUG_STRINGS
+#undef	DEBUG_COLOR
+
+#define USE_COLOR
+#define USE_MMAP
+#define USE_COMPRESSION
+#define MEDIUM_BUFSIZE	1024
+
+/************************************************************************
+ *	hipak.c		02/21/10 c.m.caldwell@alumni.unh.edu		*
+ *									*
+ *	This is a bare minimum re-write of the Tops10 usrpak/hipak	*
+ *	routines for support of my Multi-user games.  Certainly not	*
+ *	all hipak functions exist here, and those that are here are	*
+ *	not necessarily complete.  Indeed some actually perform tasks	*
+ *	that they were never chartered to do to make things work	*
+ *	"behind the scenes."						*
+ ************************************************************************/
+#include <stdio.h>
+#include <ctype.h>
+#include <curses.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <time.h>
+
+#ifdef USE_MMAP
+#include <sys/mman.h>
+#else
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#endif
+
+#include <sys/time.h>
+#include <unistd.h>
+#include <sys/select.h>
+#include <math.h>
+#include <fcntl.h>
+#include <signal.h>
+
+#ifdef F2C
+#include <f2c.h>
+#else
+typedef int integer;
+#endif
+/* #define ninteger uint32_t */
+#define ninteger int32_t
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <fcntl.h>
+#include <netdb.h>
+
+#define XDEBUG_CHAN			stdout
+#define DEBUG_FILE			"/tmp/%s.log"
+FILE *debug_file = 0;
+
+#ifdef linux				/* For FIONREAD */
+#include <asm/ioctls.h>
+#else					/* for ifdef linux */
+#ifdef __CYGWIN__
+#include <asm/socket.h>
+#else					/* else __CYGWIN__ */
+#include <sys/filio.h>
+#endif					/* else endif __CYGWIN__ */
+#endif					/* endif else linux */
+
+#ifdef linux				/* For STRERROR */
+#include <errno.h>
+#define STRERROR(x) strerror(x)
+extern char *strerror(int);
+#else
+#ifndef __CYGWIN__
+extern const char * const sys_errlist[];
+#endif
+#define STRERROR(x) sys_errlist[x]
+#endif
+extern int errno;
+
+#ifndef linux
+extern void *realloc(), *malloc(), *calloc();
+extern char *strchr();
+#endif
+
+extern void fmain_();
+extern void sm_daemon();
+extern void webserver_logic();
+extern void addusr_( integer * );
+extern int nuser_();
+
+#define HAVE_MATH_ALREADY	1
+
+#define MAX_OPEN_CHANNELS	10
+static integer default_output_channel = 0;
+static FILE * open_channels[MAX_OPEN_CHANNELS];
+int open_channel_file[MAX_OPEN_CHANNELS];
+
+static const char *full_progname = NULL;
+static const char *save_argv[20];
+static int save_argc = 0;
+static const char *progname;
+static int in_curses_mode = 0;
+static int printer_trigger = 0;
+static const char *remote_host_name = NULL;
+static const char *remote_port = NULL;
+static int remote_chan = 0;
+
+static const char *daemon_port = NULL;
+
+static const char *webserver_port = NULL;
+static int webserver_chan = 0;
+static char webserver_command_buf[MEDIUM_BUFSIZE];
+static int webserver_command_in_ind = 0;
+static int webserver_command_out_ind = 0;
+static fd_set webserver_fds;
+static int webserver_top_chan;
+
+static char *webserver_js_file = NULL;
+static int webserver_js_length = 0;
+
+/* This is nasty:  the original hipak.mac treated calls to display	*
+ * 0 as an immediate screen update.  If we support multiple screens,	*
+ * this means that any attempt to modify screen 0 requires forced	*
+ * updates every time you do pretty much anything.  Of course, if it	*
+ * is the only screen, it can update when you wait for user input	*
+ * as it does on the DEC-10.						*/
+static int force_screen0_refreshes = 0;
+
+/* This is really rude:  The DEC-10 had so little memory for user-space	*
+ * that it is not unreasonable to allocate an entire DEC-10 address	*
+ * space to run a multi-user game in.  Consider that the DEC-10 these	*
+ * ran on had 1.5MW in 36bit words or about 6MB in 8 bit bytes.		*
+ *									*
+ * In any case, rather than spending a lot of time coding dynamic	*
+ * memory management, we just allocate a small static chunk which would	*
+ * be *HUGE* by DEC-10 standards and just use static arrays.		*/
+   
+#define MAX_SHM_TABLES		50
+#define MAX_SHM_DIMS		10
+#define MAX_STRINGS		1000
+#define STRING_HEAP_SIZE	( MAX_STRINGS * 7 )
+#define Q_SHM_DATA_SIZE		( 100 * 100 * 100 )
+#define SHM_DATA_SIZE		310000
+struct shared_memory
+    {
+    int		sm_setup;
+    int		sm_users_in_database;
+    int		sm_number_strings;
+    int		sm_end_string_heap;
+    char	sm_string_heap[STRING_HEAP_SIZE];
+    int		sm_lock_flag;
+    int		sm_numdims[MAX_SHM_TABLES];
+    int		sm_dims[MAX_SHM_TABLES][MAX_SHM_DIMS];
+    int		sm_member_size[MAX_SHM_TABLES];
+#ifdef USE_COMPRESSION
+    int		sm_member_mask[MAX_SHM_TABLES];
+    int		sm_members_per_word[MAX_SHM_TABLES];
+#endif
+    int		sm_size[MAX_SHM_TABLES];
+    int		sm_offset[MAX_SHM_TABLES];
+    int		sm_end_int_heap;
+    integer	sm_data[SHM_DATA_SIZE];
+    };
+static struct shared_memory *shmp = NULL;
+
+#ifdef USE_MMAP
+int allocated_shmem = 0;
+#else
+static int shmid;
+#endif
+
+extern void getval_( integer *, ... );
+extern void putval_( integer *, ... );
+extern void addval_( integer *, ... );
+
+typedef enum
+    {
+    AC_GET,		/* Get a value from a shared table */
+    AC_PUT,		/* Put a value in a shared table */
+    AC_ADD,		/* Add a value to a shared table */
+    AC_ITS,		/* Get string associated with integer */
+    AC_STI,		/* Get integer associated with string */
+    AC_LCK,		/* Lock the database */
+    AC_UNL,		/* Unlock the database */
+    AC_ADDUSR,		/* Add specified number users to database */
+    AC_NUSER		/* Return number users in database */
+    } hiseg_func;
+
+integer integer_one = 1;
+integer integer_neg_one = -1;
+
+struct requester
+    {
+    struct requester	*requester_next;
+    int			requester_chan;
+    };
+struct requester	*head_requester = NULL;
+struct requester	*tail_requester = NULL;
+
+#ifdef USE_COLOR
+
+#define NCOLORS		8
+/* Map between ISC colors and ncurses colors */
+static int color_map[ NCOLORS ] =
+    {
+    COLOR_WHITE,	/* ICLWHI			*/
+    COLOR_BLUE,		/* ICLDBL			*/
+    COLOR_RED,		/* ICLRED			*/
+    COLOR_CYAN,		/* ICLLBL ISC's light blue	*/
+    COLOR_MAGENTA,	/* ICLPUR ISC's purple		*/
+    COLOR_GREEN,	/* ICLGRE			*/
+    COLOR_YELLOW,	/* ICLYEL			*/
+    COLOR_BLACK		/* ICLBLA			*/
+    };
+
+static const char *curses_color_to_html[ NCOLORS ] =
+    {
+    "black",		/* COLOR_BLACK			*/
+    "red",		/* COLOR_RED			*/
+    "green",		/* COLOR_GREEN			*/
+    "yellow",		/* COLOR_YELLOW			*/
+    "blue",		/* COLOR_BLUE			*/
+    "purple",		/* COLOR_MAGENTA		*/
+    "cyan",		/* COLOR_CYAN			*/
+    "white"		/* COLOR_WHITE			*/
+    };
+#endif
+
+/************************************************************************/
+void usage( const char *fmt, ... )
+/************************************************************************
+ * Print a usage message and exit.					*
+ ************************************************************************/
+    {
+    va_list ap;
+    va_start( ap, fmt );
+    vfprintf( stderr, fmt, ap );
+    fprintf(stderr,"\nUsage:  %s [shared_memory_filename] {<-arg>}\n"
+"\n"
+"Where <arg> is one of:\n"
+"\n"
+"	-dump		Print out statistics about the shared database\n"
+"	-init		Create a new database regardless of state\n"
+"	-norandom	Don't initialize the random number generator\n",
+    progname );
+
+    va_end( ap );
+    exit(1);
+    }
+
+/************************************************************************/
+void fatal( const char *filename, int linenum, const char *fmt, ... )
+/************************************************************************
+ * Print out a fatal error (and from where it came), and leave in gdb	*
+ ************************************************************************/
+    {
+    va_list ap;
+    va_start( ap, fmt );
+    FILE *dest[] = { stdout, debug_file, NULL };
+    FILE **out;
+    for( out=dest; *out; out++ )
+	{
+	fprintf(*out,"\r\nFatal error");
+	if( filename && filename[0] ) fprintf(*out," in %s",filename);
+	if( linenum ) fprintf(*out," line %d",linenum);
+	fprintf( *out, ":  " );
+	vfprintf( *out, fmt, ap );
+	fprintf( *out, "\n" );
+	fflush(*out);
+	}
+    abort();
+    }
+
+/************************************************************************/
+void progress( const char *filename, int linenum, const char *fmt, ... )
+/************************************************************************
+ * Print out a progress string.						*
+ ************************************************************************/
+    {
+#ifdef DEBUG_PROGRESS
+    va_list ap;
+    /* fprintf(debug_file,"%s",port_mode_types[port_mode]); */
+    if( filename && filename[0] )
+	{
+	const char *basename = strrchr( filename, '/' );
+	fprintf(debug_file," in %s",(basename?basename+1:filename));
+	}
+    if( linenum ) fprintf(debug_file," line %d",linenum);
+    fprintf(debug_file,":  ");
+    va_start( ap, fmt );
+    vfprintf( debug_file, fmt, ap );
+    fprintf(debug_file,"\n");
+    fflush(debug_file);
+#endif
+    }
+
+/************************************************************************/
+void dump_buf(
+    const char *filename,
+    int linenum,
+    const void *buf,
+    int size,
+    const char *fmt, ... )
+/************************************************************************
+ * Print out a progress string.						*
+ ************************************************************************/
+    {
+#ifdef DEBUG_PROGRESS
+    va_list ap;
+    /* fprintf(debug_file,"%s",port_mode_types[port_mode]); */
+    if( filename && filename[0] )
+	{
+	const char *basename = strrchr( filename, '/' );
+	fprintf(debug_file," in %s",(basename?basename+1:filename));
+	}
+    if( linenum ) fprintf(debug_file," line %d",linenum);
+    fprintf(debug_file,":  ");
+    va_start( ap, fmt );
+    vfprintf( debug_file, fmt, ap );
+    fprintf(debug_file,":");
+    int i;
+    for( i=0; i<size; i++ )
+        fprintf(debug_file," %d",((char *)buf)[i]);
+    fprintf(debug_file,"\n");
+    fflush(debug_file);
+#endif
+    }
+
+#define logical( truefalse )		( (truefalse) ? -1 : 0 )
+/************************************************************************
+ * Used to map C's idea of TRUE and FALSE to fortran's.  In both cases	*
+ * FALSE is 0, but TRUE is 1 in C and -1 (all 1s) in fortran.		*
+ * Used internally							*
+ ************************************************************************/
+
+/************************************************************************
+ * Easy way to refer to control characters without numbers.		*
+ ************************************************************************/
+#define CONTROL(x)			((x)-'@')
+#define BEEP				CONTROL('G')
+#define DELETE				0177
+#define BACKSPACE			'\b'
+
+static int error_flag = FALSE;
+/************************************************************************/
+integer lerror_( integer *unused )	{ return logical( error_flag ); }
+/************************************************************************
+ * Used by various multis to decide if the hipak routine they just	*
+ * called failed or succeeded.						*
+ * Used in: fixbug ocean risk star					*
+ ************************************************************************/
+
+/************************************************************************/
+/*	Conversion routines between network and host integer		*/
+/************************************************************************/
+#if 1 /* SIZEOF(integer) == 4 */
+integer htoninteger( ninteger src )		{ return ntohl( src ); }
+ninteger ntohinteger( integer src )		{ return htonl( src ); }
+#endif
+#if 0 /* SIZEOF(integer) == 8 */
+integer htoninteger( ninteger src )		{ return ntohll( src ); }
+ninteger ntohinteger( integer src )		{ return htonll( src ); }
+#endif
+
+/************************************************************************/
+int put_packet(int lnum, int chan, const void *buf, int len )
+/************************************************************************/
+/************************************************************************/
+    {
+    int written_so_far = 0;
+    while( written_so_far < len )
+	{
+	int to_write = len - written_so_far;
+	int nbytes = write( chan, buf+written_so_far, len );
+	if( nbytes <= 0 )
+	    {
+	    progress(__FILE__,__LINE__,"write(%d,%d) wrote %d, returned %s",
+		chan,to_write,nbytes,STRERROR(errno));
+	    return;
+	    }
+	else
+	    {
+	    written_so_far += nbytes;
+	    if( to_write==len && nbytes < len )
+		progress(__FILE__,__LINE__,
+		    "Short write(%d,%d) wrote %d, returned %s",
+		    chan,to_write,nbytes,STRERROR(errno));
+	    }
+	}
+#ifdef DEBUG_DAEMON
+    dump_buf(__FILE__,__LINE__,buf,written_so_far,
+        "put_packet(%d,%d) at %d returned %d (%s)",
+        chan, len, lnum, written_so_far, STRERROR(errno) );
+#endif
+    return written_so_far;
+    }
+
+/************************************************************************/
+typedef enum { GP_WAIT_FOR_UNKNOWN, GP_WAIT_FOR_KNOWN, GP_CHECK_BUF } gp_flag;
+int get_packet( int chan, void *buf, int buf_size, gp_flag flag )
+/************************************************************************
+ *  chan	- channel to read information from			*
+ *  buf		- place to put information				*
+ *  buf_size	- size of buffer					*
+ *  flag								*
+ *	GP_WAIT_FOR_UNNOWN	Wait for next block of characters	*
+ *	GP_WAIT_FOR_KNOWN	Wait for next block of specified chars	*
+ *				Complain about short reads		*
+ *	GP_CHECK_BUF		Check for chars in buffer and read them	*
+/************************************************************************/
+    {
+#ifdef DEBUG_DAEMON
+    progress(__FILE__,__LINE__,"get_packet(%d,%d,%d)", chan, buf_size, flag );
+#endif
+
+#if 1
+    int read_so_far = read( chan, buf, buf_size );
+#else
+    size_t chars_in_buf = -1;
+    int read_so_far = 0;
+    int nread;
+    int expecting = buf_size;
+
+    if( flag == GP_WAIT_FOR_UNKNOWN )
+        {
+	nread = read(chan,buf+read_so_far,1);
+	if( nread <= 0 )
+	    {
+	    progress(__FILE__,__LINE__,
+	        "read(%d,%d,%d) to wait failed:  %s, returning %d",
+	        chan,STRERROR(errno),read_so_far);
+	    return read_so_far;
+	    }
+#ifdef DEBUG_DAEMON
+	dump_buf(__FILE__,__LINE__,buf,read_so_far,"wait read:");
+#endif
+	read_so_far += nread;
+	}
+
+    if( ioctl(chan,FIONREAD,&chars_in_buf) < 0 )
+	{
+	progress(__FILE__,__LINE__,"FIONREAD(%d) failed:  %s",
+	    chan,STRERROR(errno));
+	}
+    else if( chars_in_buf <= 0 )
+	{
+	progress(__FILE__,__LINE__,"FIONREAD(%d) returned:  %d",
+	    chan,chars_in_buf);
+	}
+    else
+	{
+	if( flag == GP_WAIT_FOR_UNKNOWN )
+	    expecting = chars_in_buf + 1;
+	else if( flag == GP_CHECK_BUF )
+	    expecting = chars_in_buf;
+
+	if( expecting > buf_size )
+	    {
+	    progress(__FILE__,__LINE__,
+		"get_packet(%d,%d,%d) FIONREAD returned:  %d (continuing)",
+		chan,buf_size,flag,chars_in_buf);
+	    expecting = buf_size;
+	    }
+
+	while( read_so_far < expecting )
+	    {
+	    int to_read = expecting-read_so_far;
+	    int nread = read( chan, buf+read_so_far, to_read );
+	    if( nread <= 0 )
+		{
+		progress(__FILE__,__LINE__,
+		    "get_packet(%d,%d) read returned:  %s",
+			chan,to_read,STRERROR(errno));
+		break;
+		}
+	    else
+	        {
+#ifdef DEBUG_DAEMON
+		dump_buf(__FILE__,__LINE__,
+		    buf+read_so_far,nread,"read so far");
+#endif
+		read_so_far += nread;
+		if( nread < to_read )
+		    progress(__FILE__,__LINE__,
+			"Short read(%d,%d) read %d, returned %s",
+			chan,to_read,nread,STRERROR(errno));
+		}
+	    }
+	}
+#endif
+
+#ifdef DEBUG_DAEMON
+    dump_buf(__FILE__,__LINE__,buf,read_so_far,
+        "get_packet(%d,%d,%d) returns %d",
+        chan, buf_size, flag, read_so_far );
+#endif
+    return read_so_far;
+    }
+
+/************************************************************************/
+int wait_for_daemon( hiseg_func msg, const char *txt )
+/************************************************************************
+ *  Send message to daemon and wait for response.			*
+ ************************************************************************/
+    {
+    integer imsg = msg;
+    ninteger nfnc = htoninteger(imsg);
+    char resp;
+    int nbytes;
+
+    nbytes = put_packet(__LINE__, remote_chan, &nfnc, sizeof(nfnc) );
+    if( nbytes != sizeof(nfnc) )
+	progress(__FILE__,__LINE__,
+	    "%s put_packet short write of %d returned %d:  %s",
+	    txt, sizeof(nfnc), nbytes, STRERROR(errno) );
+    nbytes = get_packet( remote_chan, &resp, sizeof(resp), GP_WAIT_FOR_KNOWN );
+    if( nbytes != sizeof(resp) )
+	progress(__FILE__,__LINE__,
+	    "%s reply short read of %d returned %d:  %s",
+	    txt, sizeof(resp), nbytes, STRERROR(errno));
+    return resp;
+    }
+
+static char **string_cache = NULL;
+static int string_cache_size = 0;
+/************************************************************************/
+const char *int_to_string(int string_num)
+/************************************************************************
+ * Return the string stored in the shared string heap.			*
+ * Used internally.							*
+ ************************************************************************/
+    {
+    if( ! remote_host_name )
+	{ return shmp->sm_string_heap+(string_num); }
+    else if( string_cache
+	    && string_num < string_cache_size
+	    && string_cache[string_num] )
+	{ return string_cache[string_num]; }
+    else
+	{
+	ninteger nblock[2];
+	char buf[MEDIUM_BUFSIZE];
+	int to_write = sizeof(ninteger) * 2;
+	nblock[0] = htoninteger(AC_ITS);
+	nblock[1] = htoninteger(string_num);
+	int nbytes;
+#ifdef DEBUG_DAEMON
+	progress(__FILE__,__LINE__,"int_to_string(%d)",string_num);
+#endif
+	nbytes = put_packet(__LINE__, remote_chan, nblock, to_write );
+	if( nbytes != to_write ) return NULL;
+
+	nbytes = get_packet(remote_chan,buf,MEDIUM_BUFSIZE,GP_WAIT_FOR_UNKNOWN);
+	if( nbytes <= 0 )
+	    {
+	    progress(__FILE__,__LINE__,"ITS read returned %d:  %s",
+	        nbytes, STRERROR(errno) );
+	    }
+	else
+	    {
+#ifdef DEBUG_DAEMON
+	    progress(__FILE__,__LINE__,"ITS returned [%s]",buf);
+#endif
+	    if( string_cache_size <= string_num )
+		{
+		int new_string_cache_size = string_num + 100;
+		int size_diff = new_string_cache_size - string_cache_size;
+		string_cache =
+		    ( string_cache
+		    ? (char**)malloc(new_string_cache_size*sizeof(char*))
+		    : realloc( string_cache,
+			new_string_cache_size*sizeof(char*))
+		    );
+		if( size_diff > 0 )
+		    {
+		    memset( (void*)(string_cache+string_cache_size),
+			0, sizeof(char*)*size_diff );
+		    }
+		string_cache_size = new_string_cache_size;
+		}
+	    return string_cache[string_num] = strdup( buf );
+	    }
+	}
+    }
+
+/************************************************************************/
+static int lookup_string( const char *str )
+/************************************************************************
+ * Unfortunately, since we don't know that our word length is at least	*
+ * 36 bits, we'll end up having to store sixbit strings as indices into	*
+ * a string table rather than the strings themselves.  On the other	*
+ * hand, this means we can keep real strings, not just the characters	*
+ * allowed in sixbit.  There aren't many sixbit strings in any of the	*
+ * programs, so we can do a linear search and use a static table.	*
+ * Garbage collection?  Naw - because we have no way of knowing if a	*
+ * string is no longer used.						*
+ * Used internally							*
+ ************************************************************************/
+    {
+    if( ! remote_host_name )
+	{
+	int last_string = shmp->sm_end_string_heap;
+	char *heap_ptr = shmp->sm_string_heap;
+	int l4ind = 0;
+	int found_so_far = 0;
+	int i;
+	for( i=0; i<last_string; i++ )
+	    if( heap_ptr[i] != str[l4ind] )
+		l4ind = 0;
+	    else if( str[l4ind] == 0 )
+		{
+#ifdef DEBUG_STRINGS
+		progress(__FILE__,__LINE__,"lookup_string(%s) returned %d.",
+		    str, found_so_far );
+#endif
+		return found_so_far;
+		}
+	    else if( l4ind++ == 0 )
+		found_so_far = i;
+	l4ind = 0;
+	while( heap_ptr[i++] = str[l4ind++] );
+	shmp->sm_end_string_heap = i;
+	shmp->sm_number_strings++;
+#ifdef DEBUG_STRINGS
+	progress(__FILE__,__LINE__,"lookup_string(%s) returned new %d.",
+	    str, last_string );
+#endif
+	return last_string;
+	}
+    else
+        {
+	char cblock[MEDIUM_BUFSIZE];
+	ninteger *intp = (ninteger*)cblock;
+	char *bp = (char*)(intp+1);
+	int to_write = sizeof(*intp) + strlen(str) + 1;
+	int nbytes;
+
+	*intp = htoninteger( AC_STI );
+	strcpy( bp, str );
+
+#ifdef DEBUG_DAEMON
+	progress(__FILE__,__LINE__,
+	    "Sending STI [%s] of length %d to %d",str,to_write,remote_chan);
+#endif
+	nbytes = put_packet(__LINE__, remote_chan, cblock, to_write );
+	if( nbytes == to_write )
+	    {
+	    ninteger nres;
+	    nbytes = get_packet(
+		remote_chan, &nres, sizeof(nres), GP_WAIT_FOR_KNOWN );
+	    if( nbytes != sizeof(nres) )
+		progress(__FILE__,__LINE__,
+		    "get_packet short read of %d returned %d:  %s",
+		    sizeof(nres), nbytes, STRERROR(errno));
+	    else
+		{
+#ifdef DEBUG_DAEMON
+		progress(__FILE__,__LINE__,
+		    "STI reply from %d was %d",remote_chan,htoninteger(nres));
+#endif
+		return ntohinteger( nres );
+		}
+	    }
+	progress(__FILE__,__LINE__,"Put_packet failure.");
+	return -1;
+	}
+    }
+
+/************************************************************************/
+void settty_(
+    integer *comara,
+    integer *argara,
+    integer *ilen,
+    integer *privd,
+    integer *filesp )
+/************************************************************************
+ * Parse the command line to determine terminal type and pass any flags	*
+ * to caller.  Since curses handles the terminal type from environment	*
+ * we don't bother with the named function.  Determine if we're running	*
+ * as the administrator (for debugging etc).				*
+ * Save the current filename in filesp[3] and leave the rest null.	*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+    int i;
+    *ilen = 0;
+
+    for( i=0; i<save_argc; i++ )
+        {
+	const char *cp0 = save_argv[i];
+	int size = strlen( cp0 ) + 1;
+	char *buf = (char*)malloc( size );
+	char *cp1 = buf;
+	while( *cp0 )
+	    {
+	    if( islower(*cp0) )
+	        *cp1++ = toupper(*cp0++);
+	    else
+	        *cp1++ = *cp0++;
+	    }
+	*cp1 = 0;
+	*argara++ = lookup_string( buf );
+	free( buf );
+	(*ilen)++;
+	}
+    *privd = logical( getuid() == 4161 );
+
+    /* Return the file specification for this program */
+    memset( filesp, 0, sizeof(integer) * 13 );
+    filesp[3] = lookup_string( full_progname );
+    }
+
+#define MAX_DISPLAYS	2
+#define MAXROW		24
+#define MAXCOL		80
+struct display_struct
+    {
+    char		d_nrows, d_ncols;		/* Screen dimensions */
+    char		d_row, d_col;			/* Current position */
+    char		d_fg, d_bg;			/* Current colors */
+    char		d_table;			/* For socket mem */
+    WINDOW		*d_win;				/* For ncurses */
+    chtype		*d_data, *d_last, *d_succ;	/* For webserver */
+    int			d_last_serial, d_succ_serial;	/* For webserver */
+    } displays[MAX_DISPLAYS];
+static integer default_display = 0;
+
+/************************************************************************/
+integer itbadr_( integer *table_number )	{ return *table_number; }
+/************************************************************************
+ * Supposed to return the address of the datablock in the shared memory	*
+ * but we can't let curses just play with it directly, so instead we	*
+ * just return the table number and map it into wmoves and waddch	*
+ * calls.								*
+ * Used in greebl, risk							*
+ ************************************************************************/
+
+/************************************************************************/
+struct display_struct *get_display( int screen_num )
+/************************************************************************/
+    {
+    screen_num = 0;
+    return &displays[screen_num];
+    }
+
+/************************************************************************/
+void defadr_( integer *winnum, integer *address )
+/************************************************************************
+ * Set flag so that curses and ichrout pointed to specified window	*
+ * actually go to specified shared memory table, and updates come from	*
+ * the specified table.							*
+ * Used in: greebl risk 						*
+ ************************************************************************/
+    {
+    if( (int)*address >= 1 && (int)*address <= MAX_SHM_TABLES )
+        get_display(*winnum)->d_table = *address;
+    else
+	fatal(__FILE__,__LINE__,"defadr(%d,%d) out of range",
+	    (int)*winnum,(int)*address);
+    }
+
+/************************************************************************/
+void fwclear( struct display_struct *curd )
+/************************************************************************
+ * Clear the screen (in whatever technology we're using)		*
+ ************************************************************************/
+    {
+    if( curd->d_win )
+        wclear( curd->d_win );
+    else if( curd->d_data )
+        {
+	int to_set = curd->d_nrows * curd->d_ncols;
+	while( to_set-- > 0 )
+	    curd->d_data[to_set] = ' ';
+	}
+    }
+
+/************************************************************************/
+void fwerase( struct display_struct *curd )
+/************************************************************************
+ * Clear the screen (in whatever technology we're using)		*
+ ************************************************************************/
+    {
+    if( curd->d_win )
+        werase( curd->d_win );
+    else if( curd->d_data )
+        {
+	int to_set = curd->d_nrows * curd->d_ncols;
+	while( to_set-- > 0 )
+	    curd->d_data[to_set] = ' ';
+	}
+    }
+
+/************************************************************************/
+void fwrefresh( struct display_struct *curd )
+/************************************************************************
+ * Refresh the screen (in whatever technology we're using)		*
+ ************************************************************************/
+    {
+    if( curd->d_win )
+        wrefresh( curd->d_win );
+    }
+
+/************************************************************************/
+void fredrawwin( struct display_struct *curd )
+/************************************************************************
+ * Redraw the screen (in whatever technology we're using)		*
+ ************************************************************************/
+    {
+    if( curd->d_win )
+        redrawwin( curd->d_win );
+    }
+
+/************************************************************************/
+void fwmove( struct display_struct *curd, int row, int col )
+/************************************************************************
+ * Move cursor in appropriate screen technology.			*
+ ************************************************************************/
+    {
+    curd->d_row = row;
+    curd->d_col = col;
+    if( curd->d_win )
+        wmove( curd->d_win, row, col );
+    }
+
+/************************************************************************/
+void fwaddpch( int flag, struct display_struct *curd, chtype cell )
+/************************************************************************/
+    {
+    if( flag && curd->d_table )
+	{
+	integer numargs = 6;
+	integer line = __LINE__;
+	integer table_num = curd->d_table;
+	integer fortran_row = curd->d_row + 1;
+	integer fortran_col = curd->d_col + 1;
+	putval_( &numargs, __FILE__, &line,
+	    &table_num,
+	    &fortran_row,
+	    &fortran_col,
+	    &cell
+	    );
+	}
+    else if( curd->d_data )
+	curd->d_data[ curd->d_row*curd->d_ncols + curd->d_col ] = cell;
+    else if( curd->d_win )
+	waddch( curd->d_win, cell );
+    }
+
+/************************************************************************/
+void fwaddch( struct display_struct *curd, chtype cell )
+/************************************************************************
+ * Put character in appropriate screen technology.			*
+ ************************************************************************/
+    {
+    chtype chr = cell & A_CHARTEXT;
+    int goto_next_position = 0;
+#ifdef DEBUG_IO
+	progress(__FILE__,__LINE__,"fwaddch(%d:%c) at %d,%d",
+	    chr, chr, curd->d_row, curd->d_col );
+#endif
+    if( chr == '\r' )
+        curd->d_col = 0;
+    else if( chr == '\n' )
+	{
+	if( curd->d_table || curd->d_data )
+	    {
+	    for( ; curd->d_col<curd->d_ncols; curd->d_col++ )
+		fwaddpch( 1, curd, ' ' );
+	    }
+	curd->d_col = 0;	/* Not true for d_win, don't care */
+        curd->d_row = (curd->d_row+1)%curd->d_ncols;
+	}
+    else
+        goto_next_position = 1;
+
+    if( chr >= ' ' || (curd->d_win && !curd->d_table) )
+	fwaddpch( 1, curd, cell );
+
+    if( goto_next_position )
+        {
+	if((curd->d_col = (curd->d_col+1)%curd->d_ncols) == 0 )
+	    curd->d_row = (curd->d_row+1)%curd->d_nrows;
+	}
+
+    if( default_display == 0 && force_screen0_refreshes )
+        fwrefresh( curd );
+    }
+
+/************************************************************************/
+void fendwin( struct display_struct *curd )
+/************************************************************************
+ * End session for appropriate terminal type.				*
+ ************************************************************************/
+    {
+    if( curd->d_win )
+        endwin();
+    }
+
+/************************************************************************/
+void defscr_( integer *winnum, integer *address )	{}
+/************************************************************************
+ * curses already allocates a screen, so there is no point in using	*
+ * the memory handed to us.						*
+ * Used in: scan							*
+ ************************************************************************/
+
+/************************************************************************/
+void grafof_( /* No arguments */ )
+/************************************************************************
+ * Turn off graphical mode - just convert to curses lingo.		*
+ * Used in: greebl risk							*
+ ************************************************************************/
+    {
+    fendwin( get_display(default_display) );
+    in_curses_mode = 0;
+    }
+
+#ifdef USE_COLOR
+static int single_to_pair_map[NCOLORS][NCOLORS];
+
+#ifdef DEBUG_COLOR
+/************************************************************************/
+/*	Dump the color table.						*/
+/************************************************************************/
+void dump_colors()
+    {
+    int fg, bg;
+    printf("  ");
+    for( bg=0; bg<NCOLORS; bg++ ) printf("  %d",bg);
+    printf(" bg\n");
+    for( fg=0; fg<NCOLORS; fg++ )
+        {
+	printf("%d:",fg);
+	for( bg=0; bg<NCOLORS; bg++ )
+	    printf(" %02o",single_to_pair_map[fg][bg]);
+	printf("\n");
+	}
+    printf("fg\n");
+    fflush(stdout);
+    }
+#endif
+
+/************************************************************************/
+/*	Setup a 8x8 color table with all our standard colors.  Ick.	*/
+/*	This is even worse than it could be because color-pair 0 is	*/
+/*	more or less defined to be white on black, or at least the	*/
+/*	default color scheme.  So, we make sure that foreground white	*/
+/*	(ICLWHI=0) on background black (ICLBLA=7) becomes color pair 0.	*/
+/************************************************************************/
+void init_colors( struct display_struct *curd )
+    {
+    int fg, bg;
+    int max_pair = 0;
+    if( curd->d_win ) start_color();
+    for( fg=NCOLORS; --fg>=0; )
+	for( bg=0; bg<NCOLORS; bg++ )
+	    {
+	    single_to_pair_map[fg][bg] = max_pair++;
+	    if( curd->d_win )
+	        if( max_pair <= COLOR_PAIRS )
+		    init_pair( single_to_pair_map[fg][bg], fg, bg );
+		else
+		    fatal(__FILE__,__LINE__,"max_pair >= %d.",COLOR_PAIRS);
+	    }
+#ifdef DEBUG_COLOR
+    dump_colors();
+#endif
+    }
+
+/************************************************************************/
+int get_current_color_pair( struct display_struct *curd )
+/************************************************************************/
+    {
+    return COLOR_PAIR( single_to_pair_map[curd->d_fg][curd->d_bg] );
+    }
+
+/************************************************************************/
+int get_fg( chtype c )
+/************************************************************************/
+    {
+    int res = NCOLORS-1 - PAIR_NUMBER(c)/NCOLORS;
+    /* int res = PAIR_NUMBER(c)/NCOLORS; */
+    /* int res = NCOLORS-1 - PAIR_NUMBER(c)/NCOLORS; */
+#ifdef DEBUG_COLOR
+    progress(__FILE__,__LINE__,"get_fg(%d:%c)=%d(%s) pn=%o.",
+        c,c&A_CHARTEXT,res,curses_color_to_html[res%NCOLORS],
+	PAIR_NUMBER(c));
+#endif
+    return res;
+    }
+
+/************************************************************************/
+int get_bg( chtype c )
+/************************************************************************/
+    {
+    int res = PAIR_NUMBER(c)%NCOLORS;
+    /* int res = NCOLORS-1 - PAIR_NUMBER(c)%NCOLORS; */
+    /* int res = PAIR_NUMBER(c)%NCOLORS; */
+#ifdef DEBUG_COLOR
+    progress(__FILE__,__LINE__,"get_bg(%d:%c)=%d(%s) pn=%o.",
+        c,c&A_CHARTEXT,res,curses_color_to_html[res%NCOLORS],
+	PAIR_NUMBER(c));
+#endif
+    return res;
+    }
+
+#endif
+
+/************************************************************************/
+void start_display( struct display_struct *curd )
+/************************************************************************/
+    {
+    static int first_call = 1;
+    static chtype *webserver_data = NULL;
+    curd->d_nrows = MAXROW;
+    curd->d_ncols = MAXCOL;
+    curd->d_fg = COLOR_WHITE;
+    curd->d_bg = COLOR_BLACK;
+
+#ifdef DEBUG_CURSES
+    progress(__FILE__,__LINE__,"start_display called first_call=%d.\n",
+        first_call );
+#endif
+
+    if( !first_call )
+        if( webserver_data )
+	    curd->d_data = webserver_data;
+	else
+	    curd->d_win = stdscr;
+    else
+        {
+	if( webserver_chan )
+	    curd->d_data = webserver_data =
+		(chtype*)malloc(sizeof(chtype)*curd->d_nrows*curd->d_ncols);
+	else
+	    curd->d_win = initscr();
+#ifdef USE_COLOR
+	init_colors( curd );
+#endif
+	if( curd->d_win )
+	    {
+	    cbreak();
+	    noecho();
+	    nonl();
+	    intrflush(curd->d_win,FALSE);
+	    keypad(curd->d_win,TRUE);
+	    wattron( curd->d_win, get_current_color_pair( curd ) );
+	    assume_default_colors( curd->d_fg, curd->d_bg );
+	    wbkgdset( curd->d_win, get_current_color_pair( curd ) );
+	    wbkgd( curd->d_win, get_current_color_pair( curd ) );
+	    }
+	}
+    fwerase( curd );
+    fwmove( curd, 0, 0 );
+    first_call = 0;
+    }
+
+/************************************************************************/
+void grafon_( /* No arguments */ )
+/************************************************************************
+ * Turn on graphical mode - just convert to curses lingo.		*
+ * Used in: greebl risk							*
+ ************************************************************************/
+    {
+#ifdef DEBUG_CURSES
+    progress(__FILE__,__LINE__,"grafon called with in_curses_mode=%d.",
+        in_curses_mode );
+#endif
+    if( ! in_curses_mode )
+	{
+	struct display_struct *curd = get_display(default_display);
+	if( ! curd->d_nrows ) start_display( curd );
+	in_curses_mode = 1;
+	}
+    }
+
+/************************************************************************/
+void setdis_( integer *newdisplay )
+/************************************************************************
+ * Set the default display.  Since we only handle one display, we just	*
+ * set whatever display he uses as default to curses's stdscr.		*
+ * Used in: greebl risk							*
+ ************************************************************************/
+    {
+    default_display = *newdisplay;
+    if( *newdisplay != 0 ) force_screen0_refreshes = 1;
+    grafon_();
+    }
+
+/************************************************************************/
+void enable_( /* No arguments */ )
+/************************************************************************
+ * Trap all Control-Cs (INTs).  Probably want to trap more under Linux.	*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+    integer zero = 0;
+    grafon_();
+    setdis_(&zero);
+    }
+
+/************************************************************************/
+void newscr_( integer *winnum )
+/************************************************************************
+ * Force the screen to redraw from scratch (as in when a wall/write	*
+ * message messes up the graphics.					*
+ * Used in: greebl risk							*
+ ************************************************************************/
+    {
+    if( ! in_curses_mode ) grafon_();
+    fredrawwin( get_display(*winnum) );
+    }
+
+/************************************************************************/
+void clrscr_( /* No arguments */ )
+/************************************************************************
+ * Blank the screen - just convert to curses lingo.			*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+    struct display_struct *curd = get_display(default_display);
+    if( ! in_curses_mode ) grafon_();
+
+    if( curd->d_win )
+	{
+#ifdef USE_COLOR
+	wattron( curd->d_win, get_current_color_pair( curd ) );
+	assume_default_colors( curd->d_fg, curd->d_bg );
+	/* wbkgdset( curd->d_win, get_current_color_pair( curd ) ); */
+	/* wbkgd( curd->d_win, get_current_color_pair( curd ) ); */
+#endif
+	}
+    fwerase( curd );
+    fwmove( curd, 0, 0 );
+    fredrawwin( curd );
+    }
+
+/************************************************************************/
+void update_( integer *winnum )
+/************************************************************************
+ * Update the screen - just convert to curses lingo.			*
+ * Used in: greebl risk							*
+ ************************************************************************/
+    {
+    struct display_struct *curd = get_display(*winnum);
+    if( curd->d_table )
+        {
+	integer row, col;
+#ifdef DEBUG_IO
+	progress(__FILE__,__LINE__,"Update begins...");
+#endif
+	for( row=1; row<=curd->d_nrows; row++ )
+	    {
+	    fwmove( curd, row-1, 0 );
+	    for( col=1; col<=curd->d_ncols; col++ )
+	        {
+		integer numargs = 6;
+		integer line = __LINE__;
+		integer table_num = curd->d_table;
+		integer chr;
+		getval_( &numargs, __FILE__, &line, &table_num,
+		    &row, &col, &chr );
+		if( !chr ) chr = ' ';
+		fwaddpch( 0, curd, (chtype)chr );
+		}
+	    }
+#ifdef DEBUG_IO
+	progress(__FILE__,__LINE__,"Update ends...");
+#endif
+	}
+    fwrefresh( curd );
+    }
+
+/************************************************************************/
+void chrwat_( integer *ret )
+/************************************************************************
+ * Wait for a user-typed character - just convert to curses lingo.	*
+ * Used in: greebl ocean star war					*
+ ************************************************************************/
+    {
+    if( in_curses_mode )
+	update_( &default_display );
+    else
+	fflush(stdout);
+    if( webserver_port )
+        {
+	/* Wait for data in the ring buffer */
+	while( webserver_command_in_ind == webserver_command_out_ind )
+	    webserver_logic();
+
+	/* Extract one character from the ring buffer */
+	*ret = webserver_command_buf[webserver_command_out_ind++];
+	webserver_command_out_ind %= MEDIUM_BUFSIZE;
+	}
+    else
+        {
+	*ret = getch();
+	}
+    }
+
+/************************************************************************/
+void chrbuf_( integer *ret )
+/************************************************************************
+ * Check to see if the user has typed something.  Return character if	*
+ * yes or -1 if not.							*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+    if( webserver_port )
+	{
+	webserver_logic();
+	if( webserver_command_in_ind == webserver_command_out_ind )
+	    *ret = -1;
+	else
+	    {	/* Extract one character from the ring buffer */
+	    *ret = webserver_command_buf[webserver_command_out_ind++];
+	    webserver_command_out_ind %= MEDIUM_BUFSIZE;
+	    }
+	}
+    else
+	{
+	long numchars;
+	char chrbuf;
+	error_flag = FALSE;
+	update_( &default_display );
+	timeout( 0 );
+	*ret = getch();
+	timeout( -1 );
+	}
+    }
+
+static in_crlf = FALSE;
+/************************************************************************/
+void cursor_( integer *x, integer *y )
+/************************************************************************
+ * Used in: greebl ocean risk star war					*
+ * Move the cursor:  Translate x & y coordinates for row * column for	*
+ # curses.								*
+ ************************************************************************/
+    {
+    struct display_struct *curd = get_display(default_display);
+
+    if( ! in_curses_mode ) grafon_();
+    in_crlf = 0;
+#ifdef DEBUG_CURSES
+    progress(__FILE__,__LINE__,"cursor(%d,%d) translates to (%d,%d)\r\n",
+        (int)*x,(int)*y,curd->d_nrows-(int)*y,(int)*x-1);
+#endif
+    fwmove( curd, (int)(curd->d_nrows-*y), (int)(*x-1) );
+    }
+
+/************************************************************************
+ * Set foreground color.						*
+ * Used in star, ocean, cave, system, war, greebl, risk			*
+ ************************************************************************/
+void pcolor_( integer *col )
+    {
+    if( *col <= 0 || *col > NCOLORS ) abort();
+    get_display(default_display)->d_fg = color_map[*col - 1];
+    }
+
+/************************************************************************/
+void pback_( integer *col )
+/************************************************************************
+ * Set foreground color.						*
+ * Used in star, ocean, cave, system, war, greebl, risk			*
+ ************************************************************************/
+    {
+    if( *col <= 0 || *col > NCOLORS ) abort();
+    get_display(default_display)->d_bg = color_map[*col - 1];
+    }
+
+/************************************************************************/
+integer ichrat_( integer *x, integer *y )
+/************************************************************************
+ * Return the character placed on the screen at the named coordinates.	*
+ * Requires mapping x & y to row & column and ...			*
+ * Used in: greebl							*
+ ************************************************************************/
+    {
+    struct display_struct *curd = get_display(default_display);
+    integer res;
+
+    if( ! in_curses_mode ) grafon_();
+    if( curd->d_table )
+	{
+	integer numargs = 6;
+	integer line = __LINE__;
+	integer table_num = curd->d_table;
+	integer fortran_row = curd->d_nrows-*y + 1;
+	integer fortran_col = *x;
+	getval_( &numargs, __FILE__, &line,
+	    &table_num,
+	    &fortran_row,
+	    &fortran_col,
+	    &res
+	    );
+	}
+    else if( curd->d_win )
+	{
+	int oldcol, oldrow;
+	getyx( curd->d_win, oldrow, oldcol );
+	res = mvwinch( curd->d_win, (int)(curd->d_nrows-*y), (int)(*x-1) );
+	wmove( curd->d_win, oldrow, oldcol );
+	}
+    else if( curd->d_data )
+        {
+	res = curd->d_data[ curd->d_ncols*(curd->d_nrows-*y) + *x-1 ];
+	}
+    res &= A_CHARTEXT;
+    if( res == 0xff || res < ' ' ) res = ' ';
+    return res;
+    }
+
+#ifdef notdef
+/************************************************************************/
+void ctrap_( /* No arguments */ )
+/************************************************************************
+ * This is not here because we prune out all "CALL CTRAP"s and the	*
+ * line following because there is no good way to "skip" the next	*
+ * line in Fortran.							*
+
+ * Used to cause the subroutine call following to be invoked if the	*
+ * user types Control-C.  It's waaaay too dependent on how fortran lays	*
+ * out the code.							*
+ *									*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+    }
+#endif
+
+
+/************************************************************************/
+void outbuf_( integer *chan )
+/************************************************************************
+ * Make sure the buffer on the named channel is dumped.			*
+ * Used in: ocean war							*
+ ************************************************************************/
+    {
+    if( open_channels[*chan] == stdout && in_curses_mode )
+	fwrefresh( get_display(default_display) );
+    else
+	fflush( open_channels[*chan] );
+    }
+
+/************************************************************************/
+void curbuf_()
+/************************************************************************
+ * Make sure the buffer selected by default is dumped.			*
+ * Used in: risk star							*
+ ************************************************************************/
+    {
+    outbuf_( &default_output_channel );
+    }
+
+/************************************************************************/
+static void gchrout( chtype chr )
+/************************************************************************
+ * All graphics characters go through here.				*
+ * Used internally							*
+ ************************************************************************/
+    {
+    struct display_struct *curd = get_display(default_display);
+#ifndef USE_COLOR
+    chtype res = chr;
+#else
+    chtype ccode = get_current_color_pair( curd );
+    chtype res = ( chr | ccode );
+#ifdef DEBUG_COLOR
+    progress(__FILE__,__LINE__,"%d/%o/%c + %o/%o = %d/%o.",
+	chr, chr, chr, ccode, (ccode>>8), res, res );
+#endif
+#endif
+    fwaddch( curd, res );
+    }
+
+/************************************************************************/
+static void ichrout( int chr )
+/************************************************************************
+ * Output a character (easier to call from C)				*
+ * Output a character to the default output location.  If the default	*
+ * is 0 (not set) and the display is set, use curses.  If the display	*
+ * is not set, use stdout.  If the default output location is set	*
+ * use Unix/Linux standard i/o.						*
+ * Used internally							*
+ ************************************************************************/
+    {
+#ifdef DEBUG_IO
+    progress(__FILE__,__LINE__,"ichrout(%d:%c) chan=%d display=%d.",chr,chr,(int)default_output_channel,(int)default_display);
+#endif
+
+    /* The following is hideous:  We're just going to do EVERYTHING	*/
+    /* in graphics mode.  Absolutely everything.  Blech.		*/
+#ifndef something
+    if( default_output_channel==0 && ! in_curses_mode ) grafon_();
+#endif
+
+    if( open_channels[default_output_channel]!=stdout || !in_curses_mode )
+	fputc( (chr == 023 ? '\n' : chr ),
+	    open_channels[default_output_channel] );
+    else if( chr == BEEP )
+	{
+        if( get_display(default_display)->d_win ) flash();
+	}
+    else
+	{
+	if( in_crlf )	/* Swap order of CRLF to keep curses happy */
+	    {
+	    if( chr != '\n' ) gchrout( '\r' );
+	    gchrout( (chtype)chr );
+	    if( chr == '\n' ) gchrout( '\r' );
+	    }
+	else if( chr != '\r' )
+	    gchrout( (chtype)chr );
+
+	in_crlf = ( chr == '\r' );
+	}
+    }
+
+/************************************************************************/
+void chrout_( integer *ch )			{ ichrout( *ch ); }
+/************************************************************************
+ * Used in: greebl ocean risk star war					*
+/************************************************************************/
+
+/************************************************************************/
+static void outstring( const char *str )
+/************************************************************************
+/* Output a null terminated string.  Since Fortran doesn't use null	*
+ * terminated strings, this can only be used internally.		*
+ * Used internally							*
+ ************************************************************************/
+    {
+    while( *str ) ichrout( *str++ );
+    }
+
+/************************************************************************/
+static char *oneline( const char *cmd )
+/************************************************************************
+ * Execute a command and return a pointer to a buffer with the results.	*
+ * Used internally							*
+ ************************************************************************/
+    {
+    FILE *p;
+    char buf[100];
+    char *cp = NULL;
+    int size = 0;
+    if( (p = popen(cmd,"r")) == NULL )
+        perror(cmd);
+    else
+	{
+	char *ret;
+	while( (ret=fgets(buf,100,p))==NULL && errno==EINTR )
+	    ;
+	if( ret == NULL )
+	    perror("fgets");
+	else
+	    {
+	    for( cp=ret; *cp; cp++ )
+		if( *cp == '\r' || *cp == '\n' )
+		    break;
+		else
+		    size++;
+	    cp = (char*)malloc( size+1 );
+	    strncpy( cp, ret, size );
+	    cp[size] = 0;
+	    }
+	pclose( p );
+	}
+    return cp;
+    }
+
+/************************************************************************/
+void string_( integer *numargs, ... )
+/* integer *numargs - #arguments that follows (required for va_lists)	*
+/* void*	- String (or int*) to send to default output location.	*
+ * integer*	- Optional 1=1char/word 5=packed (default), 6=6bit.	*
+ * integer*	- Optional number of chars to print or end on ^E or ^B	*/
+/************************************************************************
+ * Send a string to default output.  Character's preceeded by a ^ are	*
+ * converted to their control equivalent (e.g. ^G will beep).  ^E	*
+ * ends the string.  ^B ends the string and dumps the buffer.		*
+ * Used in: fixbug greebl ocean risk star war				*
+ ************************************************************************/
+    {
+    va_list ap;
+    va_start( ap, numargs );
+        {
+	const char *chrp	= va_arg(ap,char*);
+	const integer *intp	= (integer*)chrp;
+	int frmnum		= ( *numargs < 2 ? 5 : *va_arg(ap,integer*) );
+	int length		= ( *numargs < 3 ? 0 : *va_arg(ap,integer*) );
+	int sofar		= 0;
+	int seenctl		= 0;
+	int seen_null		= 0;
+	int ex_on_space		= ( length < 0 );
+
+	if( length < 0 ) length = -length;
+
+	va_end( ap );
+
+	if( frmnum == 6 )
+	    {
+	    chrp = int_to_string( (int)(*intp) );
+	    if( length == 0 ) length = strlen( chrp );
+#ifdef DEBUG_STRINGS
+	    progress(__FILE__,__LINE__,"Using string %d, strlen=%d length now %d.\r\n",*(int)intp,strlen(chrp),length);
+	    progress(__FILE__,__LINE__,"{%.*s}\r\n",9,chrp);
+#endif
+	    frmnum = 5;
+	    }
+	while( (length>0 && sofar<length) || (length<=0 && !seen_null) )
+	    {
+	    int ch;
+	    switch( frmnum )
+	        {
+		case 0:
+		case 1:		if( ch = *intp )	intp++;		break;
+		default:	if( ch = *chrp )	chrp++;		break;
+				break;
+		}
+	    if( !ch ) ch = ' ';
+	    if( ex_on_space && ch <= ' ' ) break;
+	    if( ! seenctl )
+	        {
+		if( ch == '^' )
+		    seenctl=1;
+		else
+		    {
+		    ichrout( ch );
+		    sofar++;
+		    }
+		}
+	    else if( ch == 'E' )
+	        { break; }
+	    else if( ch == 'B' )
+	        {
+		curbuf_();
+		break;
+		}
+	    else
+	        {
+		ichrout( CONTROL(ch) );
+		sofar++;
+		seenctl = 0;
+		}
+	    }
+	}
+    }
+
+static char *DIGITS =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+/************************************************************************/
+void number_helper(
+    integer num_int,	/* Integer to print or zero if printing floats	*/
+    double num_float,	/* Float to print or zero if printing ints	*/
+    integer num_length,	/* Left pad to this number of characters if	*/
+    			/* positive or right pad if negative.  Don't	*/
+			/* pad at all if zero.				*/
+    integer num_radix,	/* Output base, currently only handles 8,10&16.	*/
+    integer num_max_size,	/* #digits to right of decimal with floats.	*/
+    integer pad_with )	/* Either ' ' or '0'				*/
+/************************************************************************/
+    {
+    char stack[100];
+    int stackind = 0;
+    int negflag = 0;
+    int length = ( num_length < 0 ? -num_length : num_length );
+
+    if( num_max_size >= 0 )
+	{
+	int digs_to_right;
+	if( num_float < 0 )
+	    {
+	    negflag = 1;
+	    num_float = -num_float;
+	    }
+	num_int = num_float;
+	if( num_max_size > 0 )
+	    {
+	    int mul = 1;
+	    int digs_right = num_max_size;
+	    int num_right;
+	    while( digs_right-- > 0 )
+	        mul *= num_radix;
+	    num_right = mul * num_float;
+	    for( digs_to_right=0; digs_to_right<num_max_size; digs_to_right++ )
+		{
+		stack[stackind++] = DIGITS[ num_right % num_radix ];
+		num_right /= num_radix;
+		}
+	    stack[stackind++] = '.';
+	    }
+	}
+    else
+        {
+	if( num_int < 0 )
+	    {
+	    negflag = 1;
+	    num_int = -num_int;
+	    }
+	}
+
+    do  {
+        stack[stackind++] = DIGITS[ num_int % num_radix ];
+	num_int /= num_radix;
+	} while( num_int != 0 );
+    if( negflag ) stack[stackind++] = '-';
+
+    if( length && (length < stackind ) )
+        {
+	while( length-- > 0 ) ichrout('*');
+	}
+    else
+	{
+	length -= stackind;
+	if( num_length > 0 )
+	    while( length-- > 0 )
+		ichrout( pad_with );
+	while( stackind-- > 0 )
+	    ichrout( stack[stackind] );
+	if( num_length < 0 )
+	    while( length-- > 0 )
+		ichrout( pad_with );
+	}
+    }
+
+/************************************************************************/
+void number_( integer *numargs, ... )
+/* integer *numargs	#args that follows (required for va_lists)	*
+/* integer * or float *	Either *int or *float - to print.		*
+ * integer *		Optional #chars to output, space padded left.	*
+ * integer *		Optional radix (default 10) to print number.	*/
+/************************************************************************
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+    va_list ap;
+    va_start( ap, numargs );
+	{
+	int num_int	= ( *numargs >=4 ? 0   : *va_arg(ap,integer*)   );
+	double num_float= ( *numargs < 4 ? 0.0 : *va_arg(ap,float*)     );
+	int num_length	= ( *numargs < 2 ? 0   : *va_arg(ap,integer*)   );
+	int num_radix	= ( *numargs < 3 ? 10  : *va_arg(ap,integer*)   );
+	int num_max_size	= ( *numargs < 4 ? -1  : *va_arg(ap,integer*)   );
+	va_end( ap );
+	number_helper(num_int,num_float,
+	    ( (num_length < 0) ? -num_length : num_length ),
+	    num_radix,num_max_size,
+	    ( (num_length < 0) ? '0' : ' ' )
+	    );
+	}
+    }
+
+/************************************************************************/
+void lnumbr_( integer *numargs, ... )
+/* integer *numargs	#args that follows (required for va_lists)	*
+/* integer * or float *	Either *int or *float - to print.		*
+ * integer *		Optional #chars to output, space padded right.	*
+ * integer *		Optional radix (default 10) to print number.	*/
+/************************************************************************
+ * Used in: risk							*
+ ************************************************************************/
+    {
+    va_list ap;
+    va_start( ap, numargs );
+	{
+	int num_int	= ( *numargs >=4 ? 0   : *va_arg(ap,integer*)   );
+	double num_float= ( *numargs < 4 ? 0.0 : *va_arg(ap,float*)     );
+	int num_length	= ( *numargs < 2 ? 0   : *va_arg(ap,integer*)   );
+	int num_radix	= ( *numargs < 3 ? 10  : *va_arg(ap,integer*)   );
+	int num_max_size	= ( *numargs < 4 ? -1  : *va_arg(ap,integer*)   );
+	va_end( ap );
+	number_helper(num_int,num_float,
+	    ( (num_length < 0) ? num_length : -num_length ),
+	    num_radix,num_max_size,
+	    ( (num_length < 0) ? '0' : ' ' )
+	    );
+	}
+    }
+
+/************************************************************************/
+void outnum_( integer *numargs, ... )
+/* integer *numargs	#args that follows (required for va_lists)	*
+ * integer *		Unpadded integer to print in base 10.		*
+ * integer *		Another integer to print in base 10 ...		*
+/************************************************************************
+ * Print a list of integers separated with commas.			*
+ * Used in: war								*
+ ************************************************************************/
+    {
+    int numleft;
+    va_list ap;
+    va_start( ap, numargs );
+    for( numleft=*numargs; numleft-->0; )
+        {
+	number_helper( *va_arg(ap,integer*), 0.0, 0, 10, -1, ' ' );
+	if( numleft ) outstring( "," );
+	}
+    va_end( ap );
+    }
+
+/************************************************************************/
+void crlf_()
+/************************************************************************
+ * Output a carriage return followed by a line feed.			*
+ * Used in: ocean star war						*
+ ************************************************************************/
+    {
+    outstring("\r\n");
+    }
+
+/************************************************************************/
+void irepeat_( integer *chr, integer *reps )
+/************************************************************************
+ * Output the specified character the specified number of times.	*
+ * Used in: greebl risk							*
+ ************************************************************************/
+    {
+    int repnum = *reps;
+    while( repnum-->0 )
+	chrout_( chr );
+    }
+
+/************************************************************************/
+const char *fix_file_name( integer *fsp )
+/************************************************************************
+ * Many of the program play with fsp[4] (Fortran's filesp(5)) to get	*
+ * names of data files, etc.  If fsp[4] is present, we'll fix up the	*
+ * string pointed to in fsp[3], else we'll leave it alone.		*
+ ************************************************************************/
+    {
+    if( fsp[4] )
+        {
+	char fix_file_name_buf[100];
+	char *dest = fix_file_name_buf;
+	const char *src = int_to_string( (int)(fsp[3]) );
+	const char *extension = int_to_string( (int)(fsp[4]) );
+	char *last_interesting_char = NULL;
+
+	while( *dest = *src++ )
+	    {
+	    if( *dest == '/' || *dest == '.' )
+	        last_interesting_char = dest;
+	    dest++;
+	    }
+
+	if( last_interesting_char && *last_interesting_char=='.' )
+	    dest = last_interesting_char;
+
+	if( strncmp( dest-4, "_f2c", 4 ) == 0 )
+	    dest -= 4;
+
+	for( *dest++ = '.'; *dest = *extension++; dest++ )
+	    if( isupper(*dest) )
+		*dest = tolower( *dest );
+
+	fsp[3] = lookup_string( fix_file_name_buf );
+	fsp[4] = 0;
+	}
+    return int_to_string( (int)(fsp[3]) );
+    }
+
+/************************************************************************/
+void outspc_( integer *fsp )
+/************************************************************************
+ * Output a file specification (just a string under Linux).		*
+ * Used in: ocean star							*
+ ************************************************************************/
+    {
+    outstring( fix_file_name( fsp ) );
+    }
+
+
+/************************************************************************/
+void ofile_(
+    integer *chan,	/* Channel to open				*/
+    integer *filesp)	/* File to open on channel			*/
+/************************************************************************
+ * Under Tops10, this opens a device, but we leave rfile and ofile to	*
+ * do that.  So now, we just handle pure devices (tty, maybe lpt).	*
+ * Used in: fixbug ocean risk star war					*
+ ************************************************************************/
+    {
+    error_flag = TRUE;
+    if( filesp[0] == 0 )
+        error_flag = FALSE;
+    else if( lookup_string("TTY") == *filesp )
+        {
+	open_channels[*chan] = stdout;
+	open_channel_file[*chan] = *filesp;
+	error_flag = FALSE;
+	}
+    }
+
+/************************************************************************/
+void rfile_(
+    integer *chan,	/* Channel to open				*/
+    integer *filesp)	/* File to open on channel			*/
+/************************************************************************
+ * Open specified file for reading on specified channel and set		*
+ * error_flag based on whether we failed or succeeded.			*
+ * Used in: fixbug risk							*
+ ************************************************************************/
+    {
+    error_flag =
+	((open_channels[*chan]=fopen(fix_file_name(filesp),"r")) == NULL);
+    open_channel_file[*chan] = filesp[3];
+    }
+
+/************************************************************************/
+void wfile_(
+    integer *chan,	/* Channel to open				*/
+    integer *filesp)	/* File to open on channel			*/
+/************************************************************************
+ * Open specified file for writing on specified channel and set		*
+ * error_flag based on whether we failed or succeeded.			*
+ * Used in: ocean star war						*
+ ************************************************************************/
+    {
+    if( printer_trigger )
+        {
+	char buf[100], *cp;
+	sprintf( buf, "/tmp/%s.%s",
+	    int_to_string(filesp[3]),
+	    int_to_string(filesp[4]) );
+	for( cp=buf; *cp; cp++ )
+	    if( isupper( *cp ) )
+	        *cp = tolower( *cp );
+	printer_trigger = 0;
+	filesp[3] = lookup_string( buf );
+	filesp[4] = 0;
+	}
+    error_flag =
+	((open_channels[*chan]=fopen(fix_file_name(filesp),"w")) == NULL);
+    open_channel_file[*chan] = filesp[3];
+    }
+
+/************************************************************************/
+void select_( integer *dest_chan )
+/************************************************************************
+ * Specify channel where output goes to by default.			*
+ * Used in: ocean star war						*
+ ************************************************************************/
+    {
+    default_output_channel = *dest_chan;
+    }
+
+/************************************************************************/
+void rnfile_(
+    integer *chan,	/* Channel to open				*/
+    integer *filesp)	/* New name of file openned on channel		*/
+/************************************************************************
+ * Rename the file opened on the specified channel to the specified	*
+ * filename.								*
+ * Used in: fixbug risk							*
+ ************************************************************************/
+    {
+    error_flag =
+	(   rename(int_to_string(open_channel_file[*chan]),
+		    fix_file_name(filesp)
+	    ) < 0 );
+    }
+
+/************************************************************************/
+void xfer_( integer *ichan, integer *ochan )
+/************************************************************************
+ * Transfer everything from the input channel to the output channel.	*
+ * No error checking.  Error checking is for weenies.			*
+/************************************************************************/
+    {
+    int ch;
+    while( (ch=getc(open_channels[*ichan])) != EOF )
+        fputc(ch,open_channels[*ochan]);
+    fflush(open_channels[*ochan]);
+    }
+
+/************************************************************************/
+void close_( integer *chan )
+/************************************************************************
+ * Close the specified i/o channel.					*
+ * Used in: fixbug greebl ocean risk star war				*
+ ************************************************************************/
+    {
+    if( open_channels[*chan] && open_channels[*chan] != stdout )
+        fclose( open_channels[*chan] );
+    open_channels[*chan] = NULL;
+    }
+
+
+/************************************************************************/
+int iserch_(
+    integer *list,	/* List of integers to search through.		*/
+    integer *s4,	/* Integer to look for.				*/
+    integer *len )	/* Length of list to scan.			*/
+/************************************************************************
+ * Return index where specified word is in list.			*
+ * Used in: ocean							*
+ ************************************************************************/
+    {
+    int ind;
+    for( ind=0; ind < *len; )
+	{
+	if( list[ind++] == *s4 ) return ind;
+	}
+    return 0;
+    }
+
+/************************************************************************/
+void getstr_( integer *numargs, ... )
+/*  integer *numargs	#args that follows (required for va_lists	*
+ *  integer *		Array of ints to put string into.		*
+ *  integer *		Size of array (i.e. do not exceed).		*
+ *  integer *		Actual number of characters put into array.	*
+ *  integer *		Optional channel to read data from (else tty).	*
+ *  integer *		Optional returned EOF flag.			*/
+/************************************************************************
+ * Used in: fixbug ocean risk star					*
+ ************************************************************************/
+    {
+    va_list ap;
+    va_start( ap, numargs );
+        {
+	integer *dest	= va_arg(ap,integer*);
+	int size	= *va_arg(ap,integer*);
+	integer *creadp	= va_arg(ap,integer*);
+	int chan	= ( *numargs < 4 ? 0 : *va_arg(ap,integer*) );
+	integer *eofp	= ( *numargs < 5 ? NULL : va_arg(ap,integer*) );
+
+	int ind		= 0;
+
+	if( eofp ) *eofp = logical( FALSE );
+
+	if( chan > 0 )
+	    {
+	    char *buf = (char*)malloc( size+1 );
+	    if( fgets( buf, size, open_channels[chan] ) == NULL )
+	        {
+		if( eofp ) *eofp = logical( TRUE );
+		}
+	    else
+	        {
+		char *cp = buf;
+		while( *cp && *cp!='\r' && *cp!='\n' )
+		    { dest[ind++] = *cp++; }
+		dest[ind] = 0;
+		}
+	    free( buf );
+	    }
+	else
+	    {
+	    do  {
+		integer ich;
+		chrwat_( &ich );
+		if( ich == '\r' || ich == '\n' ) break;
+		switch( ich )
+		    {
+		    case BACKSPACE:
+		    case DELETE:
+		    case 263:			/* MacOS Delete key! */
+		        if( ind <= 0 )
+			    ichrout( BEEP );
+			else
+			    {
+			    outstring("\b \b");
+			    ind--;
+			    }
+			break;
+		    case CONTROL('U'):
+		        if( ind <= 0 )
+			    ichrout( BEEP );
+			else
+			    while( ind-- > 0 )
+				outstring("\b \b");
+			break;
+		    case CONTROL('W'):
+		        if( ind <= 0 )
+			    ichrout( BEEP );
+			else
+			    {
+			    while( ind>0 && dest[ind-1]==' ' )
+			        {
+				outstring("\b \b");
+				ind--;
+				}
+			    while( ind>0 && dest[ind-1]!=' ' )
+			        {
+				outstring("\b \b");
+				ind--;
+				}
+			    }
+		        break;
+		    default:
+		        if( ich >= ' ' && ich <= '~' )
+			    {
+			    ichrout( ich );
+			    dest[ind++] = ich;
+			    }
+			break;
+		    }
+		} while( ind < size );
+	    outstring("\r\n");
+	    }
+	*creadp = ind;
+	while( ind < size ) dest[ind++] = 0;
+	}
+    va_end( ap );
+    }
+
+#define GETNUM_BUFSIZE	79
+/************************************************************************/
+void getnum_( int *numargs, ... )
+/*  integer *numargs	#args that follows (required for va_lists)	*
+ *  integer *		Array of ints to get numbers from.		*
+ *  integer *		Size of array.					*
+ *  integer *		First int returned				*
+ *  integer *		Optional radix of first int returned		*
+ *  integer *		Optional next int returned			*
+ *  integer *		Optional radix of next int returned		*
+ *  			...						*
+ * If no array is specified, getstr() one.				*/
+/************************************************************************
+ * Used in: ocean risk star war						*
+ ************************************************************************/
+    {
+    integer buf[ GETNUM_BUFSIZE ];
+    va_list ap;
+    va_start( ap, numargs );
+        {
+	int nargs = *numargs;
+	integer size;
+	integer *src;
+	integer *dest;
+	int radix;
+	if( nargs % 2 == 1 )
+	    {
+	    integer three_args = 3;
+	    integer bufsize = GETNUM_BUFSIZE;
+	    size = *va_arg( ap, integer*);
+	    getstr_( &three_args, src=buf, &bufsize, &size );
+	    nargs--;
+	    }
+	else
+	    {
+	    src = va_arg( ap, integer* );
+	    size = *va_arg( ap, integer * );
+	    nargs -= 2;
+	    }
+	int numsleft = nargs / 2;
+	int ind = 0;
+	while( (ind<size) && (numsleft > 0) )
+	    {
+	    int i = 0;
+	    int negflag = 1;
+	    dest = va_arg( ap, integer* );
+	    radix = *va_arg( ap, integer* );
+	    numsleft--;
+	    *dest = 0;
+	    while( ind<size )
+	        {
+		if( src[ind] == '-' )
+		    negflag = - negflag;
+		else
+		    for( i=0; i<radix && (src[ind] != DIGITS[i]); i++ )
+			{}
+		ind++;
+		if( i < radix )
+		    {
+		    *dest = negflag * i;
+		    break;
+		    }
+		}
+	    while( ind<size )
+	        {
+		for( i=0; i<radix && (src[ind] != DIGITS[i]); i++ ) {}
+		if( i >= radix ) break;
+		*dest = *dest * radix + negflag * i;
+		ind++;
+		}
+	    }
+	while( numsleft-- > 0 )
+	    {
+	    *va_arg(ap,integer*) = 0;
+	    va_arg(ap,integer*);
+	    }
+	}
+    va_end( ap );
+    }
+
+/************************************************************************/
+void iscan_(
+    integer *startind,	/* Index into array to start looking for spec	*/
+    integer *stopind,	/* Index into array to stop looking for spec	*/
+    integer *intext,	/* Array of ints (of chars) to look through	*/
+    integer *filespec )	/* Array of ints (of chars) to put spec in	*/
+/************************************************************************
+ * Scan through an array of ints (characters) for file specification.	*
+ * Doesn't do much under linux.						*
+ * Used in: fixbug star							*
+ ************************************************************************/
+    {
+    char buf[100];
+    char *cp = buf;
+    int i;
+    for( i=0; i<13; i++ ) filespec[i] = 0;
+
+    for( i=*startind-1; i < *stopind; i++ )
+        if( ! isspace(intext[i]) )
+	    *cp++ = intext[i];
+    *cp = 0;
+    filespec[3] = lookup_string( buf );
+    }
+
+/************************************************************************/
+allcap_( integer *str, integer *len )
+/************************************************************************
+ * Convert the array (size len) of ints (chars) to uppercase.		*
+ * Used in: fixbug greebl ocean risk star				*
+ ************************************************************************/
+    {
+    int left;
+    for( left=*len; left-- > 0; str++ )
+        if( islower( *str ) )
+	    *str = toupper( *str );
+    }
+
+
+/************************************************************************/
+void datime_( int *day, int *month, int *year, int *hour, int *min, int *sec )
+/************************************************************************
+ * Return the date and time in numerical format.			*
+ * Used in: cave ocean							*
+ ************************************************************************/
+    {
+    struct tm *ltm;
+    time_t now;
+    time( &now );
+    ltm = localtime( &now );
+    *year = ltm->tm_year + 1900;
+    *month = ltm->tm_mon + 1;
+    *day = ltm->tm_mday;
+    *hour = ltm->tm_hour;
+    *min = ltm->tm_min;
+    *sec = ltm->tm_sec;
+    }
+
+/************************************************************************/
+void hiprot_()							{}
+/************************************************************************
+ * Used in:  system							*
+ ************************************************************************/
+
+/************************************************************************/
+void nhiblk_()							{}
+/************************************************************************
+ * Used in:  system							*
+ ************************************************************************/
+
+/************************************************************************/
+void ccore_()							{}
+/************************************************************************
+ * Used in:  system							*
+ ************************************************************************/
+
+/************************************************************************/
+void lock_()
+/************************************************************************
+ * Lock the shared database or sleep until we can.			*
+ * Assumes that we'll never "wrap around" sleep counter.		*
+ * Used in: greebl ocean risk star					*
+ ************************************************************************/
+    {
+#ifdef DEBUG_HISEG
+    progress(0,0,"Entering lock...");
+#endif
+    if( !remote_host_name )
+	while( shmp->sm_lock_flag++ > 0 )
+	    sleep(1);
+    else
+        (void)wait_for_daemon( AC_LCK, "AC_LCK" );
+#ifdef DEBUG_HISEG
+    progress(0,0,"Ending lock...");
+#endif
+    }
+
+static int initter = 0;
+/************************************************************************/
+void unlock_()
+/************************************************************************
+ * Unlock the shared database.						*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+#ifdef DEBUG_HISEG
+    progress(0,0,"Entering unlock...");
+#endif
+    if( !remote_host_name )
+	shmp->sm_lock_flag = 0;
+    else
+        (void)wait_for_daemon( AC_UNL, "AC_UNL" );
+#ifdef DEBUG_HISEG
+    progress(0,0,"Ending unlock...");
+#endif
+    if( initter && daemon_port ) sm_daemon();
+    }
+
+/************************************************************************/
+void check_( integer *iniflg )
+/************************************************************************
+ * Return with iniflg true if we're setting up a new database (and	*
+ * leave locked).  Returns false if we're not the first in.		*
+ * In the single user case, we just malloc a big chunk of memory.	*
+ * In the multi-user case, we'll open a shared memory segment.		*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+#ifdef DEBUG_HISEG
+    progress(0,0,"Entering check...");
+#endif
+    if( remote_host_name )
+        addusr_( &integer_one );
+    else
+	{
+	lock_();
+	if( (shmp->sm_users_in_database++==0 && strncmp(progname,"system",6)!=0)
+	    || ! shmp->sm_setup )
+	    {
+	    *iniflg = logical( TRUE );
+	    initter = 1;
+	    printf("\r\n[Initializing database]\r\n");
+	    fflush(stdout);
+	    shmp->sm_setup = TRUE;
+	    return;
+	    }
+	unlock_();
+	}
+#ifdef DEBUG_HISEG
+    progress(0,0,"End check...");
+#endif
+    }
+
+/************************************************************************/
+int nuser_()
+/************************************************************************
+ * Return the number of users in the database (a positive integer).	*
+ * Used in: greebl							*
+ ************************************************************************/
+    {
+#ifdef DEBUG_HISEG
+    progress(__FILE__,__LINE__,"nuser_ returns.");
+#endif
+    if( ! remote_host_name )
+	return shmp->sm_users_in_database;
+    else
+	return wait_for_daemon( AC_NUSER, "AC_NUSER" );
+    }
+
+/************************************************************************/
+void addusr_( integer *increment )
+/************************************************************************
+ * Increment or decrement number of users by hand for peculiar exits	*
+ * Used in: ocean							*
+ ************************************************************************/
+    {
+#ifdef DEBUG_HISEG
+    progress(__FILE__,__LINE__,"adduser_(%d)", (int)(*increment));
+#endif
+    if( ! remote_host_name )
+	shmp->sm_users_in_database += *increment;
+    else
+        {
+	ninteger nblock[2];
+	int to_write = sizeof(ninteger) * 2;
+	char resp;
+	int nbytes;
+
+	nblock[0] = htoninteger(AC_ADDUSR);
+	nblock[1] = htoninteger(*increment);
+	nbytes = put_packet(__LINE__, remote_chan, nblock, to_write );
+	if( nbytes == to_write )
+	    {
+	    nbytes =
+		get_packet(remote_chan,&resp,sizeof(resp),GP_WAIT_FOR_KNOWN);
+	    if( nbytes != sizeof(resp) )
+		progress(__FILE__,__LINE__,
+		    "%s reply short write of %d returned %d:  %s",
+		    "AC_ADDUSR", sizeof(resp), nbytes, STRERROR(errno));
+	    }
+	}
+    }
+
+#define WORDSIZE	( 8 * sizeof(integer) )
+/************************************************************************/
+void init_( integer *numargs, ... )
+/*  integer *numargs	#args that follows (required for va_lists	*
+ *  integer *		table number to allocate (positive int)		*
+ *  integer *		number of bits / entry (currently ignored!)	*
+ *  integer *		size of first dimension				*
+ *  integer *		size of second dimension			*
+ *  			...						*/
+/************************************************************************
+ * Setup a multi-dimensional array by allocating memory from the	*
+ * pre-allocated memory from check().  Store in the dimensions because	*
+ * they are needed to calculate the offset into the array for accesses.	*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+    va_list ap;
+    va_start( ap, numargs );
+    int nargs = *numargs - 2;
+    int table_number, size, dimind;
+
+    const char *filename = va_arg( ap, const char * );
+    int linenum = *va_arg( ap, integer* );
+    nargs -= 2;
+
+#ifdef DEBUG_HISEG
+    progress(filename,linenum,"Entering init.");
+#endif
+
+    table_number = *va_arg( ap, integer* );
+#ifdef DEBUG_HISEG
+    progress(filename,linenum,"table_number=%d.",table_number);
+#endif
+    if( table_number < 1 || table_number >= MAX_SHM_TABLES )
+        fatal(filename,linenum,"init trying to create table %d (not %d to %d).\r\n",
+	    table_number,1,MAX_SHM_TABLES-1);
+    /* shmp->sm_member_size[table_number] = *va_arg( ap, integer* ); */
+    integer member_size = *va_arg( ap, integer* );
+    if( member_size > WORDSIZE ) member_size = WORDSIZE;
+    shmp->sm_member_size[table_number] = member_size;
+
+#ifdef USE_COMPRESSION
+    shmp->sm_member_mask[table_number] =
+        ( shmp->sm_member_size[table_number] >= WORDSIZE
+	? (integer)-1
+	: (( (integer)1 << shmp->sm_member_size[table_number] ) - 1 )
+	);
+    shmp->sm_members_per_word[table_number] =
+        WORDSIZE / shmp->sm_member_size[table_number];
+
+#ifdef DEBUG_HISEG
+    progress(__FILE__,__LINE__,
+	    "init wordsize=%d member_size=%d mask=%lx members_per_word=%d",
+		WORDSIZE,
+	        shmp->sm_member_size[table_number],
+	        shmp->sm_member_mask[table_number],
+	        shmp->sm_members_per_word[table_number] );
+#endif
+#endif
+    shmp->sm_numdims[table_number] = nargs;
+    size = 1;
+    for( dimind=0; dimind<shmp->sm_numdims[table_number]; dimind++ )
+        {
+#ifdef DEBUG_HISEG
+	progress(filename,linenum,"dimind=%d",dimind);
+#endif
+	int dimsize = *va_arg( ap, integer* );
+#ifdef DEBUG_HISEG
+	progress(filename,linenum,"dimsize=%d",dimind);
+#endif
+	shmp->sm_dims[table_number][dimind] = dimsize;
+	size *= dimsize;
+	}
+    shmp->sm_offset[table_number] = shmp->sm_end_int_heap;
+    shmp->sm_size[table_number] = size;
+#ifdef USE_COMPRESSION
+    if( size % shmp->sm_members_per_word[table_number] )
+        { size = size / shmp->sm_members_per_word[table_number] + 1; }
+    else
+        { size = size / shmp->sm_members_per_word[table_number]; }
+#endif
+    shmp->sm_end_int_heap += size;
+    va_end( ap );
+#ifdef DEBUG_HISEG
+	{
+	char msgbuf[100];
+	int i;
+	sprintf(msgbuf, "Ending init for table %d: ",
+	    table_number );
+	for( i=0; i<dimind; i++ )
+	    {
+	    if(i)strcat(msgbuf,"x");
+	    sprintf(msgbuf+strlen(msgbuf),"%d",shmp->sm_dims[table_number][i]);
+	    }
+	sprintf(msgbuf+strlen(msgbuf)," size %d (%d-%d).",
+	    size,shmp->sm_offset[table_number],shmp->sm_end_int_heap);
+	progress(filename,linenum,"%s",msgbuf);
+	}
+#endif
+    if( shmp->sm_end_int_heap >= SHM_DATA_SIZE )
+        fatal(filename,linenum,"Table %d extends heap to %d (beyond %d)",
+	    table_number, 
+	    shmp->sm_end_int_heap, SHM_DATA_SIZE );
+    }
+
+const char *ac_filename = "remote";
+int ac_linenum = 0;
+static int last_table_number;
+static int last_addr;
+static int last_member_offset = 0;
+/************************************************************************/
+integer local_address_calculator(
+    integer *block,
+    int size )
+/************************************************************************
+ * Used internally							*
+/************************************************************************/
+    {
+    int offset, dimind;
+
+    int fnc = *block++;
+    int table_number = *block++;
+
+	{
+#ifdef DEBUG_HISEG
+	char msgbuf[100];
+	sprintf(msgbuf,"val(%d, ", table_number );
+#endif
+	if( table_number >= 0 )
+	    {
+	    if( table_number < 1 || table_number >= MAX_SHM_TABLES )
+		fatal(ac_filename,ac_linenum,
+		    "Trying to reference table %d (not %d to %d).",
+		    ac_linenum,table_number,1,MAX_SHM_TABLES-1);
+	    for(offset=dimind=0;
+		dimind<shmp->sm_numdims[table_number];
+		dimind++ )
+		{
+		int dimsize = shmp->sm_dims[table_number][dimind];
+		int ind = *block++ - 1;
+		if( ind < 0 )
+		    fatal(ac_filename,ac_linenum,
+		        "table %d, dim %d, %d < 1",
+			table_number, dimind, ind+1 );
+		if( ind >= dimsize )
+		    fatal(ac_filename,ac_linenum,
+		        "table %d, dim %d, %d > %d\r\n",
+			table_number, dimind, ind+1, dimsize );
+		offset = offset*dimsize + ind;
+#ifdef DEBUG_HISEG
+		if( dimind ) strcat(msgbuf,",");
+		sprintf(msgbuf+strlen(msgbuf),"%d",ind+1);
+#endif
+		}
+#ifdef USE_COMPRESSION
+	    int mpw = shmp->sm_members_per_word[table_number];
+	    last_member_offset = offset % mpw;
+	    last_addr = shmp->sm_offset[table_number]+(offset / mpw);
+#else
+	    last_addr = shmp->sm_offset[table_number]+offset;
+#endif
+	    last_table_number = table_number;
+	    if( last_addr >= shmp->sm_end_int_heap )
+		fatal(ac_filename,ac_linenum,
+		    "table %d offset=%d last_addr=%d heap=%d.\n",
+		    table_number, offset, last_addr, shmp->sm_end_int_heap );
+#ifdef DEBUG_HISEG
+	    strcat(msgbuf,", ");
+#endif
+	    }
+
+	integer t0, val;
+#ifdef USE_COMPRESSION
+	integer shift_dist
+	    = shmp->sm_member_size[last_table_number] * last_member_offset;
+	integer mask = shmp->sm_member_mask[last_table_number];
+	integer shifted_mask = (mask << shift_dist);
+	integer t1;
+#endif
+
+	switch( fnc )
+	    {
+	    case AC_GET:
+#ifdef USE_COMPRESSION
+		val = (( shmp->sm_data[last_addr] >> shift_dist ) & mask );
+#else
+		val = shmp->sm_data[last_addr];
+#endif
+#ifdef DEBUG_HISEG
+		progress(ac_filename,ac_linenum, "get%s%d) [%d/%d]",
+		    msgbuf,val,last_addr,last_member_offset);
+#endif
+		return val;
+	    case AC_PUT:
+		val = *block++;
+#ifdef USE_COMPRESSION
+		t0 = (shmp->sm_data[last_addr] & ~shifted_mask);
+		t1 = ((val & mask) << shift_dist);
+		shmp->sm_data[last_addr] = (t0 | t1);
+#ifdef DEBUG_HISEG
+		progress(__FILE__,__LINE__,
+		    "t0=%d t1=%d val=%d mask=%d sd=%d sm=%d res=%d",
+		    t0, t1, val, mask, shift_dist, shifted_mask,
+		    shmp->sm_data[last_addr] );
+#endif
+#else
+		shmp->sm_data[last_addr] = val;
+#endif
+#ifdef DEBUG_HISEG
+		progress(ac_filename,ac_linenum, "put%s%d) [%d/%d]",
+		    msgbuf,val,last_addr,last_member_offset);
+#endif
+		break;
+	    case AC_ADD:
+		val = *block++;
+#ifdef USE_COMPRESSION
+		t0 = ( shmp->sm_data[last_addr] >> shift_dist );
+		t0 = ((t0 + val) & mask);
+		t1 = (~shifted_mask & shmp->sm_data[last_addr]);
+		shmp->sm_data[last_addr] = ( t1 | (t0 << shift_dist) );
+#else
+		t0 = shmp->sm_data[last_addr] + val;
+		shmp->sm_data[last_addr] = t0;
+#endif
+#ifdef DEBUG_HISEG
+		progress(ac_filename,ac_linenum, "add%s%d) => %d [%d/%d]",
+		    msgbuf,shmp->sm_data[last_addr],val,t0,
+		    last_addr,last_member_offset);
+#endif
+		break;
+	    }
+	}
+    }
+
+/************************************************************************/
+integer remote_getputaddval( integer *block, int size )
+/************************************************************************/
+/*	Data to send							*
+ *	Number of words to send						*
+/************************************************************************/
+    {
+    ninteger nresp, nblock[100];
+    int ctr = size;
+    int nbytes;
+    while( ctr-- > 0 )
+        nblock[ctr] = htoninteger(block[ctr]);
+    size_t to_write = size * sizeof(ninteger);
+    if( put_packet(__LINE__, remote_chan, nblock, to_write ) == to_write )
+	if( (nbytes =
+	    get_packet(remote_chan,&nresp,sizeof(nresp),GP_WAIT_FOR_KNOWN))
+		== sizeof(nresp) )
+	    return ntohinteger(nresp);
+	else
+	    progress(__FILE__,__LINE__,
+		"getputaddval short read of %d returned %d:  %s",
+		sizeof(nresp), nbytes, STRERROR(errno) );
+    progress(__FILE__,__LINE__,"remote_getputaddval failed.");
+    return 0;
+    }
+
+void address_calculator( hiseg_func fnc, int numargs, va_list ap )
+/************************************************************************/
+/*  integer		#args that follows (required for va_lists)	*
+ *  char *		Filename of caller				*
+ *  integer *		Line number where called from			*
+ *  integer *		table number to retrieve data from		*
+ *  integer *		index into first dimension			*
+ *  integer *		index into second dimension			*
+ *  			...						*
+ *  integer *		Arg to retrieve, put or add.			*/
+/************************************************************************
+ * If we're local, call the local calculator, otherwise, bundle up the	*
+ * requests and let some machine with local access get at the database.	*
+ ************************************************************************/
+    {
+    static integer block[10];
+    static int size;
+    integer ret;
+
+    ac_filename		=  va_arg( ap, const char*	);
+    ac_linenum		= *va_arg( ap, integer*		);
+    int table_number	= *va_arg( ap, integer*		);
+
+#ifdef DEBUG_HISEG
+    progress(__FILE__,__LINE__,"ln=%d fnc=%d tn=%d.",ac_linenum,fnc,table_number);
+#endif
+
+    if( table_number > 0 )
+        {
+	size = 0;
+	block[size++] = fnc;
+	block[size++] = table_number;
+	int count_down = ( fnc==AC_GET ? numargs-4 : numargs-3 );
+	while( count_down-- >0 ) block[size++] = *va_arg( ap, integer* );
+	}
+    else if( ! remote_host_name )
+        {
+	size = 0;
+	block[size++] = fnc;
+	block[size++] = -1;
+	if( fnc != AC_GET ) block[size++] = *va_arg(ap,integer*);
+	}
+    else
+        {
+	if( block[0] == AC_GET && fnc != AC_GET )
+	    block[size++] = *va_arg(ap,integer*);
+	else if( block[0] != AC_GET && fnc == AC_GET )
+	    size--;
+	else if( fnc != AC_GET )
+	    block[size-1] = *va_arg(ap,integer*);
+
+	block[0] = fnc;
+	}
+
+#ifdef HISEG
+    {
+    char msgbuf[MEDIUM_BUFSIZE];
+    int i;
+    strcpy(msgbuf,"address_calculator:");
+    for( i=0; i<size; i++ )
+        { sprintf( msgbuf+strlen(msgbuf), " %d", blocks[i] ); }
+    progress(__FILE__,__LINE__,msgbuf);
+#endif
+
+    ret = ( remote_host_name
+	    ? remote_getputaddval(block,size)
+	    : local_address_calculator(block,size) );
+
+    if( fnc == AC_GET ) *(va_arg( ap, integer*)) = ret;
+    }
+
+
+/************************************************************************/
+void getval_( integer *numargs, ... )
+/*  integer *numargs	#args that follows (required for va_lists	*
+ *  integer *		table number to retrieve data from		*
+ *  integer *		index into first dimension			*
+ *  integer *		index into second dimension			*
+ *  			...						*
+ *  integer *		Place to put value retrieved			*/
+/************************************************************************
+ * Get data from specified table at specified indices.			*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+    va_list ap;
+    va_start( ap, numargs );
+    address_calculator( AC_GET, *numargs, ap );
+    va_end( ap );
+    }
+
+/************************************************************************/
+void putval_( integer *numargs, ... )
+/*  integer *numargs	#args that follows (required for va_lists	*
+ *  integer *		table number to put data into			*
+ *  integer *		index into first dimension			*
+ *  integer *		index into second dimension			*
+ *  			...						*
+ *  integer *		Value to be placed.				*/
+/************************************************************************
+ * Put data into specified table at specified indices.			*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+    va_list ap;
+    va_start( ap, numargs );
+    address_calculator( AC_PUT, *numargs, ap );
+    va_end( ap );
+    }
+
+/************************************************************************/
+void addval_( integer *numargs, ... )
+/*  integer *numargs	#args that follows (required for va_lists	*
+ *  integer *		table number to add data to			*
+ *  integer *		index into first dimension			*
+ *  integer *		index into second dimension			*
+ *  			...						*
+ *  integer *		Data to add to specified entry.			*
+/************************************************************************
+ * Add data into specified table at specified indices.			*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+    va_list ap;
+    va_start( ap, numargs );
+    address_calculator( AC_ADD, *numargs, ap );
+    va_end( ap );
+    }
+
+extern struct servent *getservbyname();
+/************************************************************************/
+struct hostent *string_to_host( const char *hname )
+/************************************************************************/
+/*	Convert IP address or hostname to hostent.			*/
+/************************************************************************/
+    {
+    static struct hostent res;
+    static long taddr;
+
+    if( (taddr = inet_addr( hname )) != (unsigned long) -1 )
+	{
+	static char *block[2];
+	res.h_name = (char*)hname;
+	res.h_aliases = NULL;
+	res.h_addrtype = AF_INET;
+	res.h_length = 4;
+#ifndef NOT43
+	res.h_addr_list = (char**)block;
+	block[0] = (char*)&taddr;
+	block[1] = NULL;
+#else
+	res.h_addr = temp;
+#endif
+	return &res;
+	}
+	
+    return gethostbyname(hname);
+    }
+
+/************************************************************************/
+u_short string_to_port( const char *str )
+/************************************************************************/
+/*	Convert string to TCP port number				*/
+/************************************************************************/
+    {
+    struct servent *sp;
+    u_short hport = 0;
+    
+    if( (hport = atoi(str)) <= 0 )
+        if( ( (sp = getservbyname( str, "tcp" )) != NULL )
+#ifdef SERVIENAME
+	    || ( (sp = getservbyname( SERVICENAME, "tcp" )) != NULL )
+#endif
+	    )
+	    hport = ntohs(sp->s_port);
+	else
+#ifdef SERVICEPORT
+	    hport = SERVICEPORT;
+#else
+	    hport = -1;
+#endif
+
+    return hport;
+    }
+
+/************************************************************************/
+int setup_net_connect( const char *hstring, const char *pstring )
+/************************************************************************/
+/*	Setup connection to daemon with internet address in hstring	*/
+/*	and port in pstring.						*/
+/************************************************************************/
+    {
+    struct sockaddr_in sin;
+    int net;
+    int debug = 1;
+    int connected = 0;
+    u_short hport = 0;
+    struct hostent *host = 0;
+
+    if( (host = string_to_host(hstring)) == NULL )
+	fprintf(stderr,"\"%s\" has unknown host\n", hstring );
+    if( (hport = string_to_port(pstring)) <= 0 )
+	fprintf(stderr,"\"%s\" has unknown port\n", pstring );
+    sin.sin_family = host->h_addrtype;
+    memcpy((caddr_t)&sin.sin_addr,
+#ifndef	NOT43
+	host->h_addr_list[0],
+#else	/* NOT43 */
+	host->h_addr,
+#endif	/* NOT43 */
+	host->h_length);
+    sin.sin_port = htons( hport );
+
+    do  {
+	net = socket(AF_INET, SOCK_STREAM, 0);
+	if (net < 0)
+	    fprintf(stderr,"Socket call failed:  %s\n",STRERROR(errno));
+#ifdef notdef
+	if( debug &&
+#ifndef	NOT43
+	    setsockopt(net, SOL_SOCKET, SO_DEBUG, (char *)&debug, sizeof(debug))
+#else	/* NOT43 */
+	    setsockopt(net, SOL_SOCKET, SO_DEBUG, 0, 0)
+#endif	/* NOT43 */
+	    < 0 )
+	    fprintf(stderr,"setsockopt (SO_DEBUG) failed:  %s\n",STRERROR(errno));
+#endif
+
+	if (connect(net, (struct sockaddr *)&sin, sizeof (sin)) < 0)
+	    {
+#ifndef	NOT43
+	    if (host && host->h_addr_list[1])
+		{
+#ifdef DEBUG
+		fprintf(stderr, "connect to address %s:  %s\n",
+		    inet_ntoa(sin.sin_addr),STRERRORerrno));
+#endif
+		host->h_addr_list++;
+		memcpy((caddr_t)&sin.sin_addr,
+		    host->h_addr_list[0], host->h_length);
+#ifdef DEBUG
+		fprintf(stderr, "Trying %s...\n", inet_ntoa(sin.sin_addr));
+#endif
+		(void) close(net);
+		continue;
+		}
+#endif	/* NOT43 */
+	    fprintf(stderr,"connect %s(%d/tcp) failed:  %s\n",
+		hstring,ntohs(sin.sin_port),STRERROR(errno));
+	    }
+	connected++;
+	} while (connected == 0);
+    return net;
+    }
+
+/************************************************************************/
+void bad_channel( int chan, fd_set *defreadfds, const char *msg )
+/************************************************************************
+ *	Close a channel down and log why.				*
+ ************************************************************************/
+    {
+#ifdef DEBUG_DAEMON
+    progress(__FILE__,__LINE__,"Closing channel %d:  %s",chan,msg);
+#endif
+    close( chan );
+    FD_CLR( chan, defreadfds );
+    }
+
+/************************************************************************/
+void one_byte_reply(
+    int chan,
+    fd_set *defreadfds,
+    char reply,
+    const char *txt )
+/************************************************************************
+ *  Send packet to client saying what he wanted is complete.		*
+ ************************************************************************/
+    {
+    if( put_packet(__LINE__,chan,&reply,sizeof(reply)) != sizeof(reply) )
+	bad_channel(chan,defreadfds,txt);
+    }
+
+/************************************************************************/
+void check_daemon_locks( fd_set *defreadfds )
+/************************************************************************/
+    {
+    if( head_requester && shmp->sm_lock_flag++ <= 0 )
+        {
+	struct requester *old_requester = head_requester;
+	int wake_up_chan = old_requester->requester_chan;
+	head_requester = old_requester->requester_next;
+	free( old_requester );
+#ifdef DEBUG_DAEMON
+	progress(__FILE__,__LINE__,"Replying to lock request on channel %d",
+	    wake_up_chan);
+#endif
+	one_byte_reply(wake_up_chan,defreadfds,1,"AC_LCK OK failed");
+	}
+    }
+
+/************************************************************************/
+int open_listener( const char *port_name, fd_set *readfds )
+/************************************************************************/
+    {
+    int finet;
+    struct sockaddr_in sin;
+    int one = 1;
+    int options = 0;
+
+    u_short hport = string_to_port( port_name );
+
+    if( (finet = socket(AF_INET, SOCK_STREAM, 0)) < 0 )
+	{
+	fprintf(stderr,"socket(AF_INET,SOCK_STREAM,0) failed:  %s\n",
+	    STRERROR(errno));
+	exit(1);
+	}
+
+    if (options & SO_DEBUG)
+#ifndef NOT43
+	if (setsockopt(finet, SOL_SOCKET, SO_DEBUG, &one, sizeof(one)) < 0)
+#else /* NOT43 */
+	if (setsockopt(finet, SOL_SOCKET, SO_DEBUG, 0, 0 ) < 0)
+#endif
+	    {
+	    fprintf(stderr,
+		"setsockopt (SO_DEBUG): %s\n",STRERROR(errno));
+	    exit(1);
+	    }
+    
+    sin.sin_family = AF_INET;
+    sin.sin_addr.s_addr = INADDR_ANY;
+    while( 1 )
+	{
+	sin.sin_port = htons(hport);
+	if( bind(finet, (struct sockaddr *)&sin, sizeof(sin) ) >= 0 )
+	    break;
+	if( errno != EADDRINUSE )
+	    {
+	    fprintf(stderr, "%s:  bind problem:  %s\n",
+		progname,STRERROR(errno));
+	    }
+	fatal(__FILE__,__LINE__,"Cannot open listener on %d.",hport);
+	hport++;
+	}
+
+    if( listen(finet, 5) < 0 )
+	fatal(__FILE__,__LINE__,"listen(%d) failed:  %s",STRERROR(errno));
+
+    FD_ZERO( readfds );
+    FD_SET( finet, readfds );
+    return finet;
+    }
+
+/************************************************************************/
+void sm_daemon()
+/************************************************************************
+ * Respond to incoming requests for access to shared memory.		*
+ ************************************************************************/
+    {
+    struct sockaddr_in frominet;
+    int fromlen = sizeof(frominet);
+    fd_set defreadfds;
+
+    initter = 0;	/* So we can lock and unlock without recursion */
+
+    int finet = open_listener( daemon_port, &defreadfds );
+    int topchan = finet;
+
+    if( 0 && fork() )
+        {
+	grafof_();
+	exit(0);
+	}
+
+    while( 1 )
+	{
+	struct timeval tv;
+        fd_set readfds;
+#ifdef FD_COPY
+	FD_COPY( &defreadfds, &readfds );
+#else
+	readfds = defreadfds;
+#endif
+	check_daemon_locks( &defreadfds );
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
+#ifdef DEBUG_DAEMON
+	progress(__FILE__,__LINE__,
+	    "Calling select with topchan=%d and readfds=%x.",topchan,readfds);
+#endif
+	int nfds = select( topchan+1, &readfds, 0, 0, &tv );
+#ifdef DEBUG_DAEMON
+	progress(__FILE__,__LINE__,"Waiting completed with nfds=%d and readfds=%x.",nfds,readfds);
+#endif
+	int chan;
+	for( chan=0; chan<=topchan; chan++ )
+	    {
+	    if( FD_ISSET( chan, &readfds ) )
+		{
+	        if( chan == finet )
+                    {
+		    int nc;
+#ifdef DEBUG_DAEMON
+		    progress(__FILE__,__LINE__,"Incoming open request.");
+#endif
+                    if( (nc = accept(finet, (struct sockaddr *)&frominet,
+			&fromlen)) >= 0 )
+			{
+			FD_SET( nc, &defreadfds );
+			if( nc > topchan ) topchan = nc;
+#ifdef DEBUG_DAEMON
+		    progress(__FILE__,__LINE__,"Adding channel %d (topchan=%d)",
+		        nc, topchan );
+#endif
+			}
+		    }
+		else
+		    {
+		    ninteger nblock[ MEDIUM_BUFSIZE/sizeof(ninteger) ];
+		    char *bufp;
+		    int nbytes;
+		    
+		    if( (nbytes=
+		        get_packet(chan,nblock,MEDIUM_BUFSIZE,GP_CHECK_BUF))
+			<= 0 )
+			bad_channel(chan,&defreadfds,"Could not read packet.");
+		    else switch( ntohinteger(nblock[0]) )
+			{
+			case AC_STI:
+			    {
+#ifdef DEBUG_DAEMON
+			    progress(__FILE__,__LINE__,
+			        "Incoming STI on %d",chan);
+#endif
+			    integer res = lookup_string( (char*)(nblock+1) );
+#ifdef DEBUG_DAEMON
+			    progress(__FILE__,__LINE__,
+				"STI res = %d, writing %d",res,sizeof(res));
+#endif
+			    ninteger nres = htoninteger(res);
+			    put_packet(__LINE__,chan,&nres,sizeof(nres));
+			    }
+			    break;
+			case AC_ITS:
+			    {
+#ifdef DEBUG_DAEMON
+			    progress(__FILE__,__LINE__,
+			        "Incoming ITS on %d",chan);
+#endif
+			    const char *res =
+				int_to_string( ntohinteger(nblock[1]) );
+			    int to_write = strlen(res) + 1;
+			    put_packet(__LINE__,chan,res,to_write);
+			    }
+			    break;
+			case AC_LCK:
+			    {
+#ifdef DEBUG_DAEMON
+			    progress(__FILE__,__LINE__,
+			        "Incoming LCK on %d",chan);
+#endif
+			    struct requester *new_requester
+				= malloc( sizeof(struct requester) );
+			    new_requester->requester_next = NULL;
+			    new_requester->requester_chan = chan;
+			    if( !head_requester )
+				head_requester = new_requester;
+			    else
+				tail_requester->requester_next = new_requester;
+			    tail_requester = new_requester;
+			    }
+			    break;
+			case AC_UNL:
+			    {
+#ifdef DEBUG_DAEMON
+			    progress(__FILE__,__LINE__,
+			        "Incoming UNL on %d",chan);
+#endif
+			    unlock_();
+			    one_byte_reply(chan,&defreadfds,1,"AC_UNL OK failed");
+			    }
+			    break;
+			case  AC_ADDUSR:
+			    {
+#ifdef DEBUG_DAEMON
+			    progress(__FILE__,__LINE__,
+			        "Incoming ADDUSR on %d",chan);
+#endif
+			    integer uinc = ntohinteger( nblock[1] );
+			    addusr_( &uinc );
+			    one_byte_reply(chan,&defreadfds,1,
+			        "AC_ADDUSR OK failed");
+			    }
+			    break;
+			case AC_NUSER:
+			    {
+#ifdef DEBUG_DAEMON
+			    progress(__FILE__,__LINE__,
+			        "Incoming NUSERS on %d",chan);
+#endif
+			    shmp->sm_users_in_database--;
+			    one_byte_reply(chan,&defreadfds,nuser_(),
+				"AC_DIED OK failed");
+			    }
+			    break;
+			default:
+			    {
+			    int ninteger_size = sizeof(ninteger);
+			    int size = nbytes / ninteger_size;
+#ifdef DEBUG_DAEMON
+			    progress(__FILE__,__LINE__,
+				"Incoming on %d:  nbytes=%d ninteger_size=%d size=%d fnc=%d",
+				chan,nbytes,ninteger_size,size,
+				ntohinteger(nblock[0]));
+#endif
+			    integer block[200];
+			    int cvtind = size;
+			    while( cvtind-- > 0 )
+			        block[cvtind] = ntohinteger( nblock[cvtind] );
+			    ninteger nres =
+			        htoninteger(
+				    local_address_calculator(block,size) );
+			    put_packet(__LINE__,chan,&nres,sizeof(nres));
+			    }
+			}
+		    }
+		}
+	    }
+	}
+    exit(0);
+    }
+
+/************************************************************************/
+void suck_in_file( const char *filename, char **bufp, int *len )
+/************************************************************************/
+    {
+    struct stat statblk;
+    size_t nbytes;
+    if( stat(filename,&statblk) < 0 )
+	fatal(__FILE__,__LINE__,"Cannot stat %s:  %s",
+	    filename, STRERROR(errno) );
+    *len = statblk.st_size;
+    *bufp = (char*)malloc( *len+1 );
+    int inf = open(filename,0);
+    if( inf < 0 )
+	fatal(__FILE__,__LINE__,"Cannot open %s:  %s",
+	    filename, STRERROR(errno) );
+    if( (nbytes = read(inf,*bufp,*len)) != *len )
+	fatal(__FILE__,__LINE__,
+	    "Short read of %d bytes of %d from %s:  %s",
+	    nbytes, *len, filename, STRERROR(errno) );
+    *(*bufp + *len) = 0;
+    close( inf );
+    }
+
+/************************************************************************/
+/*	Make an fd_set printable.					*/
+/************************************************************************/
+char *fds_map( fd_set *fdsp )
+    {
+    static char fds_buf[100];
+    int chan;
+    fds_buf[0] = 0;
+    for( chan=0; chan<10; chan++ )
+        if( FD_ISSET( chan, fdsp ) )
+	    sprintf( fds_buf+strlen(fds_buf), "%d", chan );
+    return fds_buf;
+    }
+
+#define MOVE_CMD	' '
+#define BASE_CHAR	(MOVE_CMD+1)
+/************************************************************************/
+/*	Add character to array to send (escaping as needed).		*/
+/************************************************************************/
+void add_char( char **cp, int c )
+    {
+    if( c=='"' || c=='\'' || c=='\\' )	*(*cp)++ = '\\';
+    *(*cp)++ = c;
+    }
+
+/************************************************************************/
+/*	Compare what we last sent to browser with what's changed and	*/
+/*	only update what has changed.  We get back a serial number from	*/
+/*	the browser to prevent the case where we thought we sent	*/
+/*	something but it never got there.				*/
+/************************************************************************/
+void send_browser( struct display_struct *curd, int serial, char *cp )
+    {
+    chtype *newp;
+    chtype *oldp = NULL;
+    int row, col;
+
+    if( curd->d_last == NULL )
+        {
+	curd->d_last =
+	    (chtype*)malloc( curd->d_nrows*curd->d_ncols*sizeof(chtype) );
+	curd->d_succ =
+	    (chtype*)malloc( curd->d_nrows*curd->d_ncols*sizeof(chtype) );
+	curd->d_succ_serial = -1;
+	}
+    else if( curd->d_last_serial == serial )
+        {
+	oldp = curd->d_last;
+	curd->d_last = curd->d_succ;
+	curd->d_succ = oldp;
+	curd->d_succ_serial = serial;
+	}
+    else if( curd->d_succ_serial == serial )
+	oldp = curd->d_succ;		/* Send update based on last success */
+    else
+        { /* should never ever happen, try another update based on last */ }
+
+    memcpy( newp = curd->d_last, curd->d_data,
+	curd->d_nrows*curd->d_ncols*sizeof(chtype) );
+
+    for( row=0; row<curd->d_nrows; row++ )
+	{
+	int move_next = 1;
+	for( col=0; col<curd->d_ncols; col++ )
+	    {
+	    chtype newval = *newp++;
+	    if( oldp && *oldp++ == newval )
+		move_next = 1;
+	    else
+		{
+		if( move_next )
+		    {
+		    add_char( &cp, MOVE_CMD );
+		    add_char( &cp, row+BASE_CHAR );
+		    add_char( &cp, col+BASE_CHAR );
+		    move_next = 0;
+		    }
+		int fg = NCOLORS-1 - PAIR_NUMBER(newval)/NCOLORS;
+		int bg = PAIR_NUMBER(newval)%NCOLORS;
+		int ch = newval & A_CHARTEXT;
+		if( ch == ' ' )
+		    {
+		    ch = '_';
+		    fg = bg;
+		    }
+		add_char( &cp, fg*8+bg+BASE_CHAR );
+		add_char( &cp, ch );
+		}
+	    }
+	}
+    *cp++ = 0;
+    }
+
+/************************************************************************/
+void webserver_logic()
+/************************************************************************/
+    {
+    struct sockaddr_in frominet;
+    int fromlen = sizeof(frominet);
+    static new_serial = 1;
+
+    (void)signal( SIGPIPE, SIG_IGN );
+
+#ifdef DEBUG_WEBSERVER
+    progress(__FILE__,__LINE__,"webserver_logic:  webserver_fds=%s",
+        fds_map( &webserver_fds) );
+#endif
+
+    while( 1 )
+	{
+	struct timeval tv;
+        fd_set readfds;
+#ifdef FD_COPY
+	FD_COPY( &webserver_fds, &readfds );
+#else
+	readfds = webserver_fds;
+#endif
+	tv.tv_sec = 0;
+	tv.tv_usec = 10000;
+#ifdef DEBUG_WEBSERVER
+	progress(__FILE__,__LINE__,
+	    "Calling select with topchan=%d and readfds=%s.",
+	        webserver_top_chan,fds_map(&readfds));
+#endif
+	int nfds = select( webserver_top_chan+1, &readfds, 0, 0, &tv );
+#ifdef DEBUG_WEBSERVER
+	progress(__FILE__,__LINE__,
+	    "Waiting completed with nfds=%d and readfds=%s.",
+	    nfds,fds_map(&readfds));
+#endif
+	if( nfds < 0 )
+	    progress(__FILE__,__LINE__,"select error:  %s",STRERROR(errno));
+	if( nfds == 0 ) return;
+	int chan;
+	for( chan=0; chan<=webserver_top_chan; chan++ )
+	    {
+	    if( FD_ISSET( chan, &readfds ) )
+		{
+	        if( chan == webserver_chan )
+                    {
+		    int nc;
+#ifdef DEBUG_WEBSERVER
+		    progress(__FILE__,__LINE__,"Incoming open request.");
+#endif
+                    if( (nc = accept(webserver_chan, (struct sockaddr *)&frominet,
+			&fromlen)) >= 0 )
+			{
+			FD_SET( nc, &webserver_fds );
+			if( nc > webserver_top_chan ) webserver_top_chan = nc;
+#ifdef DEBUG_WEBSERVER
+		    progress(__FILE__,__LINE__,"Adding channel %d (webserver_top_chan=%d)",
+		        nc, webserver_top_chan );
+#endif
+			}
+		    }
+		else
+		    {
+		    char buf[MEDIUM_BUFSIZE];
+		    int nbytes;
+		    
+#ifdef DEBUG_WEBSERVER
+		progress(__FILE__,__LINE__,"Pre get_packet(%d) logic.",chan);
+#endif
+		    if( (nbytes=
+		        get_packet(chan,buf,MEDIUM_BUFSIZE,GP_CHECK_BUF))
+			<= 0 )
+			bad_channel(chan,&webserver_fds,"Could not read packet.");
+		    else
+			{
+			char *url = buf;
+			char *cp;
+			buf[nbytes] = 0;
+			while( url && strncmp(url,"GET ",4) )
+			    if( url = strchr( url, '\n' ) )
+			        url++;
+			if( ! url )
+			    fatal(__FILE__,__LINE__,
+			        "No \"GET\" in input webserver input.");
+			url += 4;
+			for( cp=url; *cp && !strchr(" \t\r\n",*cp); cp++ ) {}
+			*cp = 0;
+#ifdef DEBUG_WEBSERVER
+			progress(__FILE__,__LINE__,"Incoming URL:  [%s]",url);
+#endif
+			if( strcmp( url, "/" ) == 0 )
+			    {
+			    const char *filename = "js.js";
+			    if( !webserver_js_file )
+			        suck_in_file( "js.js",
+				    &webserver_js_file, &webserver_js_length );
+			    put_packet( __LINE__, chan,
+				webserver_js_file, webserver_js_length );
+			    close( chan );
+			    FD_CLR( chan, &webserver_fds );
+			    }
+			else
+			    {
+			    char *bp = url + 1;
+			    int check_serial;
+			    int inchar = 0;
+			    struct display_struct *curd =
+			        get_display(default_display);
+			    sscanf(url,"/%d/%d",&check_serial,&inchar);
+			    if( inchar > 0 )
+				{	/* Will happily overflow ring buffer */
+				webserver_command_buf[webserver_command_in_ind++]
+				    = inchar;
+				webserver_command_in_ind %= MEDIUM_BUFSIZE;
+				}
+			    char resp[5000];
+			    sprintf( resp,
+				"<HTML><HEAD>\n"
+				"<META HTTP-EQUIV=\"Content-Type\" "
+				"CONTENT=\"text/html; charset=utf-8\">\n"
+				"\n"
+				"<script>parent.upd_screen(%d,\"",
+				++new_serial);
+			    send_browser(curd,check_serial,resp+strlen(resp));
+			    curd->d_last_serial = ++new_serial;
+			    strcat( resp, "\");</script>\n");
+			    put_packet( __LINE__, chan, resp, strlen(resp) );
+#ifdef DEBUG_WEBSERVER
+			    progress(__FILE__,__LINE__,"Update:[%s]",
+				buf);
+#endif
+			    close( chan );
+			    FD_CLR( chan, &webserver_fds );
+			    }
+			}
+		    }
+		}
+	    }
+	}
+    }
+
+/************************************************************************/
+static void final_exit( int code )
+/************************************************************************
+ * Used internally							*
+ ************************************************************************/
+    {
+    int ppid = getppid();
+    char buf[100];
+    char *cp;
+    sprintf( buf, "ps -p %d | sed -e '$!d' -e 's/  */ /'", getppid() );
+    cp = oneline( buf );
+    while( *cp )
+        if( strncmp(cp++,"gdb",3) == 0 )
+	    abort();
+    exit( code );
+    }
+
+/************************************************************************/
+void pstop_()						{ final_exit(0); } 
+/************************************************************************
+ * Permanently stop the program.					*
+ * Used in: fixbug ocean risk						*
+ ************************************************************************/
+
+/************************************************************************/
+void tstop_()						{ final_exit(0); } 
+/************************************************************************
+ * Temporarily stop the program (won't work, just exits)		*
+ * Used in: ocean							*
+ ************************************************************************/
+
+/************************************************************************/
+void qgone_()						{ final_exit(0); } 
+/************************************************************************
+ * Stop program and log user out (won't work, just exits)		*
+ * Used in: ocean							*
+ ************************************************************************/
+
+/************************************************************************/
+void exprog_()
+/************************************************************************
+ * Stop the program, cleaning up database if we're the last user.	*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+    grafof_();
+    abort();
+    if( remote_host_name )
+	addusr_( &integer_neg_one );
+    else if( shmp->sm_users_in_database-- <= 1 )
+        {
+	if( strncmp( progname, "system", 6 ) )
+	    {
+	    memset( (void*)shmp, 0, sizeof( struct shared_memory ) );
+	    printf("\r\n[Database flags reset]\r\n");
+	    }
+#ifdef USE_MMAP
+	if( munmap( shmp, allocated_shmem ) < 0 )
+	    printf("munmap(%d) failed:  %s",allocated_shmem,strerror(errno));
+#else
+	if( shmdt( shmp ) < 0 )
+	    printf("\r\nFailed to detach from database:  %s",strerror(errno));
+	else if( shmctl(shmid,IPC_RMID,NULL) < 0 )
+	    printf("\r\nFailed to reset database:  %s",strerror(errno));
+#endif
+	fflush(stdout);
+	}
+    (void)pstop_();
+    }
+
+/************************************************************************/
+integer icomb_( integer *left, integer *right )
+/************************************************************************
+ * Combine two halves of 36 bit word.  Or not.				*
+ * Used in: ocean							*
+ ************************************************************************/
+    {
+    return *left * 01000000 + *right;
+    }
+
+/************************************************************************/
+integer igtab_( integer *ind, integer *table )
+/************************************************************************
+ * Retrieve data from specified Tops10 kernel tables.			*
+ * Since we're not Tops10 we'll just return fake (but well thought out)	*
+ * values to make sure program keeps running.				*
+ * Used in: ocean star war						*
+ ************************************************************************/
+    {
+    char buf[100], *cp;
+    int intres;
+    error_flag = FALSE;
+    switch( *table )
+        {
+	case 02:
+	    {
+	    int iuid, igid;
+	    integer iiuid, iigid;
+#ifdef __CYGWIN__
+	    sprintf(buf,"ps -p %d | tail -1 | awk '{print $6,$6}'",
+	        (int)(*ind));
+#else
+	    sprintf(buf,"ps -p %d -o uid,gid | tail -1",(int)(*ind));
+#endif
+	    cp = oneline( buf );
+	    sscanf(cp,"%d%d",&iuid,&igid);
+	    iiuid = iuid;
+	    iigid = igid;
+	    free( cp );
+	    return icomb_( &iigid, &iiuid );
+	    }
+	    break;
+	case 011:				/* Defeat styxline code */
+	    switch( *ind )
+		{
+		case 050:	return 100;	/* Maxusers */
+		case 054:	return 10;	/* Curusers */
+		}
+	    break;
+	case 031:
+#ifdef __CYGWIN__
+	    sprintf(buf,"ps -p %d -f | tail -1 | awk '{print $1}'",
+	        (int)(*ind));
+#else
+	    sprintf(buf,"ps -p %d -o user | tail -1",(int)(*ind));
+#endif
+	    intres =  lookup_string( cp = oneline( buf ) );
+	    free( cp );
+	    return intres;
+	    break;
+	case 032:
+	    return lookup_string( "" );
+	    break;
+	case 0137:
+#ifdef __CYGWIN__
+	    sprintf(buf,"ps -p %d | sed -e '!$d' -e 's+.*/++'",(int)(*ind));
+#else
+	    sprintf(buf,"ps -p %d -o ucomm | tail -1",(int)(*ind));
+#endif
+	    intres =  lookup_string( cp = oneline( buf ) );
+	    free( cp );
+	    return intres;
+	    break;
+	}
+    error_flag = TRUE;
+    return -1;
+    }
+
+/************************************************************************/
+integer job_( integer *jnum )
+/************************************************************************
+ * Under Tops10, we would just return the job number and then it was	*
+ * the responsibility of other routines to ascertain information about	*
+ * that job and print it out.  However, by dumb luck, we know that	*
+ * job is always called with JOB(0) to get the job number.  Under	*
+ * Tops10, regardless of the argument, job will return the job.		*
+ * Therefore, Fortran can call job with some other number to decide	*
+ * if we're really Tops10 or not.  If we are, then use the fortran	*
+ * logic.  However, if we get here, and we have an argument, we take	*
+ * it to be a job number (actually pid) we want information about.	*
+ * We then return a zero (which should never happen under Tops10), so	*
+ * it knows to skip its own logic.					*
+ * Used in: cave ocean star war						*
+ ************************************************************************/
+    {
+    char cmdbuf[100], *res;
+    switch( *jnum )
+        {
+	case -1:	return 0;		break;
+	case 0:		return getpid();	break;
+	default:
+#ifdef __CYGWIN__
+	    sprintf( cmdbuf, "ps -p %d | sed -e '$!d' -e 's/  */ /g' -e 's+/.*/++'", (int)(*jnum));
+#else
+	    sprintf( cmdbuf,
+		"ps -p %d -o pid,uid,user,tty,state,time,ucomm | tail -1",
+		(int)(*jnum));
+#endif
+	    res = oneline( cmdbuf );
+	    progress(__FILE__,__LINE__,"cmd=[%s]\nres=[%s]\n",
+	        cmdbuf,res);
+	    outstring( res );
+	    free( res );
+	    return 0;
+	}
+    }
+
+/************************************************************************/
+integer itty_( integer *job )
+/************************************************************************
+ * Get tty number from job number.  Pretty misleading since the caller	*
+ * will print out what we return in octal (correct for Tops10) instead	*
+ * of decimal (correct for Linux).  System independent code would have	*
+ * simply gotten back a string.  Alas.					*
+ * Used in: ocean star war						*
+ ************************************************************************/
+    {
+    char buf[100], *ret;
+    int ttynum;
+    int ijob = *job;
+#ifdef __CYGWIN__
+    sprintf(buf,"ps -p %d | awk '{print $5}'",ijob);
+#else
+    sprintf(buf,"ps -p %d -o tty | sed -e 1d -e 's+.*/++'",ijob);
+#endif
+    ret = oneline( buf );
+    ttynum = atoi( ret );
+    free( ret );
+    return ttynum;
+    }
+
+/************************************************************************/
+integer node_( integer *nodenum )
+/************************************************************************
+ * Not sure how to return the sixbit node name of the specified number.	*
+ * Used in: ocean star war						*
+ ************************************************************************/
+    {
+    char *st = oneline("uname -n");
+    int ret = lookup_string( st );
+    free(st);
+    return ret;
+    }
+
+/************************************************************************/
+void nodlin_( integer *ttynum, integer *nodnum, integer *nodetty )
+/************************************************************************
+ * Return the node and line number of the specified terminal.  Or not.	*
+ * Used in: ocean star war						*
+ ************************************************************************/
+    {
+    *nodnum = 1;
+    *nodetty = *ttynum;
+    }
+
+/************************************************************************/
+integer jstat_( integer *job )
+/************************************************************************
+ * Return the status of the specified job.  Or not.			*
+ * Used in: ocean star war						*
+ ************************************************************************/
+    {
+#ifdef JSTAT_NOT_TOO_SLOW
+    char buf[100], *cp;
+    int ret;
+    int ijob = *job;
+#ifdef __CYGWIN__
+    sprintf( buf, "ps -p %d | sed -e '$!d' -e 's/./&Q/' -e 's/Q.*//'", ijob );
+#else
+    sprintf( buf, "ps -p %d -o stat | tail -1", ijob );
+#endif
+    cp = oneline( buf )
+    if( ! strcmp(cp," ") ) strcpy( cp, "R" );
+    ret = lookup_string( cp );
+    free( cp );
+    return ret;
+#endif
+    return 0;
+    }
+
+/************************************************************************/
+integer logdin_( integer *job )
+/************************************************************************
+/* Return true if the specified job is logged in (or at least exists).	*
+ * Used in: star							*
+ ************************************************************************/
+    {
+    return logical( kill( *job, 0 ) >= 0 );
+    }
+
+/************************************************************************/
+void ppn_( integer *p, integer *pn )
+/************************************************************************
+ * Retrieve the current job's PPN.  Under Linux, the closest thing to	*
+ * a PPN is a contorted combination of the UID and the GID.		*
+ * Used in: ocean star war						*
+ ************************************************************************/
+    {
+    *p = getgid();
+    *pn = getuid();
+    }
+
+
+/************************************************************************/
+void convrt_(
+    void *array_from,	/* Array we're converting data from		*/
+    integer *length,	/* Number of words in array we're converting	*/
+    integer *format_from, /* 0=R1, 1=A1 ... 5=A5, 6=sixbit		*/
+    void *array_to,	/* Where we're putting the results		*/
+    integer *format_to ) /* 0=R1, 1=A1 ... 5=A5, 6=sixbit		*/
+/************************************************************************
+ * Convert from different formats for storing strings.  Major dragons.	*
+ * Used in: ocean star							*
+ ************************************************************************/
+    {
+    char buf[100];
+    int i;
+    int buflen = 0;
+
+    if( *format_from == 6 )
+	array_from = (void*)int_to_string( *(int*)array_from );
+    for( i=0; i<*length; i++ )
+	{
+	switch( *format_from )
+	    {
+	    case 0:
+	    case 1:	buf[buflen++] = *(integer*)array_from;
+	    		array_from += sizeof(integer);
+			break;
+	    case 5:
+	    case 6:	buf[buflen++] = *(char*)array_from;
+	    		array_from += sizeof(char);
+			break;
+	    }
+	}
+    buf[buflen] = 0;
+
+    if( *format_to == 6 )
+	{
+	int len_to_go = *length - 6;
+	*((int*)array_to) = lookup_string( buf );
+	while( len_to_go > 0 )
+	    {
+	    array_to += sizeof(integer);
+	    *(int*)array_to = lookup_string( "" );
+	    len_to_go -= 6;
+	    }
+	}
+    else
+        {
+	for( i=0; i<*length; i++ )
+	    switch( *format_to )
+		{
+		case 0:
+		case 1:	*(integer*)array_to = buf[i];
+			array_to += sizeof( integer );
+			break;
+		case 5:	*(char*)array_to = buf[i];
+			array_to += sizeof( char );
+			break;
+		}
+	}
+    }
+
+/************************************************************************/
+int isrsix_(
+    integer *ar_to_search, /* Array of sixbit to search through		*/
+    integer *search_for, /* Word to find (may be an abbreviation)	*/
+    integer *ar_len )	/* Size of array of sixbit to seach through.	*/
+/************************************************************************
+ * Search for search_for in an array of sixbit words (ar_len long).	*
+ * search_for may be an abbreviation.					*
+ * Used in: risk							*
+ ************************************************************************/
+    {
+    const char *s4 = int_to_string( (int)*search_for );
+    int s4len = strlen(s4);
+    int i;
+    int res = 0;
+    for( i=0; i<*ar_len; )
+        {
+	const char *check = int_to_string( (int)(ar_to_search[i++]) );
+	if( strcasecmp( check, s4 ) == 0 )
+	    {
+	    return i;
+	    }
+	if( strncasecmp( check, s4, s4len ) == 0 )
+	    if( res == 0 )
+	        res = i;
+	    else if( res > 0 )
+	        res = -res;
+	}
+    return res;
+    }
+
+/************************************************************************/
+integer parse_(
+    integer *comara,	/* Array of A1 to parse				*/
+    integer *ilength,	/* Length of A1 array				*/
+    integer *parara,	/* Array of sixbit parsed results		*/
+    integer *olength,	/* Words found					*/
+    integer *omax )	/* Maximum words found				*/
+/************************************************************************
+ * Parse A1 formatted array into words to return as sixbit.		*
+ * Used in: cave							*
+ ************************************************************************/
+    {
+    char buf[100];
+    char *cp;
+    int i = 0;
+    typedef enum { SPACING, PUNCTUATION, WORD } state;
+    state old_state = SPACING;
+
+    *olength = 0;
+    do  {
+	char ch = ( i < *ilength ? comara[i] : ' ' );
+	state new_state = (isalnum(ch)?WORD:(ispunct(ch)?PUNCTUATION:SPACING));
+	if( old_state != WORD )
+	    cp = buf;
+	else if( new_state != WORD )
+	    {
+	    *cp = 0;
+	    parara[ (*olength)++ ] = lookup_string( buf );
+	    if( *olength >= *omax ) break;
+	    }
+	if( new_state == WORD )
+	    *cp++ = ch;
+	else if( new_state == PUNCTUATION )
+	    {
+	    buf[0] = ch;
+	    buf[1] = 0;
+	    parara[ (*olength)++ ] = lookup_string( buf );
+	    if( *olength >= *omax ) break;
+	    }
+	old_state = new_state;
+	} while( i++ <= *ilength );
+    }
+
+/************************************************************************/
+integer isxbit_( const char *a5format )
+/************************************************************************
+ * Return sixbit form of A5 formatted string.  Terminate on ~.		*
+ * This was arguably a bug in the Tops10 version - it just happened	*
+ * that you were guarenteed that incoming strings were null terminated.	*
+ * Fortran (and indeed g77) gives no such guarentee.  Therefore, we	*
+ * have fix_keywords add a tilde to the end of all the strings so we	*
+ * know where to terminate.						*
+ * Used in: ocean risk star war						*
+ ************************************************************************/
+    {
+    char buf[100];
+    const char *cp0=a5format;
+    char *cp1=buf;
+    while( *cp0 && *cp0 != '~' )
+        *cp1++ = *cp0++;
+    *cp1 = 0;
+    if( strcmp( buf, "LPT00" ) == 0 ) printer_trigger = 1;
+    return lookup_string( buf );
+    }
+
+/************************************************************************/
+integer icon_( integer *toconvert )		{ return *toconvert; }
+/************************************************************************
+ * Return the A1 form of the R1 argument or the R1 form of the A1 arg.	*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+
+
+/************************************************************************/
+integer ileft_( integer *nm )			{ return *nm / 01000000; }
+/************************************************************************
+ * Return left half of 36 bit word.  Or not.				*
+ * Used in: ocean star war						*
+ ************************************************************************/
+
+/************************************************************************/
+integer iright_( integer *nm )			{ return *nm % 01000000; }
+/************************************************************************
+ * Return right half of 36 bit word.  Or not.				*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+
+/************************************************************************/
+integer ishift_( integer *word1, integer *nbits )
+/************************************************************************
+ * Shift word1 nbits.							*
+ * Original hipak routine had either 2 arguments (as here), or three	*
+ * where the result was returned in the third.  We never need the	*
+ * latter form in the games, and have no desire to make this have	*
+ * a variable number of arguments just for that.			*
+ * Used in: ocean							*
+ ************************************************************************/
+    {
+    return *word1 << *nbits;
+    }
+
+/************************************************************************/
+void ishiftc_( integer *word1, integer *word2, integer *nbits )
+/************************************************************************
+ * Shift word1 nbits.							*
+ * Used in: system							*
+ ************************************************************************/
+    {
+    *word1 <<= *nbits;
+    }
+
+/************************************************************************/
+void e_( integer *addr, integer *value )		{ *value = *addr; }
+/************************************************************************
+ * Get the value from the specified address.				*
+ * Used in: system							*
+ ************************************************************************/
+
+/************************************************************************/
+void d_( integer *addr, integer *value )		{ *value = *addr; }
+/************************************************************************
+ * Put the value into the specified address.				*
+ * Used in: system							*
+ ************************************************************************/
+
+/************************************************************************/
+void filget_( integer *chan, integer *dest, integer *eof )
+/************************************************************************
+ * Read an int from the specified i/o channel to dest, setting EOF	*
+ * if need be.								*
+ * Used in: system							*
+ ************************************************************************/
+     {
+     *eof = logical( fread(dest,sizeof(int),1,open_channels[*chan]) == 0 );
+     }
+
+/************************************************************************/
+void filput_( integer *chan, integer *value )
+/************************************************************************
+ * Write an int to the specified i/o channel from value.		*
+ * Used in: system							*
+ ************************************************************************/
+     {
+     error_flag = ( fwrite(value,sizeof(int),1,open_channels[*chan]) == 0 );
+     }
+
+#define STACK_SIZE	1000
+static integer *stack = NULL;
+static int top_stack = 0;
+/************************************************************************/
+void pushvl_( integer *word, integer *pdlerr )
+/************************************************************************
+ * Push specified word onto a stack or return error for overflow.	*
+ * Used in: cave							*
+ ************************************************************************/
+    {
+    *pdlerr = logical( FALSE );
+    if( stack == NULL )
+	stack = (integer*)malloc( STACK_SIZE * sizeof(integer) );
+    if( top_stack >= STACK_SIZE )
+        *pdlerr = logical( TRUE );
+    else
+	stack[top_stack++] = *word;
+    }
+
+/************************************************************************/
+void popval_( integer *word, integer *pdlerr )
+/************************************************************************
+ * Pop stack into specified word or return error for underflow.		*
+ * Used in: cave							*
+ ************************************************************************/
+    {
+    *pdlerr = logical( FALSE );
+    if( top_stack <= 0 )
+        *pdlerr = logical( TRUE );
+    else
+        *word = stack[--top_stack];
+    }
+
+/************************************************************************/
+void arfill_( integer *dest, integer *size, integer *word )
+/************************************************************************
+ * Fill dest with specified word.					*
+ * Would use memset or wmemset if there was one for ints.		*
+ * Used in: cave							*
+ ************************************************************************/
+    {
+    int left = *size;
+    while( left-- > 0 )
+        *dest++ = *word;
+    }
+
+/************************************************************************/
+void arcopy_( integer *src, integer *dest, integer *size )
+/************************************************************************
+ * Copy one array to another.						*
+ * Not used.								*
+ ************************************************************************/
+    {
+    memcpy( (void*)dest, (void*)src, *size * sizeof( integer ) );
+    }
+
+
+/************************************************************************/
+void nap_( integer *ms_to_sleep, integer *flags )
+/************************************************************************
+ * Sleep specified number of milliseconds or until flags condition met.	*
+ * If flag 010 is set, also wake up on keyboard activity.		*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+    {
+    struct timeval timeout;
+    fd_set readfds;
+    FD_ZERO( &readfds );
+
+    timeout.tv_sec = *ms_to_sleep / 1000;
+    timeout.tv_usec = (*ms_to_sleep % 1000) * 1000;
+
+    if( *flags & 010 ) FD_SET( fileno(stdin), &readfds );
+
+    select( 1, &readfds, NULL, NULL, &timeout );	/* Perchance to dream */
+    }
+
+
+/************************************************************************/
+void usrset_( integer *tbl, integer *val )
+/************************************************************************
+ * Routine to change various attributes of a job such as terminal	*
+ * echo, tab mode, etc.  Implement what we absolutely have to and	*
+ * error out on the rest.						*
+ * Used in: ocean star war						*
+ ************************************************************************/
+    {
+    error_flag = FALSE;
+    switch( *tbl )
+        {
+	case 01030:			error_flag=TRUE;	break;
+	case 02001: 			error_flag=TRUE;	break;
+	case 02002: /* tape */		error_flag=TRUE;	break;
+	case 02005: /* tabs */		error_flag=TRUE;	break;
+	case 02006: /* forms */		error_flag=TRUE;	break;
+	case 02007: /* no echo */
+	    switch( *val )
+		{
+	        case 0:			system("stty echo");	break;
+		case 1:			system("stty -echo");	break;
+		default:		error_flag=TRUE;
+		}
+	    break;
+	case 02010: /* nocrlf */	error_flag=TRUE;	break;
+	case 02013:			error_flag=TRUE;	break;
+	case 02021: /* page */		error_flag=TRUE;	break;
+	case 02025: /* noblank */	error_flag=TRUE;	break;
+	case 02030:			error_flag=TRUE;	break;
+	case 02031:			error_flag=TRUE;	break;
+	case 02035: /* autocr*/		error_flag=TRUE;	break;
+	case 02036: /* rt */		error_flag=TRUE;	break;
+	default:			error_flag=TRUE;	break;
+	}
+    }
+
+/************************************************************************/
+void execut_( integer *instr )					{}
+/************************************************************************
+ * Execute the specified instruction (nowhere but on a DEC10!)		*
+ ************************************************************************/
+
+/************************************************************************/
+void mcall1_( integer *callno, integer *ac, integer *errflg )
+/************************************************************************
+ * Execute the specified instruction (nowhere but on Tops10!)		*
+ ************************************************************************/
+    {
+    struct tm *ltm;
+    time_t now;
+    time( &now );
+    ltm = localtime( &now );
+
+    *errflg = logical( TRUE );
+    switch( *callno )
+        {
+	case 014:	*ac =	ltm->tm_mday +
+				31*ltm->tm_mon +
+				372*(ltm->tm_year+1900-64);
+			*errflg = logical( FALSE );
+			break;
+	case 023:	*ac = ltm->tm_hour * 3600000 + ltm->tm_min*60000;
+			*errflg = logical( FALSE );
+			break;
+	}
+    }
+
+/************************************************************************/
+void mcall2_(
+    integer *callno,
+    integer *ac,
+    integer *errflg,
+    integer *ar,
+    integer *arlen )
+/************************************************************************
+ * Execute the specified instruction (nowhere but on Tops10!)		*
+ ************************************************************************/
+    {
+    *errflg=logical(TRUE);
+    }
+
+
+
+/************************************************************************/
+double aran_( float *range )
+/************************************************************************
+ * DOES NOT WORK - Problem with how to return floats to Fortran Reals.	*
+ * Return a random floating point number between 0 and range.		*
+ * Used in: star (rewritten to use iran)				*
+ ************************************************************************/
+    {
+    double r = ( rand() % (int)( 1000 * *range ) ) / 1000.0;
+    progress(__FILE__,__LINE__,"aran(%f) returning %f.\r\n",*range,r);
+    return r;
+    }
+
+
+/************************************************************************/
+integer iran_( integer *range )
+/************************************************************************
+ * Return a random int between 1 and range (inclusive).			*
+ * Used in: greebl ocean risk star war					*
+ ************************************************************************/
+     {
+     int ret = 0;
+     if( *range > 0 ) ret = rand() % *range;
+     return ret + 1;
+     }
+
+/************************************************************************/
+integer isgn_( integer *val )
+/************************************************************************
+ * Return -1 if value negative, 1 if positive or 0 if 0.		*
+ * Used in: greebl							*
+ ************************************************************************/
+    {
+    if( *val < 0 ) return -1;
+    if( *val > 0 ) return 01;
+    return 0;
+    }
+
+/************************************************************************/
+static void *allocate_shmem( const char *memory_file, size_t sz )
+/************************************************************************
+ * Used internally							*
+ ************************************************************************/
+    {
+    void *ret = (void*)NULL;
+
+#ifdef USE_MMAP
+	{
+	char zero = 0;
+	int fd = open( memory_file, O_RDWR|O_CREAT, 0666 );
+	if( fd < 0 )
+	    usage("Cannot create %s:  %s",memory_file,strerror(errno));
+	fchmod(fd,0666);	/* May fail for non-creators */
+	if( lseek( fd, (off_t)sz, SEEK_SET ) != (off_t)sz )
+	    usage("Cannot seek %s:  %s",memory_file,strerror(errno));
+	if( write( fd, (void*)&zero, 1 ) < 1 )
+	    usage("Cannot write %s:  %s",memory_file,strerror(errno));
+	ret=mmap((void*)0,sz,PROT_READ|PROT_WRITE,MAP_SHARED,fd,(off_t)0);
+	if( ret == NULL || ret == (void*)-1 )
+	    usage("Cannot mmap(%s,%d):  %s",memory_file,sz,strerror(errno));
+	close( fd );
+	allocated_shmem = sz;
+	}
+#else
+	{
+	int shm_key = ftok( memory_file, 1 );
+	if( shm_key < 0 )
+	    {
+	    fprintf(stderr,"Cannot generate key from %s:  %s\n",
+		memory_file, strerror(errno) );
+	    final_exit(1);
+	    }
+
+	if( (shmid = shmget( shm_key, sz, IPC_CREAT | 0666 )) < 0 )
+	    {
+	    fprintf(stderr,
+	    "Cannot create shmem of size %d from keybase %s from key %d:  %s\n",
+		(int)sz, memory_file, shm_key, strerror(errno) );
+	    final_exit(1);
+	    }
+
+	if( (ret = shmat(shmid,NULL,0)) == NULL )
+	    {
+	    fprintf(stderr,
+	        "Cannot attach to keybase=%s key=%d, shmid=%d:  %s\n",
+		memory_file, (int)shm_key, shmid, strerror(errno) );
+	    final_exit(1);
+	    }
+	}
+#endif
+
+    return ret;
+    }
+
+/************************************************************************/
+static void dump_shmem( const char *keybase )
+/************************************************************************
+ * Used internally							*
+ ************************************************************************/
+    {
+    struct shared_memory *shmp =
+	allocate_shmem( keybase, sizeof( struct shared_memory ) );
+    int i, j;
+    printf("%socked database with %d user%s and a %d word heap:\n",
+	( shmp->sm_lock_flag ? "L" : "Unl" ),
+        shmp->sm_users_in_database,
+	(shmp->sm_users_in_database==1?"":"s"),
+	shmp->sm_end_int_heap
+	);
+    int headered = 0;
+    int linepos = 0;
+    int cpos = 0;
+    for( i=0; i<MAX_SHM_TABLES; i++ )
+        {
+	if( shmp->sm_numdims[i] )
+	    {
+	    if( headered++ == 0 )
+		printf("\n    %5s %9s %6s %6s %s\n",
+		    "Table", "Word size", "Offset", "Size", "Dimensions" );
+	    printf("    %5d %9d %6d %6d ",
+	        i, shmp->sm_member_size[i], shmp->sm_offset[i],
+		shmp->sm_size[i] );
+	    for( j=0; j<shmp->sm_numdims[i]; j++ )
+		{
+		if( j ) printf("x");
+		printf("%d",shmp->sm_dims[i][j]);
+		}
+	    printf("\n");
+	    }
+	}
+
+    printf("\n%d strings in string heap of %d bytes:\n",
+        shmp->sm_number_strings, shmp->sm_end_string_heap);
+    while( cpos < shmp->sm_end_string_heap )
+        {
+	char *str = shmp->sm_string_heap + cpos;
+	int len = strlen(str) + 1;
+	cpos = cpos + len;
+	if( len+linepos > 78 )
+	    {
+	    printf("\n");
+	    linepos = 0;
+	    }
+	printf(" [%s]",str);
+	linepos = linepos + len + 2;
+	}
+    if( linepos > 0 ) printf("\n");
+    }
+
+#ifdef ANYONE_USE_POW_DD_ANYMORE
+/************************************************************************/
+double pow_dd( float *x, float *n )
+/************************************************************************
+ * Used by fortran trying to raise one float to another			*
+ ************************************************************************/
+    {
+    double ret = 1.0;
+    int nleft = *n;
+    while( nleft-- > 0 ) ret *= *x;
+    return ret;
+    }
+#endif
+
+/************************************************************************/
+integer pow_ii( integer *x, integer *n )
+/************************************************************************
+ * Used by fortran trying to raise one integer to another		*
+ ************************************************************************/
+    {
+    integer ret = 1;
+    int nleft = *n;
+    while( nleft-- > 0 ) ret *= *x;
+    return ret;
+    }
+
+/************************************************************************/
+double pow_ri( float *x, integer *n )
+/************************************************************************
+ * Used by fortran trying to raise a float to an integer		*
+ ************************************************************************/
+    {
+    double ret = 1.0;
+    int nleft = *n;
+    while( nleft-- > 0 ) ret *= *x;
+    return ret;
+    }
+
+/************************************************************************/
+double r_lg10( float *x )
+/************************************************************************
+ * Used by fortran to get the log10 of a number.			*
+ ************************************************************************/
+    {
+    return logf(*x) / log(10.0);
+    }
+
+/************************************************************************/
+double r_sign( float *x, float *signed_x )
+/************************************************************************
+ * Used by fortran trying to raise one integer to another		*
+ ************************************************************************/
+    {
+    float abs_x = ( (*x < 0) ? -(*x) : *x );
+    return ( ( *signed_x < 0 ) ? -abs_x : abs_x );
+    }
+
+struct strstruct
+    {
+    int		min_size;
+    int		max_size;
+    int		base;
+    int		pad;
+    int		left_justified;
+    int		fortran;
+    FILE	*outfile;
+    } str;
+
+/************************************************************************/
+static void intoutchar( int c )
+/************************************************************************
+ * Output a character ... somewhere.					*
+ ************************************************************************/
+    {
+    putc( c, str.outfile );
+    }
+
+/************************************************************************/
+static const char *any_string( const char *s )
+/************************************************************************/
+    {
+    if( ! s ) s = "(null)";
+    int clen = strlen(s);
+    int sofar = 0;
+    if( ! str.left_justified )
+        {
+	while( clen+sofar < str.min_size )
+	    {
+	    intoutchar( str.pad );
+	    sofar++;
+	    }
+	}
+    while( *s && ( str.max_size==0 || sofar < str.max_size ) )
+        {
+	intoutchar( *s++ );
+	sofar++;
+	}
+    if( str.left_justified && str.max_size > 0 )
+	while( sofar < str.max_size )
+	    {
+	    intoutchar( str.pad );
+	    sofar++;
+	    }
+    return NULL;
+    }
+
+/************************************************************************/
+static const char *print_char( va_list ap, int ch )
+/************************************************************************/
+    {
+    char buf[2];
+    int firstp = 2;
+    buf[--firstp] = 0;
+    buf[--firstp] = ( str.fortran ? *va_arg(ap,int*) : va_arg(ap,int) );
+    return any_string( buf );
+    }
+
+/************************************************************************/
+static const char *print_string( va_list ap, int ch )
+/************************************************************************/
+    {
+    return any_string( va_arg(ap,const char*) );
+    }
+
+/************************************************************************/
+static const char *print_int( va_list ap, int ch )
+/************************************************************************/
+    {
+    char buf[100];
+    int firstp = 100;
+    int num = ( str.fortran ? *va_arg(ap,int*) : va_arg(ap,int) );
+    int negflag = ( num < 0 );
+    int base = (str.base?str.base:( (ch=='x') ? 16 : ( (ch=='o') ? 8 : 10 ) ) );
+    if( negflag ) num = -num;
+    buf[--firstp] = 0;
+    do { buf[--firstp] = DIGITS[ num % base ]; } while( num /= base );
+    if( negflag ) buf[--firstp] = '-';
+    return any_string( buf+firstp );
+    }
+
+/************************************************************************/
+static const char *print_float( va_list ap, int ch )
+/************************************************************************/
+    {
+    char buf[100];
+    int firstp = 100;
+    double num = ( str.fortran ? *va_arg(ap,double*) : va_arg(ap,double) );
+    int to_right = str.max_size;
+    int negflag = ( num < 0 );
+    int base = (str.base?str.base:10);
+    if( negflag ) num = -num;
+
+    /* Do the part to the right of the decimal point */
+    int numint = (num - floor(num)) * ( base ^ to_right );
+    buf[--firstp] = 0;
+    do { buf[--firstp] = DIGITS[ numint % base ]; } while( numint/=base );
+
+    buf[--firstp] = '.';
+
+    /* Now do all to the left of the decimal point */
+    numint = num;	/* Convert to integer */
+    do { buf[--firstp] = DIGITS[ numint % base ]; } while( numint/=base );
+    if( negflag ) buf[--firstp] = '-';
+    return any_string( buf+firstp );
+    }
+
+typedef const char * (*printf_dispatcher)( va_list ap, int ch );
+
+static printf_dispatcher printf_dispatchers[256];
+
+/************************************************************************/
+void set_dispatcher( int ch, printf_dispatcher new_dispatcher )
+/************************************************************************/
+    {
+    printf_dispatchers[ch] = new_dispatcher;
+    }
+
+/************************************************************************/
+void hprintf_( const char *fmt, ... )
+/************************************************************************
+ * Fortran needs a printf, right?  Sure it does.			*
+ * Used for debugging under non-Tops10 environments since the original	*
+ * usrpak.mac/hipak.mac didn't have it.					*
+ *									*
+ * Note we still end when we see a ^E because we can't count on NULL	*
+ * termination.  The particular Fortran we're testing with (Gnu g77)	*
+ * does have a method of passing string lengths, but its not clear how	*
+ * that works with variable length argument lists and it would make	*
+ * this less portable.  Yep, that means the debug routines are portable	*
+ * and the base code is not.  2 Bad Pal.				*
+ ************************************************************************/
+    {
+    va_list ap;
+    char ch;
+
+    str.outfile = debug_file;
+
+    if( ! printf_dispatchers['c'] )
+        {
+	set_dispatcher('c',&print_char);
+	set_dispatcher('s',&print_string);
+	set_dispatcher('f',&print_float);
+	set_dispatcher('d',&print_int);
+	set_dispatcher('o',&print_int);
+	set_dispatcher('x',&print_int);
+	}
+
+    va_start( ap, fmt );
+    while( ch = *fmt++ )
+        {
+	if( ch == '^' )
+	    {
+	    ch = *fmt++;
+	    if( ch == 0 )
+	        break;
+	    else if( ch=='e' || ch=='E' || ch=='b' || ch=='B' )
+	        break;
+	    else if( ch == '^' )
+	        intoutchar( ch );
+	    else
+	        intoutchar( CONTROL(ch) );
+	    }
+	else if( ch == '\\' )
+	    {
+	    ch = *fmt++;
+	    switch( ch )
+	        {
+		case '\\':	intoutchar(ch);			break;
+		case 'f':	intoutchar('\f');		break;
+		case 'b':	intoutchar('\b');		break;
+		case 'r':	intoutchar('\r');		break;
+		case 'n':	intoutchar('\n');		break;
+		}
+	    }
+	else if( ch != '%' )
+	    intoutchar( ch );
+	else
+	    {
+	    str.min_size = 0;
+	    str.max_size = 0;
+	    str.base = 0;
+	    str.pad = ' ';
+	    str.left_justified = 0;
+	    str.fortran = 1;
+
+	    int *working_on = &(str.min_size);
+
+	    while( ch = *fmt++ )
+	        {
+	        if( ch == '%' )
+		    {
+		    intoutchar(ch);
+		    break;
+		    }
+		else if( ch == '-' )
+		    str.left_justified = 1;
+	        else if( ch == '*' )
+		    {
+		    *working_on =
+			    ( str.fortran
+			    ? *va_arg(ap,integer*)
+			    : va_arg(ap,integer) );
+		    }
+		else if( ch=='0' && *working_on==0 )
+		    str.pad = '0';
+		else if( ch == '.' )
+		    working_on = &(str.max_size);
+		else if( ch == ',' )
+		    working_on = &(str.base);
+		else if( isdigit( ch ) )
+		    *working_on = *working_on*10 + (ch-'0');
+		else if( printf_dispatchers[ch] )
+		    {
+		    (*printf_dispatchers[ch])( ap, ch );
+		    break;
+		    }
+		}
+	    }
+	}
+    va_end( ap );
+    }
+
+/************************************************************************/
+void showln_( integer *where )	/* Indicate we've just executed a line	*/
+/************************************************************************/
+    {
+    int iwhere = *where;
+#ifdef DEBUG_PROGRESS
+    progress("?",(int)(*where),"Got here!");
+#endif
+    }
+
+/************************************************************************/
+int main( int argc, const char *argv[] )
+/************************************************************************
+ * Starts the whole world.						*
+ * Invokes the fortran mainline.					*
+ * If that returns, cleanns up graphics and or database.		*
+ ************************************************************************/
+    {
+    int dump_mode = FALSE;
+    int init_mode = FALSE;
+    int random_mode = TRUE;
+    const char *memory_file = NULL;
+    int i;
+
+    full_progname = argv[0];
+    if( progname = strrchr( full_progname, '/' ) )
+        progname++;
+    else
+        progname = argv[0];
+
+#ifdef __APPLE__
+    /* The "Terminal" application claims it can emulate xterm, but it	*/
+    /* cannot.  If we think we're on an xterm on a mac, use ANSI logic.	*/
+    if( strcmp(getenv("TERM"),"xterm") == 0 ) putenv("TERM=ansi");
+#endif
+
+    while( *++argv && --argc>0 )
+	if( strcmp(*argv,"-dump") == 0 )
+	    dump_mode = TRUE;
+	else if( strcmp(*argv,"-init") == 0 )
+	    init_mode = TRUE;
+	else if( strcmp(*argv,"-norandom") == 0 )
+	    random_mode = FALSE;
+	else if( strcmp(*argv,"-client") == 0 )
+	    {
+	    remote_host_name = *++argv;
+	    remote_port = *++argv;
+	    argc--;
+	    }
+	else if( strcmp(*argv,"-daemon") == 0 )
+	    {
+	    daemon_port = *++argv;
+	    argc--;
+	    }
+	else if( strcmp(*argv,"-webserver") == 0 )
+	    {
+	    webserver_port = *++argv;
+	    argc--;
+	    }
+	else if( argv[0][0] == '-' )
+	    save_argv[ save_argc++ ] = argv[0]+1;
+	else if( memory_file == NULL )
+	    memory_file = *argv;
+	else
+	    usage("Unknown argument \"%s\".",*argv);
+
+#ifdef DEBUG_CHAN
+    debug_file = DEBUG_CHAN;
+#else
+#ifdef DEBUG_FILE
+    {
+    char debug_file_name[100];
+    sprintf( debug_file_name, DEBUG_FILE, progname, getpid() );
+    debug_file = fopen( debug_file_name, "a" );	/* Its OK if it fails */
+    }
+#endif
+#endif
+
+    if( remote_host_name )
+	remote_chan = setup_net_connect( remote_host_name, remote_port );
+    else
+	{
+	if( memory_file == NULL )
+#ifdef USE_MMAP
+	    asprintf((char**)(&memory_file),"/tmp/%s.memory",progname);
+#else
+	    memory_file = save_argv[0];
+#endif
+
+	progress(0,0,"Using file %s.",memory_file);
+	shmp = (struct shared_memory *)allocate_shmem(
+	    memory_file,
+	    sizeof( struct shared_memory )
+	    );
+	}
+
+    lookup_string("");		/* Make sure string 0 is the empty string. */
+
+    if( dump_mode )
+        {
+	dump_shmem( memory_file );
+	exit(0);
+	}
+
+    if( init_mode )
+        {
+	shmp->sm_setup = 0;
+	shmp->sm_users_in_database = 0;
+	}
+
+    if( random_mode ) srand( time((time_t*)NULL) );
+
+    open_channels[0] = stdout;
+    default_output_channel = 0;
+
+    if( webserver_port )
+	{
+	webserver_chan = open_listener( webserver_port, &webserver_fds );
+	webserver_top_chan = webserver_chan;
+#ifdef WEBSERVER
+	progress(__FILE__,__LINE__,"webserver_port=%s chan=%d",
+	    webserver_port, webserver_chan );
+#endif
+	}
+    fmain_();
+    fendwin( get_display(default_display) );
+    exprog_();
+    }

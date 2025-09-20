@@ -1,0 +1,81 @@
+            WAR is a multi-user game written by Chris Caldwell
+     with considerable input from Roger Long and some Macro-10
+     assembly coding by Robert Kenney at the University of New Hampshire.  
+     
+     To run the game under Tops10, type in:
+     
+             .R GAM:WAR -switch /switch /switch . . .
+     
+     where "switch" is can be:
+     
+       A terminal type:
+         ADDS580         for use on ADDS580 terminals
+         ADM3A           for use on ADM3A terminals
+         VT52            for use on DEC scopes
+         ISC             for use on the ISC graphic terminal
+         ISCBIG          for use with A7 mode on the ISC graphics terminal
+         PE550           for use on PERKINS ELMER terminals
+         ADDS980         for use on ADDS980 terminals
+         ACTV            for use on ACT-V terminals
+         ADVANT          for use with North Star ADVANTage terminals
+         ANSI            for use on any ANSI terminal (now with color!)
+                         When in doubt, use ANSI.
+     
+       OLDANG            use 0"=East, 90"=North, 180"=West, 270"=South
+       		    Otherwise 0"=North, 90"=East, 180"=South, 270"=West
+     
+     If you don't specify a terminal type, you will be prompted for one.
+     If you don't specify /OLDANG, the normal compass rose of 0"-means-
+     North will be used instead of the old (incorrect) 0"-means-East
+     system.
+     
+          WAR is a multi-user simulation based loosely  on  the  final
+     battle scene of THE NEW HOPE in the STAR WARS series.
+
+          WAR will then ask you for the character  to  represent  your
+     ship on the sensor displays.  A-M will make you a rebel ship, N-Z
+     will make you an empire ship.
+
+          The display for WAR is very simple.  In the upper  right  of
+     the  screen is the time (in minutes and seconds) before the Death
+     Star destroys the Rebel Base, and the rest of the  display  is  a
+     low  resolution picture of what you would see out of the front of
+     your ship.
+
+          The  playing  area  is  100  units  wide   on   the   X-axis
+     (coordinates -50 to 50), 100 units wide on the Y-axis (-75 to 25)
+     and 28 units deep on the Z-axis (-3 to 25).  The surface  of  the
+     Death  Star is at altitude zero.  The exhaust port is at location
+     (0,0,-2) and the trench (3 units deep and wide) goes  from  (0,0)
+     to  (0,-75).  There are light and heavy lazer guns scattered over
+     the surface which will fire at rebel ships.
+
+          As a rebel,  you  must  start  out  from  somewhere  between
+     (-50,-75)  to  (-50,25),  pilot your ship to somewhere around the
+     beginning of the trench (0,-75),  down  the  trench  and  fire  a
+     proton-torpedo  down  the  exhaust  port.   Then  in  order to be
+     completely successful, you must pull out of the trench and  leave
+     the playing area before the Death Star explodes.
+
+          As a member of the empire, you must start out from somewhere
+     between   (50,-75)   to  (50,25)  and  prevent  any  rebels  from
+     destroying the Death Star before  the  Death  Star  destroys  the
+     Rebel Base.
+
+
+     COMMANDS:
+     A         Accelerate the ship (increase speed by 1 unit)
+     D         Decelerate the ship (decrease speed by 1 unit)
+     1         Pitch the ship down and yaw it left one degree/S^2
+     2         Pitch the ship down one degree/S^2
+     3         Pitch the ship down and yaw it right one degree/S^2
+     4         Yaw the ship one degree left/S^2
+     5         Stop all rotational movement
+     6         Yaw the ship right one degree/S^2
+     7         Pitch the ship up and yaw it left one degree/S^2
+     8         Pitch the ship up one degree/S^2
+     9         Pitch the ship up and yaw it right one degree/S^2
+     <         Roll the ship counter-clockwise one degree/S^2
+     >         Roll the ship clockwise one degree/S^2
+     T         Fire proton-torpedo (rebels have two, empire has none)
+     0         Fire lazer-gun

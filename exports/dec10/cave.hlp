@@ -1,0 +1,161 @@
+        CAVE is a multi-user game written by Chris Caldwell
+with considerable input from Roger Long and some Macro-10
+assembly coding by Robert Kenney at the University of New Hampshire.  
+
+To run the game under Tops10, type in:
+
+        .R GAM:CAVE -switch
+
+where "switch" is a a terminal type:
+    ADDS580         for use on ADDS580 terminals
+    ADM3A           for use on ADM3A terminals
+    VT52            for use on DEC scopes
+    ISC             for use on the ISC graphic terminal
+    ISCBIG          for use with A7 mode on the ISC graphics terminal
+    PE550           for use on PERKINS ELMER terminals
+    ADDS980         for use on ADDS980 terminals
+    ACTV            for use on ACT-V terminals
+    ADVANT          for use with North Star ADVANTage terminals
+    ANSI            for use on any ANSI terminal (now with color!)
+                    When in doubt, use ANSI.
+
+If you don't specify a terminal type, you will be prompted for one.
+system.
+
+The game will then ask you for your character's name.  It must
+be 4 letters or less and not conflict with anything else in the
+game.  You cannot call yourself a pack and your name must not
+have the first letter as anyone else's.
+
+After you have responded, the game will ask you for the number
+of points you wish to distribute to strength (0 to 8).
+Your strength will equal your answer plus eight.
+Your dexterity will then equal 24 - your answer.
+
+After you have entered this, a list of items which you may
+buy at the store before entering the cave is printed along
+with the item's weight and cost.  Enter the number of the
+item you want keeping in mind that you have just so much
+money, can carry just so much and cannot initially hold
+more than ten items.  In order to carry a full ten items,
+you must get a helm, some armor, a pack, a shield and a weapon.
+The other 5 items will be placed in your belt.
+To end this mode, respond with negative one (-1).
+
+Once you have done this, the screen is cleared and the game
+display is printed.  You will see in the center of the display
+the first letter of your character in a hex.  Next to it will
+be a character indicating which way it is facing.  If you were the
+"A":
+
+Representation			Direction
+--------------			---------
+A=				0 (Lying down)
+A.				1
+A\				2
+A/				3
+^A				4
+\A				5
+/A				6
+
+Your view is limited by walls and the direction you are pointing.
+Beside that display is an inventory of yourself.  It can be changed
+to another person by typing "INVENT <PLAYER>".  See commands.
+
+The following are all the legal commands to cave (without synonyms):
+
+Command					Meaning
+-------					-------
+EXIT					Exit from cave
+CLEAR					Reprint screen
+GAG					Gag user's tty
+WHO					List of who is playing
+WHO <PLAYER/MONSTER>			Print stats on player/monster
+WHISPER "<MESSAGE>"			Tell everyone in your hex
+					    something
+SAY "<MESSAGE>"				Tell everyone in your area
+					    something
+SHOUT "<MESSAGE>"			Tell everyone on your level
+					    something
+TURN <DIRECTION>			Turn player to face direction
+RUN					Move 3 hexes in your current
+					    direction
+RUN <DIRECTION>				Move 3 hexes in some direction
+WALK					Move 1 hex in your current
+					    direction
+WALK <DIRECTION>			Move 1 hex in some direction
+DOWN					Go down one floor
+					    (requires staircase)
+UP					Go up one floor
+					    (requires staircase)
+GET <ITEM>				Get item from hex
+GET <ITEM> FROM <ITEM>			Get item from another item
+					    (I.E. PACK)
+JUGGLE <ITEM>				Put item in its useful position
+DROP <ITEM>				Drop item on hex
+PUT <ITEM> IN <ITEM>			Put item in another item
+					    (I.E. PACK)
+INVENTORY				Set inventory to player
+INVENTORY <PLAYER>			Set inventory to any visible
+					    player
+INVENTORY <ITEM>			Print out contents of item
+LOOK					Print out what is in hex
+STATUS					Print out info on player
+STATUS <ITEM>				Print out info on item
+KILL <PLAYER/MONSTER> WITH <ITEM>	Kill something in front 3 hexes
+PUNCH <PLAYER/MONSTER>			Punch somone in your hex
+ALLY <PLAYER>				Declare a player is an ally
+ENEMY <PLAYER>				Declare a player is an enemy
+THROW <ITEM> AT <PLAYER/MONSTER>	Throwing attack, accuracy
+					    decreases with distance
+REST					Rest for time to increase
+					    strength
+WAKE					Wake up
+FIRE <ITEM> AT <PLAYER/MONSTER>		Projectile attack, requires
+					    QIVR
+TIME					Print out time and other info
+
+******************************************************************
+
+Directions are numbered counter clockwise:
+
+			   4
+			5     3
+			   *
+			6     2
+			   1
+
+The game also recognizes left (counterclockwise) and
+right (clockwise) to be your current direction plus or minus
+one respectively.
+
+Players may be reffered to by first letter or full name.
+Monsters may be reffered to by m<first letter> or by full name.
+Items must be reffered to by full name.
+
+The parser recognizes words to 6 letters.  Therefore, you needn't
+say "INVENTORY" but merely "INVENT".  It also knows about synonyms
+for verbs.  There are *no* synonyms for nouns.
+
+All commands (except whisper, say and shout) may be repeated
+by pressing the escape key.  Also, commands may be put on the
+same line separated by commas.
+
+Prepositions (WITH, IN, ON etc.) are merely for clarity.  They
+are not required.  Thus "KILL FRED WITH PAXE" is the same
+as "KILL F PAXE".  However, in some cases this may not always
+work.  With the ATTACK/PUNCH/THROW/FIRE commands, the parser
+remembers the last victim and the last item (except throw).
+As a result, the following command string becomes possible:
+
+	ATTACK F WITH PAXE, THROW ROCK, FIRE SBOW
+
+Or if you were being attacked by more then one person:
+
+	FIRE SBOW AT F, FIRE AT G, FIRE AT H
+
+The word "AT" must be present in the last example.
+
+In reality the above two examples would not work because
+a certain amount of time is reqired between attacks and defends
+for recovery.

@@ -1,0 +1,91 @@
+#!/bin/sh
+
+genlist()
+    {
+    sed -e 's/^	//' <<SEDEOF
+	simple_compile		HIPAK.MAC
+	simple_compile		USRPAK.MAC
+	simple_compile		SETTTY.FOR
+	use_hipak		CAVE
+	use_hipak		GREEBL
+	use_hipak		OCEAN
+	use_hipak		RISK
+	use_hipak		SCAN
+	use_hipak		STAR
+	use_hipak		SYSTEM
+	use_hipak		WAR
+	use_usrpak		CUBIC
+	use_usrpak		LIFE
+	use_usrpak		SNAKE
+SEDEOF
+    }
+
+simple_compile()
+    {
+    echo "	.COMPILE $1"
+    }
+
+use_usrpak()
+    {
+    cat <<CATEOF
+	.COMPILE $1.FOR
+	.R LINK
+	*/SAVE $1.EXE
+	*/SEGMENT:DEFAULT $1.REL, SETTTY.REL
+	*/SEARCH USRPAK.REL
+	*/GO
+	.DELETE $1.REL
+CATEOF
+    }
+
+use_hipak()
+    {
+    cat <<CATEOF
+	.COMPILE $1.FOR
+	.R LINK
+	*/SSAVE $1.EXE
+	*/SEGMENT:DEFAULT $1.REL, SETTTY.REL
+	*/SEARCH HIPAK.REL
+	*/GO
+	.DELETE $1.REL
+CATEOF
+    }
+
+cat <<EOF
+	.GOTO 'A
+	'<SILENCE>
+!Options are:
+!	ALL	-	Build everything
+EOF
+
+genlist | while read how what ; do
+    case "$how" in
+        simple_compile)		echo "!	$what	-	Compile $what"
+				;;
+	*)			echo "!	$what	-	Compile and load $what"
+				;;
+    esac
+done
+echo "	.MIC RETURN"
+
+genlist | while read how what ; do
+    echo ""
+    echo "${what}::"
+    case "$how" in
+        use_hipak)	simple_compile HIPAK.MAC
+			simple_compile SETTTY.FOR
+			;;
+	use_usrpak)	simple_compile USRPAK.MAC
+			simple_compile SETTTY.FOR
+			;;
+    esac
+    $how $what
+    echo "	.MIC RETURN"
+done
+
+echo ""
+echo "ALL::"
+genlist | while read how what ; do
+    $how $what
+done
+echo "	.MIC RETURN"

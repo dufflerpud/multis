@@ -1,0 +1,55 @@
+             GREEBLe is a multi-user game written by Chris Caldwell
+     with considerable input from Roger Long and some Macro-10
+     assembly coding by Robert Kenney at the University of New Hampshire.  
+
+     To run the game under Tops10, type in:
+     
+             .R GAM:GREEBL -switch
+     
+     where "switch" is a terminal type:
+         ADDS580         for use on ADDS580 terminals
+         ADM3A           for use on ADM3A terminals
+         VT52            for use on DEC scopes
+         ISC             for use on the ISC graphic terminal
+         ISCBIG          for use with A7 mode on the ISC graphics terminal
+         PE550           for use on PERKINS ELMER terminals
+         ADDS980         for use on ADDS980 terminals
+         ACTV            for use on ACT-V terminals
+         ADVANT          for use with North Star ADVANTage terminals
+         ANSI            for use on any ANSI terminal (now with color!)
+                         When in doubt, use ANSI.
+     
+     If you don't specify a terminal type, you will be prompted for one.
+     
+          GREEBLE is another  multi-user  game  in  the  tradition  of
+     MINDLS.
+
+          When GREEBLE has ascertained  what  terminal  type  you  are
+     using,  it  will  prompt  you  for  the  character  you  will  be
+     represented by on the screen.
+
+          The commands are non-echoing characters.  They are
+
+          E - Exit GREEBLE
+          N - Draw a new screen
+          n - Move your character in direction "n".
+          Rn - Continue walking in direction "n".
+          0n - Continue walking in direction "n".
+          Fn - Fire a bullet in direction "n".
+          .n - Fire a bullet in direction "n".
+
+          Directions are as follows: 1) down left, 2)  down,  3)  down
+     right, 4) left, 5) don't move, 6) right, 7) up left, 8) up, 9) up
+     right.
+
+          The object of the game is to kill  off  greebles  and  other
+     players.   Other  players  are  represented by the character they
+     chose, and all  greebles  are  represented  with  at  signs  (@).
+     Greebles  are sadistic balloon-like creatures which chase after a
+     random  player  until  either  the  player  or  the  greeble   is
+     destroyed.   Unfortunately,  as  soon  as  a  greeble  is killed,
+     another shows up to mourn its brother and to  avenge  its  death.
+     Also, greebles occasionally show up just for spite.
+
+          As time  progresses,  there  will  be  lots  of  very  angry
+     greebles.

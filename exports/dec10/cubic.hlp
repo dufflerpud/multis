@@ -1,0 +1,50 @@
+     CUBIC is a single-user game written by Chris Caldwell
+with some Macro-10 assembly coding by Robert Kenney at the University
+of New Hampshire.
+
+To run the game under Tops10, type in:
+
+     .R GAM:CUBIC -switch
+
+where "switch" is a terminal type:
+ ADDS580         for use on ADDS580 terminals
+ ADM3A           for use on ADM3A terminals
+ VT52            for use on DEC scopes
+ ISC             for use on the ISC graphic terminal
+ ISCBIG          for use with A7 mode on the ISC graphics terminal
+ PE550           for use on PERKINS ELMER terminals
+ ADDS980         for use on ADDS980 terminals
+ ACTV            for use on ACT-V terminals
+ ADVANT          for use with North Star ADVANTage terminals
+ ANSI            for use on any ANSI terminal (now with color!)
+                 When in doubt, use ANSI.
+
+If you don't specify a terminal type, you will be prompted for one.
+CUBIC will then ask if you want the computer to go first.  After
+your response ("yes" or "no") CUBIC will then ask if you want the
+computer to go second.  (Hence you can make it play it self by answering
+"yes" to both questions) the computer will ask you if you want the
+coordinates to be printed.  If you respond "yes," then the computer
+will label the columns, rows and planes for the CUBIC board.
+
+The game has now begun.  A CUBIC board is printed out in forced
+perspective and (if the user said he didn't want the computer to
+move first) x's move is prompted for.  To enter a move, type
+in the column number, followed by the row number followed by the
+plane number or more simply the x-y-z coordinate in a cartesian
+coordinate system.  Thus the lower left corner on the bottom
+plane is 111 and the upper right corner on the top plane is 444.
+If the coordinates are printed out, the position of the move
+is the number on the bottom (or top) followed by the number on the
+side.
+
+When prompted for a move, the user may choose to type in
+one of the following things:
+
+       new     -       reprint the screen
+       untake  -       forget last move
+       move    -       tell the computer to make the move
+       go      -       tell the computer to play to end of game
+
+If somebody wins, the computer will type out the winning
+line and ask the user if he wants to play again.

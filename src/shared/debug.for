@@ -1,0 +1,80 @@
+C	@HDR@	$Id$
+C	@HDR@		Copyright 1982-2025 by
+C	@HDR@		Christopher Caldwell/Brightsands
+C	@HDR@		P.O. Box 401, Bailey Island, ME 04003
+C	@HDR@		All Rights Reserved
+C	@HDR@
+C	@HDR@	This software comprises unpublished confidential information
+C	@HDR@	of Brightsands and may not be used, copied or made available
+C	@HDR@	to anyone, except in accordance with the license under which
+C	@HDR@	it is furnished.
+	SUBROUTINE DUMP36( IV )
+	CALL NUMBER( ILEFT(IV), -6, 8 )
+	CALL STRING(',,^E')
+	CALL NUMBER( IRIGHT(IV), -6, 8 )
+	RETURN
+	END
+
+	SUBROUTINE DUMPC( IV )
+	CALL NUMBER( IV )
+	IF( IV .LT. 32 .OR. IV .GE. "177 ) RETURN
+	CALL CHROUT('(')
+	CALL CHROUT( IV )
+	CALL CHROUT(')')
+	RETURN
+	END
+
+	SUBROUTINE DUMPV( IVAL )
+	CALL NUMBER( IVAL )
+	CALL STRING('=F^E')
+	CALL NUMBER( (IVAL/256)/8 )
+	CALL STRING('+B^E')
+	CALL NUMBER( MOD(IVAL/256,8) )
+	CALL STRING('+C^E')
+	CALL DUMPC( MOD( IVAL, 256 ) )
+	RETURN
+	END
+
+	SUBROUTINE DUMP( ISCR, FILSPC )
+	INTEGER FILSPC(13), ISCR
+	FILSPC(5) = ISXBIT('DMP')
+	CALL OFILE( 5, FILSPC, 0 )
+	CALL WFILE( 5, FILSPC )
+	CALL SELECT( 5 )
+	DO 200 IY=24, 1, -1
+	    DO 100 IX=1, 80
+	    	CALL GETVAL( ISCR+0, IY+0, IX+0, IVAL )
+		CALL DEBVAL( ISCR+0, IY+0, IX+0, IB0 )
+		CALL SETDIS(1)
+		IAT = ICHRAT(IX+0,IY+0)
+		IB1 = IBPTR(0)
+		CALL SETDIS(0)
+		CALL OUTNUM( IX+0, IY+0 )
+		CALL STRING('  VA=^E')
+		CALL DUMP36( IB0 )
+		CALL CHROUT(':')
+		CALL DUMPV( IVAL )
+		CALL STRING(' vs. CA=^E')
+		CALL DUMP36( IB1 )
+		CALL CHROUT(':')
+		CALL DUMPC( IAT )
+     		CALL CRLF
+100	    CONTINUE
+200	CONTINUE
+	CALL STRING('------------^M^J^E')
+	IBASE = IRIGHT(ITBADR(ISCR))
+	DO 300 IADDR=0,959
+	    CALL NUMBER( IADDR+IBASE, -6, 8 )
+	    CALL CHROUT('/')
+	    CALL NUMBER( IADDR+0, -3 )
+	    CALL CHROUT('=')
+	    CALL E(IADDR+0,IVAL)
+	    CALL DUMPV( ILEFT(IVAL) )
+	    CALL STRING(',,^E')
+	    CALL DUMPV( IRIGHT(IVAL) )
+	    CALL CRLF
+300	CONTINUE
+	CALL CLOSE( 5 )
+	CALL SELECT( 0 )
+	RETURN
+	END

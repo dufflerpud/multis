@@ -1,0 +1,78 @@
+             RISK is a multi-user game written by Chris Caldwell
+     with considerable input from Roger Long and some Macro-10
+     assembly coding by Robert Kenney at the University of New Hampshire.  
+     
+     To run the game under Tops10, type in:
+     
+             .R GAM:RISK -switch
+     
+     where "switch" is a terminal type:
+         ADDS580         for use on ADDS580 terminals
+         ADM3A           for use on ADM3A terminals
+         VT52            for use on DEC scopes
+         ISC             for use on the ISC graphic terminal
+         ISCBIG          for use with A7 mode on the ISC graphics terminal
+         PE550           for use on PERKINS ELMER terminals
+         ADDS980         for use on ADDS980 terminals
+         ACTV            for use on ACT-V terminals
+         ADVANT          for use with North Star ADVANTage terminals
+         ANSI            for use on any ANSI terminal (now with color!)
+                         When in doubt, use ANSI.
+     
+     If you don't specify a terminal type, you will be prompted for one.
+
+          When RISK has ascertained  what  terminal  type  you  are
+     using,  if you are the first person entering the game, it  will
+     prompt  you  for  the  number of players who will be playing.
+     The program will then wait until all the number of specified
+     people run the game before drawing the screens on all of their
+     terminals.
+
+          If you only specify one player, the computer will create
+     a second player which it will control - though it puts up only
+     a modest fight.
+
+          The screen drawn is a (very) low resolution map of the
+     world divided up into 26 sections labeled A through Z.
+
+          If a player has armies located in a region, next to the
+     region letter will be the number of armies followed by the player
+     letter.  You know which player you are by looking down on the
+     lower section of the screen, which shows you how many armies
+     you have as well.
+
+          When a player enters the game, he is given 10 armies in
+     a random region.  The object of the game is to have at least one
+     army on every region of the board.
+
+          The commands are non-echoing characters.  They are
+
+          E - Exit RISK
+          N - Draw a new screen
+          nab - Move "n" armies from region "a" to region "b".
+
+          So, say, if you had 10 armies in region W and you wanted
+     to move 4 of them to region X, you would type "4WX" followed
+     by the return key.  Note that (unlike the board game) it takes
+     time to move an army from one region to another.  You can
+     continue to enter as many movement commands as you want, as
+     fast as you can type them, but eventually all that will do for
+     you is make all of your armies be in transit for awhile.  The
+     armies that are in transit will appear on the upper right hand
+     screen along with the amount of time until they arrive in their
+     new region.
+
+          If one or more armies arrives at a region which has
+     armies from another player, they have a battle using the traditional
+     dice-odds from the board game.  Consequently, only one player's
+     armies will end up in the region.
+
+          Occasionally, (every 200 game clock ticks), the program
+     will increase the number of armies at most of the occupied
+     locations on the board.  This means, it is to a player's
+     advantage to have armies on as many regions as possible, but
+     of course, the fewer armies he has on a region, the more easily
+     he can be defeated by an attack from another player.
+
+          Play continues until all the regions on the board are
+     occupied by one player or everyone has exited the game.

@@ -1,0 +1,28 @@
+        SCAN is a multi-user game written by Chris Caldwell
+with considerable input from Roger Long and some Macro-10
+assembly coding by Robert Kenney at the University of New Hampshire.  
+
+To run the game under Tops10, type in:
+
+        .R GAM:SCAN -switch /switch /switch . . .
+
+where "switch" may be any of the following options:
+
+  A terminal type:
+    ADDS580         for use on ADDS580 terminals
+    ADM3A           for use on ADM3A terminals
+    VT52            for use on DEC scopes
+    ISC             for use on the ISC graphic terminal
+    ISCBIG          for use with A7 mode on the ISC graphics terminal
+    PE550           for use on PERKINS ELMER terminals
+    ADDS980         for use on ADDS980 terminals
+    ACTV            for use on ACT-V terminals
+    ADVANT          for use with North Star ADVANTage terminals
+    ANSI            for use on any ANSI terminal (now with color!)
+                    When in doubt, use ANSI.
+
+  Or:
+    OLDANG          use 0"=East, 90"=North, 180"=West, 270"=South
+  		    Otherwise 0"=North, 90"=East, 180"=South, 270"=West
+
+Since SCAN was never finished, this is all of the documentation you get.

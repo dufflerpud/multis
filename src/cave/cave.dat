@@ -1,0 +1,184 @@
+;	NUMBER OF VERBS, NUMBER OF OBJECTS
+;
+213,117
+;
+;	VERBS
+;
+exit quit stop end die suicide
+map dump debug error
+clear new screen charon
+gag shutup silence
+player who
+whisper
+say speak talk communicate
+shout yell scream howl bellow
+look
+weigh weight price cost value status examine locate where
+ally allies
+enemy enemies
+time daytime when cycle cycles left lognum logmax styx styxline
+shit fuck damn asshole hell swear god goddamn godamn dammit damnit-
+cunt whang bong piss bm bastard bitch masturbate motherfucker cock-
+cocksucker bull bullshit penis clit pussy ejaculate cum tit tits-
+nipple jism cliff albert
+parry defend block protect
+noparry nodefend noblock noprotect
+turn rotate spin face orient
+run canter gallop lope flee speed race charge pursue escape
+jog trot pace
+walk ambulate move forward go continue proceed stroll meander-
+escape hop trot mosey saunter stride
+down decend dn
+up ascend
+get take aquire grab seize sieze appropriate acquisition requisition-
+commandeer steal accumulate pickup lift ripoff unpack don donn wear-
+adorn puton
+juggle shift
+drop leave putdown excrete divest abandon maroon strand put place pack
+inventory carrying list
+attack strike clobber whale zap numb pierce puncture spear-
+stab perforate slash jab mutilate spindle fold cut kill maim
+punch hit slug kick punt grapple
+throw hurl chuck heave toss lob
+rest recuperate sleep deactivate
+arise awake wake getup activate
+fire shoot
+destroy evaporate vaporize atomize obliterate
+cast magic.
+;
+;
+;	VARIOUS OBJECTS ONE MIGHT FIND AROUND THE CAVE
+;	COLUMN		MEANING
+;	1-4		OBJECT NAME
+;	8		WHERE OBJECT GOES:
+;			0 - BELT
+;			1 - HEAD
+;			2 - BODY
+;			3 - BACK
+;	16		HOW MUCH OBJECT CAN HOLD
+;	24		WEIGHT
+;	32		NUMBER OF OBJECTS IN DUNGEON
+;	40		COST OF ITEM
+;	48		DAMAGE FACTOR
+;	56		STRENGTH REQUIRED TO USE (IF WEAPON)
+;	56		NUMBER POINTS DEFLECTED (IF DEFENCE)
+;	64		TYPE OF ITEM
+;			-4	-	FOUND ON FLOOR 4
+;			-3	-	FOUND ON FLOOR 3
+;			-2	-	FOUND ON FLOOR 2
+;			-1	-	FOUND ON FLOOR 1
+;			0	-	BOTH HITTING OR THROWING
+;			1	-	HIT OR STAB
+;			2	-	THROW
+;			3	-	FIRE OR SHOOT
+;
+;	STUFF IN THE STORE
+Pack	3	34	2	5	40	00	0
+;
+CArmor	2	14	7	4	50	00	1
+LArmor	2	16	8	3	100	00	2
+CMail	2	25	15	2	200	00	3
+PArmor	2	22	25	1	300	00	5
+;
+Helmet	1	0	2	7	40	00	0
+;
+SShield	5	0	5	4	30	00	1
+BShield	5	0	10	2	50	00	2
+TShield	5	0	15	1	70	00	3
+;
+Dagger	4	0	1	5	10	14	8	0
+Rapier	4	0	1	2	40	15	9	1
+Cutlass	4	0	2	1	50	17	12	1
+SSword	4	0	2	3	60	24	11	1
+BSword	4	0	3	2	80	25	12	1
+TSword	4	0	5	2	120	34	14	1
+GSword	4	0	7	1	150	36	15	1
+Club	4	0	2	3	10	14	8	1
+Hachet	4	0	1	1	15	15	9	0
+Hammer	4	0	2	2	25	16	10	0
+Mace	4	0	3	1	40	24	11	1
+SAxe	4	0	3	2	30	14	11	0
+Morningstar	4	0	6	2	100	27	13	1
+GHammer	4	0	8	1	110	27	14	0
+BAxe	4	0	10	1	130	35	15	0
+SBow	4	0	2	2	20	14	9	3
+HBow	4	0	2	1	30	15	9	3
+LBow	4	0	2	2	40	17	10	3
+XBow	4	0	5	1	80	35	12	3
+Quiver	0	0	10	7	9	00	0
+Javelin	4	0	2	2	20	14	9	2
+Spear	4	0	3	2	40	15	11	0
+Halbert	4	0	8	1	70	25	13	1
+PAxe	4	0	10	1	100	27	15	0
+Trident	4	0	2	1	30	15	10	1
+Staff	4	0	2	2	10	15	9	1
+;
+;
+;	STUFF FOUND IN CAVE ALREADY
+Rock	4	0	1	15	0	11	8	0
+Coin	0	0	1	1	1045	00	0	-4
+Pearl	0	0	1	1	2315	00	0	-3
+Diamond	0	0	1	1	3000	00	0	-2
+Jewel	0	0	1	1	4095	00	0	-1
+Disintegrator	0	0	10	1	0	00	0	-1
+.
+;
+;	MONSTER DATA
+;	COLUMN		MEANING
+;	1-4		MONSTER NAME
+;	8		WEIGHT
+;	16		DEXTERITY
+;	24		STRENGTH
+;	32-40		PERCENTAGE OF BITING ATTACKS
+;			PERCENTAGE OF CLAWING ATTACKS
+;			PERCENTAGE OF BURNING ATTACKS
+;			PERCENTAGE OF HITTING ATTACKS
+;			PERCENTAGE OF SMOTHER ATTACKS
+;	48		NUMBER OF HEXES OCCUPIED
+;	56		STARTING FLOOR
+;
+;
+Adder	2	25	8	95,0,0,5,0	1	2
+Bear	100	6	15	30,35,0,30,5	2	3
+Crab	4	18	4	50,50,0,0,0	1	3
+Dragon	973	18	40	20,20,20,20,20	7	1
+Elephant	500	7	20	0,0,0,95,5	4	2
+Fly	1	63	1	100,0,0,0,0	1	4
+Gas	1	20	6	0,0,0,0,100	20	2
+Heat	1	40	3	0,0,80,0,20	4	4
+Imp	60	14	14	10,10,0,80,0	1	4
+Jaguar	40	18	18	40,20,0,40,0	1	3
+Kangaroo	38	15	12	0,0,0,100,0	1	4
+Louse	1	1	1	100,0,0,0,0	1	4
+Mummy	80	10	20	0,0,0,100,0	1	3
+Nit	1	1	1	100,0,0,0,0	1	4
+Ooze	1	5	12	0,0,95,0,5	2	1
+Python	2	30	15	95,0,0,5,0	3	2
+Quick	1	63	2	0,0,0,0,100	5	4
+Rat	5	16	4	95,5,0,0,0	1	4
+Scorpion	1	20	20	100,0,0,0,0	1	3
+Tiger	50	16	25	25,50,0,25,0	2	2
+Unicorn	60	12	12	0,0,0,100,0	2	3
+Vampire	80	18	16	50,0,0,50,0	1	2
+Wolf	6	19	9	45,45,0,10,0	1	2
+Xorn	190	14	12	10,70,0,20,0	1	1
+Yeti	120	10	20	10,40,0,40,10	3	1
+Zebra	100	8	8	0,0,0,100,0	2	4
+.
+The following people have left the dungeon with the disintegrator:
+18-JUN-1982 22:18:54  "GROG"  EXP:961   STR: 14(14)  DEX: 13(16)  VAL: $ 9961
+	Job 39 User A BENNETT    [1000,47433] TTY10 MCCONN(32)_14
+19-JUN-1982 21:52:39  "UMPH"  EXP:171   STR: 13(13)  DEX: 12(14)  VAL: $ 2785
+	Job 56 User D. P. GUMBY  [2015,46557] TTY74 MCCONN(32)_12
+20-JUN-1982 19:49:29  "GOR "  EXP:26   STR: 11(11)  DEX: 13(14)  VAL: $ 2939
+	Job 49 User A BENNETT JR [2000,13225] TTY67 MCCONN(32)_20
+20-JUN-1982 23:55:41  "KILR"  EXP:555   STR: 14(14)  DEX: 11(15)  VAL: $ 522
+	Job 26 User B FAULKENHAM [2123,10127] TTY17 ZEPHYR(12)_6
+25-JUN-1982 03:22:59  "BHOB"  EXP:167   STR: 13(14)  DEX: 10(13)  VAL: $ 612
+	Job 34 User MEDIATOR     [2123,22167] TTY7 APELIO(13)_0
+25-JUN-1982 06:38:19  "SKIP"  EXP:67   STR: 12(13)  DEX: 10(13)  VAL: $ 5530
+	Job 30 User AEROSMITH    [2123,64300] TTY115 ZEPHYR(12)_15
+30-JUN-1982 05:15:56  "BHOB"  EXP:243   STR: 12(12)  DEX: 14(16)  VAL: $ 4497
+	Job 56 User MEDIATOR     [2123,22167] TTY104 APELIO(13)_0
+27-MAR-2010 20:50:59  "Fred"  Exp:66   Str: 11(12)  Dex: 11(14)  Val: $ 10797
+	 8457  4161 chris    pts/14   S 00:00:04 cave

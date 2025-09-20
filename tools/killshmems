@@ -1,0 +1,37 @@
+#!/bin/sh
+
+TMP=/tmp/killipcs.$$
+
+echodo()
+    {
+    echo "+ $*"
+    $*
+    }
+
+GAME_TO_KILL="$1"
+[ -z "$GAME_TO_KILL" ] && GAME_TO_KILL="*"
+
+#while : ; do
+#    case `uname -v` in
+#        Darwin*)	ipcs -m	| grep rw-			;;
+#	*)		ipcs -m | grep 666			;;
+#    esac > $TMP
+#    shmids=`awk '{ print $2; }' $TMP`
+#    [ -z "$shmids" ] && break
+#    cat $TMP
+#    #awk '/rw-/ || / perms / { print $0; }' $TMP
+#    echo -n "Kill" ${shmids} " (y or n): "
+#    ans=y
+#    echo $ans
+#    #read ans
+#    case "$ans" in
+#        y*|Y*)			for shmid in $shmids ; do
+#				    echodo ipcrm -m $shmid
+#				done
+#				;;
+#	n*|N*|q*|Q*)		break
+#				;;
+#    esac
+#done
+
+echodo exec rm -f $TMP /tmp/$GAME_TO_KILL.memory

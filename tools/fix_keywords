@@ -1,0 +1,199 @@
+#!/usr/bin/perl -w
+use strict;
+
+$| = 1;
+
+my @variable_arguments =
+    (
+    "init",
+    "getval",
+    "putval",
+    "addval",
+    "number",
+    "lnumbr",
+    "getstr",
+    "string",
+    "getnum",
+    "outnum"
+    );
+
+my @add_location =
+    (
+    "INIT",
+    "GETVAL",
+    "PUTVAL",
+    "ADDVAL"
+    );
+
+my @keywords =
+    (
+    "subroutine",
+    "integer",
+    "real",
+    "logical",
+    "data",
+    "if",
+    "goto",
+    "and",
+    "or",
+    "eq",
+    "ne",
+    "le",
+    "lt",
+    "ge",
+    "gt",
+    "true",
+    "false",
+    "call",
+    "do",
+    "common",
+    "return",
+    "end"
+    );
+
+my $never_seen = "ns".time();
+
+my @inlines = ();
+my $line_number = 1;
+my $next_paren = 0;
+while( $_ = <STDIN> )
+    {
+    s/GOT_HERE/CALL SHOWLN($line_number)/;
+    s/^C-TOPS10//;
+    s/(ISXBIT\( *'[^']*)'/$1~'/g;
+    if( $next_paren )
+        {
+	$_ =~ s/\(/( 0,$line_number,/i;	# ))
+	$next_paren = 0;
+	}
+    if( /^\014+/ )
+	{
+	push( @inlines, "C\014\n" );
+	s/^\014+//g;
+	}
+    s/'/$never_seen/g if( /^[Cc]/ );
+    if( /^(.*)!(.*)/ )
+	{
+	my( $code, $comment ) = ( $1, $2 );
+	$comment =~ s/'/$never_seen/g;
+	$_ = "$code!$comment\n";
+	}
+    foreach my $fnc ( @add_location )
+	{
+	if( /(CALL $fnc\()/ )
+	    { s/(CALL $fnc\()/$1 0,$line_number, /i; }
+	elsif( /CALL $fnc\b/ )
+	    { $next_paren = 1; }
+	}
+    s/([A-Za-z0-9]+)\s*\.XOR\.\s*([A-Za-z0-9]+)/XOR($1,$2)/g;
+    push( @inlines, $_ );
+    $line_number++;
+    }
+my $intext = join("",@inlines);
+
+# This will be slow ... very slow ... but we don't need to run it alot.
+foreach my $va ( @variable_arguments )
+    {
+    #print "{Fixing $va calls ...}\n";
+    my @reconstruct = ();
+    # Fast to see if any left
+    while( $intext =~ /\b$va[\s\n\&]*\(/is )
+        {
+	#print "{Found a $va ...}\n";
+	# Slow, to break em up
+        if( $intext =~ /(.*?)\b($va[\s\n\&]*)\((.*)$/is )
+	    {
+	    push( @reconstruct, $1 );
+	    my $kwuncased = $2;
+	    $intext = $3;
+	    #print "{Found {$1},{$2},{$3}}\n";
+	    my $count_string = $3;
+	    while( $count_string =~ /^[^\)]*\(/s )
+		{
+		#print "count_string = {$count_string}.\n";
+		$count_string =~ s/\([^\(]*?\)/x/s;
+		#print "count_string now = {$count_string}.\n";
+		}
+	    $count_string =~ s/\).*//s;
+	    $count_string =~ s/'.*?'/y/gs;
+	    my @args = split(/,/,$count_string);
+	    #print "args=[",join("#",@args),"]\n";
+	    my $argcount = scalar( @args );
+	    push( @reconstruct, "$kwuncased($argcount," );
+	    #print "end inner loop, intext now {$intext}\n";
+	    }
+	}
+    $intext = join("",@reconstruct,$intext);
+    #print "{end outer loop, intext={$intext}}\n";
+    }
+#print "{end hack}\n";
+
+#foreach my $kw ( @keywords )
+#    {
+#    s/\b$kw\b/$kw/gis;
+#    }
+
+my $in_string = 0;
+foreach my $str ( split(/'/s,$intext) )
+    {
+    $_ = $str;
+    if( $in_string )
+	{
+	if( length($_) == 1 )
+	    { print ord( $_ ); }
+	else
+	    { print "'$_'"; }
+	}
+    else
+	{
+	my $comment_next_line = 0;
+	foreach my $ln ( split(/(\n)/s ) )
+	    {
+	    if( $ln eq "\n" )
+	        {
+		print $ln;
+		}
+	    elsif( $ln =~ /^[Cc]/ )
+	        {
+		$ln =~ s/$never_seen/'/gs;
+		print $ln;
+		}
+	    else
+		{
+		if ( $comment_next_line )
+		    {
+		    $comment_next_line = 0;
+		    $ln =~ s/^/C/;
+		    }
+		$ln =~ tr/A-Z/a-z/;
+		$ln =~ s/\^/**/gs;
+		$ln =~ s/\berror\b/lerror/gs;
+		$ln =~ s/\bscan\b/iscan/gs;
+		$ln =~ s/\bshift\b/ishift/gs;
+		$ln =~ s/\bshiftc\b/ishiftc/gs;
+		$ln =~ s/\brepeat\b/irepeat/gs;
+		$ln =~ s/integer msgara\( 16 \)/character msgara( 80 )/gs;
+		if( $ln =~ /call ctrap/ )
+		    {
+		    $ln =~ s/call ctrap/continue ! call ctrap/;
+		    $comment_next_line = 1;
+		    }
+		foreach my $spart ( split(/("[0-7]+)/s,$ln) )
+		    {
+		    if( $spart =~ /^"(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
+		        {
+			my $six=join("",map(chr(oct($_)+32),$1,$2,$3,$4,$5,$6));
+			print "isxbit('$six~')";
+			}
+		    elsif( $spart =~ /"(.*)/ )
+			{ print oct( "0$1" ); }
+		    else
+			{ print $spart; }
+		    }
+		}
+	    }
+	}
+    $in_string = 1 - $in_string;
+    }
+
+exit(0);
