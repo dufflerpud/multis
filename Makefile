@@ -84,7 +84,7 @@ BACKUP_ARCHIVE=$(dir $(UNIQUE_ARCHIVE))$(DEFAULT_ARCHIVE)
 TARARGS=projects/$(PROJECT)
 INSTALL_DIR=/usr/local/multis
 INSTALLED_UNIVERSES=$(INSTALL_DIR)/universes
-F77VER=$(shell f77 -v 2>&1 | grep version)
+F77VER=$(shell f77 -v 2>&1 | grep -v f2c | grep version)
 F2CVER=$(shell f2c -v 2>&1 | grep version)
 ROOT_PRIVS=$(shell id | grep uid=0)
 
@@ -107,8 +107,8 @@ CFLAGS=-Isrc/shared -g
 FFLAGS=-ff77 -fugly-logint -Wno-globals -fonetrip -finit-local-zero -fno-automatic -C
 
 F2C=f2c
-F2CFLAGS=-w -c -kr  -NL800 -f -K
-F2CCFLAGS=-Isrc/shared
+F2CFLAGS=-w -c -kr -NL800 -f -K
+F2CCFLAGS=-std=c99 -Isrc/shared
 
 #LD=gcc
 ifeq ( $(OS), Cygwin )
