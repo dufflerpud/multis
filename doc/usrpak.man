@@ -1,0 +1,990 @@
+                                 USRPAK.HLP
+     USRPAK is a subroutine package designed to give FORTRAN users the
+     advantages of degenerating to assembly operations only when  nec-
+     essary.   It  allows the user to retrieve information about other
+     jobs, perform I/O functions, control his own job parameters,  and
+     manipulate his core image.
+     USRPAK  has one standard logical function ERROR which will return
+     .true. if the previous subroutine call failed.  .page
+            ******************** module WHO ********************
+
+
+                       LOGICAL FUNCTION LOGDIN( JOB )
+     Returns .true. if the specified integer JOB number is logged  in.
+
+
+                         INTEGER FUNCTION JOB( 0 )
+     Returns the integer number of the user’s job.
+
+
+                        INTEGER FUNCTION ITTY( JOB )
+     Returns  the  integer tty number (octal) of the specified integer
+     JOB if it is attached, or else -1 if it is detached.
+
+
+                       INTEGER FUNCTION ICJOB( JOB )
+     Return the controlling job (batch/opser) for JOB or -1 if it con-
+     trols itself.
+
+
+                       INTEGER FUNCTION JSTAT( JOB )
+     Returns  the  two  letter sixbit run queue name for JOB.  Some of
+     these states are "RN", "SL", "EW" etc.
+
+
+                 INTEGER FUNCTION NODE( NODNUM or NODNAM )
+     Return the sixbit node name from the octal integer NODNUM or  the
+     octal integer node number for the sixbit NODNAM.
+
+
+                     INTEGER FUNCTION IDLINE( DEVNAM )
+     Return the terminal number from the
+
+
+                          SUBROUTINE PPN( P, PN )
+     This  routine  will return the octal integer P and PN of this us-
+     er’s ppn.
+
+
+                 SUBROUTINE NODLIN( ITTY, NODNUM, TTYLIN )
+     Given the integer octal tty number ITTY, NODLIN will  return  the
+     integer octal node number NODNUM associated with that tty and the
+     tty’s integer octal line number in TTYLIN.
+
+
+              SUBROUTINE CORSIZ( JOB, LOWCOR, HIGHCO, SWAPPD )
+     Given the integer JOB number, this routine will return the amount
+     of  core  it has in the low segment in integer LOWCOR, the amount
+     of core it has in the hi segment in integer HICHCO, and the logi-
+     cal SWAPPD as .true. if the job is swapped out.
+
+
+          ******************** module DATIME ********************
+
+
+                    SUBROUTINE DATIME( DAY, MONTH, YEAR,
+                       HOUR, MINUTE, SECOND, MILSEC )
+     Return the numeric time in integers.
+
+
+          ******************** module OUTDAT *********************
+
+
+              SUBROUTINE OUTDAT( IDATWD, ISTRNG, ILEN, MAXLN,
+                              TYPE[, SEPCHR ])
+     This routine takes the date istored in TYPE format and places the
+     string equivalent in ISTRNG with a length of ILEN (user specifies
+     maximum  in  MAXLN).   SEPCHR specifies the character to separate
+     the date and time.  TYPE may be one of the following:
+           0 Fancy universal format (date,,time)
+           1 System date,,time in seconds
+           2 System date
+           3 System time
+           4 Universal date,,time
+           5 Universal date
+           6 Universal time
+           7 Time in jiffies to seconds
+           8 Time in ticks to seconds
+           9 Time in milliseconds to seconds
+          10 Time in milliseconds
+          11 Time in minutes to seconds
+
+
+          ******************** module INDAT *********************
+
+
+                  SUBROUTINE INDAT( STRING, ILEN, IDATE )
+
+
+     This routine interprets the date stored in A1 format in the array
+     STRING (ILEN long), and returns it in system format.
+
+
+                  SUBROUTINE SETHOL( NAMEAR, VALAR, LEN )
+     THIS  routine  allows  the  user to set hollidays that INDAT will
+     recognize.  LEN is the number of hollidays the user wishes to de-
+     fine.   NAMEAR  is  a  sixbit array of holliday names (LEN long).
+     VALAR is an array of hollidays specifiers of the following form:
+        0,,(MON-1)*31+DAY-1             month, day of month
+        1,,(WEEK-1)*7+DAY               week of year, day of week
+        2,,((MON-1)*6+WEEK-1)*7+DAY-1   month,week day falls on
+        3,,((MON-1)*6+WEEK-1)*7+DAY-1   same except skip to next
+                                        week if it falls on the first
+
+
+                            INTEGER FUNCTION DATNOW
+        This function returns the current date and time in system for-
+        mat.
+
+
+                          SUBROUTINE FIXDAT( IDATE )
+        If IDATE (SYSTEM format) contains only a time, the current the
+        date will be added to it and if the time is previous  to  now,
+        then increment the date.
+
+
+                       INTEGER FUNCTION UNVSYS( IUNIV )
+        This  function  returns the time stored in UNIVERSAL date/time
+        format in SYSTEM format.
+
+
+                       INTEGER FUNCTION SYSUNV( ISYSTM )
+        This function returns the time stored in SYSTEM format in UNI-
+        VERSAL date/time format.
+
+
+            ******************** module USRSET ********************
+
+
+                       SUBROUTINE USRSET( CODE, VALUE )
+        USRSET  returns  or  sets  the user’s terminal characteristics
+        based on CODE.  (refer to MONITOR CALLS manual)  When  return-
+        ing the value, the integer CODE will be less than 2000 and the
+        value will be returned in VALUE.  When setting, CODE  will  be
+        greater  than  2000 and the value will be set to VALUE.  value
+        will be set to VALUE.
+            ******************** module OUTPUT ********************
+
+
+                          SUBROUTINE TTYTYP( ITYPE )
+        TTYTYP will set the terminal type for the routines CURSOR  and
+        CLRSCR.  the types are:
+                     0 - ADDS580
+                     1 - ADM3
+                     2 - VT52
+                     3 - ISC
+                     4 - ISC (large mode, A7 on)
+                     5 - PE550
+                     6 - ADDS980
+                     7 - ACTV
+                     8 - VT100
+                     9 - NORTHSTAR ADVANTAGE
+
+
+                         SUBROUTINE SELECT( CHAN )
+     This  routine  allows the user to direct output in this module to
+     any device openned on integer channel CHAN.  If CHAN is zero  (or
+     hasn’t been called), output defaults to this terminal via the TR-
+     MOP. MONITOR CALL.
+
+
+                     ***** STATIC SCREEN ROUTINES *****
+
+
+                     SUBROUTINE DEFSCR( SCRNUM, ARRAY )
+     This routine defines a screen array referrenced by SCRNUM in  ar-
+     ray ARRAY (a 384 word integer array).
+
+
+                        SUBROUTINE SETDIS( SCRNUM )
+     All  output  from this module until this routine is called again,
+     will be diverted to the screen SCRNUM.  In most cases,  the  user
+     would  sporatically  output  to  the screen, and then display the
+     screen contents all at once with the UPDATE or  NEWSCR  routines.
+     The advantage of this method is that the computer can do the min-
+     imum amount of I/O to update the screen in a refresh environment.
+
+
+                    SUBROUTINE CURPOS( CURSRX, CURSRY )
+     This  routine returns the current position of the cursor in inte-
+     ger CURSRX - CURSRY.  (*note*  the  bottom  left  corner  of  the
+     screen is 1-1 and the top right of most screens is 80-24)
+
+
+                 INTEGER FUNCTION ICHRAT( CURSRX, CURSRY )
+     This  function  returns  the  character  at CURSRX, CURSRY on the
+     screen defined by SETDIS.
+
+
+                        SUBROUTINE NEWSCR( SCRNUM )
+     This routine clears the screen of the terminal  and  then  prints
+     the entire contents of the screen defined as SCRNUM.
+
+
+                        SUBROUTINE UPDATE( SCRNUM )
+     This  routine  updates  only the things that have changed for the
+     screen SCRNUM since last time UPDATE was called.
+
+
+                             SUBROUTINE GRAFON
+     This routine sets certain terminal characteristics to allow  easy
+     graphics  interaction.   It turns off echo, control-S/Q, turns on
+     tape mode (no line feed after carriage return during input)  etc.
+     *** The terminal is virtually unusable in this state without spe-
+     cial I/O routines to handle character input.  ***  To  exit  this
+     mode, use the routine GRAFOF.
+
+
+                             SUBROUTINE GRAFOF
+     This  routine  resets some of the terminal characteristics set by
+     GRAFON.  It is useful in recovering from graphics mode.
+
+
+                 ***** end of STATIC SCREEN ROUTINES *****
+
+
+                    SUBROUTINE CURSOR( CURSRX, CURSRY )
+     Place the cursor at CURSRX, CURSRY (1-1 is lower left  hand  cor-
+     ner) of screen.
+
+
+                             SUBROUTINE CLRSCR
+     Clear the screen.
+
+
+                         SUBROUTINE CHROUT( ICHAR )
+     Output either an A1 or R1 formatted character integer ICHAR.
+
+
+                     SUBROUTINE REPEAT( ICHAR, NUMTMS )
+     This routine will call CHROUT with ICHAR NUMTMS times.
+
+
+                          SUBROUTINE NUMBER( NUM )
+                                     or
+                      SUBROUTINE NUMBER( NUM, LENGTH )
+                                     or
+                   SUBROUTINE NUMBER( NUM, LENGTH, BASE )
+                                     or
+               SUBROUTINE NUMBER( NUM, LENGTH, BASE, RITDEC )
+     This  routine outputs a number NUM which may be either an integer
+     or real.  All other parameters are optional.
+      LENGTH - default: 0
+          If LENGTH is greater than zero, a LENGTH  number  of  digits
+          will  be printed (putting spaces to the left as needed).  If
+          LENGTH is zero, the number is printed using as  many  digits
+          as necessary.  If LENGTH is less than zero, a -LENGTH number
+          will be printed using zeroes to the left as needed).
+      BASE - default: 10
+          Legal bases are -36 through -2 and 2 through 36.
+      FIELD - default: 2 (for reals only)
+          This parameter is only valid for real NUM’s.  it is the num-
+          ber  of digits to print to the right of the decimal point if
+          it is not negative.  else, do not print a decimal point.
+
+                          SUBROUTINE LNUMBR( NUM )
+                                     or
+                      SUBROUTINE LNUMBR( NUM, LENGTH )
+                                     or
+                   SUBROUTINE LNUMBR( NUM, LENGTH, BASE )
+                                     or
+               SUBROUTINE LNUMBR( NUM, LENGTH, BASE, RITDEC )
+     This routine is identical to NUMBER except that it adds  trailing
+     spaces instead of leading spaces.
+
+
+                  SUBROUTINE OUTNUM( NUM1, NUM2,...<NUMn )
+     This  routine  will  output NUM1...<NUMn in their default formats
+     separated by commas.
+
+
+                         SUBROUTINE STRING( ARRAY )
+                                     or
+                 SUBROUTINE STRING( ARRAY, FRMNUM, NUMCHR )
+     This routine will output the array ARRAY.  If FRMNUM is not spec-
+     ified,  the  array is assumed to be A5 formatted and it will con-
+     tinue until it encounters a control-E (end of string) or  a  con-
+     trol-B  (end of buffer).  Otherwise, FRMNUM represents the format
+     number 1=A1, 2=A2 etc.  (0=R1, 6=sixbit) and NUMCHR is the number
+     of  characters  to output.  When FRMNUM and NUMCHR are not speci-
+     fied, characters preceded with a circumflex  (^)  are  considered
+     control characters.  Thus the following is a common output state-
+     ment.
+           CALL STRING(’^GTHIS is a test.^M^J^B’)
+      This call will output a control-G, "This is a test."  a carriage
+     return, a line feed and then it will dump the buffer.
+
+
+                             SUBROUTINE CURBUF
+     This routine will dump the buffer (if chan not zero).
+
+
+                              SUBROUTINE CRLF
+     This routine outputs a carriage return.
+
+
+           ******************** module INPUT ********************
+
+
+                        LOGICAL FUNCTION LSKIP( 0 )
+     Return .true. if there is a line in the terminal input buffer.
+
+
+                        LOGICAL FUNCTION CSKIP( 0 )
+     Return  .true.  if  there  is  a  character in the terminal input
+     buffer.
+
+
+                        SUBROUTINE CHRBUF( INCHAR )
+     Return the next character in the input buffer in  INCHAR  if  one
+     exists.  Else, return -1.
+
+
+                        SUBROUTINE CHRWAT( INCHAR )
+     Return  the  next  character in the input buffer in INCHAR if one
+     exists.  Else, wait until one does.
+
+
+                     SUBROUTINE GETNUM( ARRAY, LENGTH,
+                 NUM1, BASE1, NUM2, BASE2,...NUMn, BASEn )
+     Return either real or integer numbers NUM1...NUMn from the  array
+     ARRAY  (integer  LENGTH long) in radix BASE1...BASEn.  ARRAY must
+     be an A1 formmated array  (such as an array  returned  form  GET-
+     STR).
+
+
+                 SUBROUTINE GETSTR( ARRAY, MAXLEN, LENGTH )
+                                     or
+           SUBROUTINE GETSTR( ARRAY, MAXLEN, LENGTH, CHAN, EOF )
+     Return the A1 formatted string ARRAY from the terminal if 3 argu-
+     ments, or from chan if 5 arguments.  MAXLEN is the length of  the
+     array  you  passed to GETSTR.  LENGTH is the number of characters
+     in the line returned.  EOF will return .true.  if  found  end  of
+     file while reading from CHAN.
+
+
+          ******************** module STROPR ********************
+
+
+               INTEGER FUNCTION ISERCH( ARRAY, WORD, LENGTH )
+     Search  the  array ARRAY (LENGTH long) for the first occurence of
+     WORD.  If found, return its index, else return zero.
+
+
+               INTEGER FUNCTION ISRSIX( ARRAY, WORD, LENGTH )
+     Search the sixbit array ARRAY (LENGTH long) for an element  which
+     sixbit  WORD is an abbreviation for.  If one is found, return its
+     index, If more than one is found, return the  negative  index  of
+     the  first  one, else return zero.  This function is particularly
+     useful in scanning a list of commands (stored in sixbit).
+
+
+             LOGICAL FUNCTION COMPAR( ARRAY1, ARRAY2, LENGTH )
+     This function returns .true. if ARRAY1 (LENGTH long)  and  ARRAY2
+     (LENGTH long) are identical.
+
+
+                     SUBROUTINE ALLCAP( ARRAY, LENGTH )
+     Replace  all  lower case letters with their uppercase equivalents
+     in this A1 or R1 formatted array ARRAY (LENGTH long).
+
+
+                      SUBROUTINE PARSE( ARRAY, LENGTH,
+                          SIXARA, NUMWRD, MAXWRD )
+     This routine extracts "words" from the A1 formatted  array  ARRAY
+     (LENGTH  long)  and  returns  them  in sixbit in the array SIXARA
+     (having a maximum of MAXWRD elements and  returning  NUMWRD,  the
+     number of word found).  A word is any collection of alphanumerics
+     or a printable character.  if a string contained "this is a test,
+     add  2.4  +  8.5  and  get  10.9",  parse  would return "this  ",
+     "is    ",  "a     ",  "test  ",  ",      ",  "add   ",  "2     ",
+     ".     ",   "4     ",  "+     ",  "3     ",  ".     ",  "5     ",
+     "and   ", "get   ", "10    ", ".     ", "9     ".
+
+
+                      INTEGER FUNCTION IRAD50( WORD )
+     Return the radix 50 equivalent of the sixbit integer WORD.
+
+
+          ******************** module CONVRT ********************
+
+
+                  SUBROUTINE CONVRT( ARRAY1, LENGTH, INRM,
+                              ARRAY2, OUTFRM )
+     This routine converts the array ARRAY1 (LENGTH  characters)  for-
+     matted according to INFRM (0=R1, 1=A1, 2=A2,...5=A5, 6=sixbit) to
+     ARRAY2 formatted according to OUTFRM.
+
+
+                       INTEGER FUNCTION ICON( ICHAR )
+     Return the equivalent R1 format from A1 formatted ICHAR or return
+     the equivalent A1 format from R1 formatted ICHAR.
+
+
+                      INTEGER FUNCTION ISXBIT( WORD )
+     Return the sixbit equivalent of the A5 formatted WORD.
+
+
+          ******************** module JOBCON ********************
+
+
+                      SUBROUTINE RPROG( FILESP, INC )
+     Run  the program specified in FILESP (see SCAN in module IO) with
+     a runoffset of INC.
+
+
+                              SUBROUTINE TSTOP
+     Exit to the monitor but allow a CONTINUE.
+
+
+                              SUBROUTINE PSTOP
+     Exit to the monitor and destroy core image.
+
+
+                             SUBROUTINE DETACH
+     Detach this job.
+
+
+                              SUBROUTINE QGONE
+     Log this job out.
+
+
+                           SUBROUTINE NAP( TIME )
+                                     or
+                       SUBROUTINE NAP( TIME, WAKFLG )
+     This routine will sleep for TIME milliseconds or until the condi-
+     tions  of WAKFLG are met (refer to MONITOR CALLS manual under HI-
+     BER MONITOR CALL).
+
+
+                    SUBROUTINE ASSIGN( DEVNAM, LOGNAM )
+     Assign the physical device specified in the sixbit integer DEVNAM
+     the logical sixbit integer name LOGNAM.
+
+
+           ******************** module IPCF ********************
+
+
+                  SUBROUTINE SEND( TOJOB, LENGTH, ARRAY )
+     Send  an  IPCF message to TOJOB job consisting of the array ARRAY
+     (LENGTH long, max. is 511 words).
+
+
+                 SUBROUTINE RCEIVE( FRMJOB, LENGTH, ARRAY )
+     Receive the next IPCF message destined for this job.  Return  FR-
+     MJOB as zero if none present, else the number of the job who sent
+     it.  Return the array ARRAY (and its length LENGTH).
+
+
+           ******************** module TEMP ********************
+
+
+                  SUBROUTINE TEMP( TMPNAM, LENGTH, ARRAY )
+     Store the array ARRAY (LENGTH long) in tmpcore under the  integer
+     sixbit name TMPNAM.
+
+
+                 SUBROUTINE GETEMP( TMPNAM, LENGTH, ARRAY )
+     Read  the  array ARRAY (LENGTH long) from the TMPCOR file integer
+     sixbit name TMPNAM.
+
+
+           ******************** module MATH ********************
+
+
+                      INTEGER FUNCTION INTOF( REALNM )
+     Return the value without converting it (thus fooling fortran  and
+     all its integer/real conversions).
+
+
+                       REAL FUNCTION REALOF( INTNUM )
+     Return the value without converting it.
+
+
+                        REAL FUNCTION DEGRAD( deg )
+                                     or
+                        REAL FUNCTION RADDEG( rad )
+     Convert degrees to radians or radians to degrees.
+
+
+                        INTEGER FUNCTION ISGN( NUM )
+     Return -1 if NUM<0, 0 if NUM=0 or 1 if NUM>0.
+
+
+                         REAL FUNCTION ASGN( RNUM )
+     Return -1.0 if RNUM<0, 0.0 if RNUM=0 or 1.0 if RNUM>0.
+
+
+                          REAL FUNCTION TAN( RAD )
+     Return the tangent of RAD (in radians).
+
+
+                        REAL FUNCTION TAND( DEGREE )
+     Return  the tangent of DEGREE in degree measurement (vs. radian).
+
+
+                        REAL FUNCTION ATAND( rnum )
+     Return the arctangent in degrees of RNUM.
+
+
+                       REAL FUNCTION ASIND( DEGREE )
+                                     or
+                       REAL FUNCTION ACOSD( DEGREE )
+     Return the arcsine or the arccosine of DEGREE in degrees.
+
+
+                       INTEGER FUNCTION IFACTR( NUM )
+     Return NUM factorial.
+
+
+                      SUBROUTINE CMPCOD( ARRAY1, LEN1,
+                           ARRAY2, MAXLEN, LEN2,
+                SNAME1, VAR1, SNAME2, VAR2...SNAMEn, VARn )
+     This routine generates *executable code* from  the  A1  formatted
+     character  array  ARRAY1  (LEN1 long) which contains an algebraic
+     expression (I.E. A*B+3).  The code is left in  the  array  ARRAY2
+     (maximum  sent  in  MAXLEN, actual returned in LEN2) which can be
+     handed to the routine TVAR.  If TVAR is called with  this  array,
+     the  result of the algebraic expression will be placed in OUTVAR.
+     NAME1...NAMEn are the sixbit names used to refer to the variables
+     (I.E.  A,  B,  Xcood) and VAR1...VARn are the corresponding vari-
+     ables in your program.
+
+
+                      INTEGER FUNCTION TVAR( ARRAY2 )
+     This routine is used primarily to execute code generated by  CMP-
+     COD.  The function will have the value of the expression evaluat-
+     ed with the current VAR1...VARn.  The combination of  these  rou-
+     tines  allow  the programmer to allow the user to input a formula
+     and then re-evaluate it extremely  efficiently  (I.E.  for  plot-
+     ting).
+
+
+                    SUBROUTINE DEFUNC( SIXNAM, NUMARG )
+     This routine allows the user to define functions to be allowed in
+     CMPCOD (sin, log, abs etc. have already been defined).  SIXNAM is
+     the  sixbit name which CMPCOD will recognize the function as, and
+     FNC is the function itself.  Calling sequence:
+           CALL DEFUNC( ISXBIT( ’MYFUNC’ ), 1 )
+                CALL FNC
+      *** MYFUNC will not be called by DEFUNC, only by the calling  of
+     TVAR.
+
+
+          ******************** module CNTRLC ********************
+
+
+                             SUBROUTINE ENABLE
+     Disallow control-C’s.
+
+
+                             SUBROUTINE DISABL
+     Allow control-C’s again.
+
+
+                              SUBROUTINE CTRAP
+     Call the routine MYSUB when a control-C is typed.  MYSUB will not
+     be executed directly after CTRAP is (although  by  standard  FOR-
+     TRAN, it looks like it would).  Calling sequence:
+           CALL CTRAP
+                CALL MYSUB( ARG1...ARGn )
+      This can be turned off by calling DISABL.
+
+
+            ******************** module IO ********************
+
+
+                   SUBROUTINE OFILE( CHAN, SIXDEV, MODE )
+                                     or
+                   SUBROUTINE OFILE( CHAN, FILESP, MODE )
+                                     or
+                INTEGER FUNCTION OFILE( CHAN, SIXDEV, MODE )
+                                     or
+                INTEGER FUNCTION OFILE( CHAN, FILESP, MODE )
+     This  routine  when  called  as a function returns the error code
+     (check to see if there was an error with function ERROR).  Other-
+     wise,  the  error code is discarded.  This routine opens a device
+     specified in sixbit in SIXDEV or in the FILESP array  (see  SCAN)
+     on  channel  CHAN (integer such that 0  chan  16) in mode MODE (0
+     is ascii).
+
+
+                          SUBROUTINE CLOSE( CHAN )
+     Finish any IO operations on channel CHAN and close off any  files
+     associated with it.  Release the channel.
+
+
+                      SUBROUTINE RFILE( CHAN, FILESP )
+                                     or
+                   INTEGER FUNCTION RFILE( CHAN, FILESP )
+     Lookup  file  specified  in  FILESP  and associate file with CHAN
+     (I.E. prepare file for reading).  If function, return error code.
+
+
+                   SUBROUTINE READF( CHAN, ’filestring’ )
+                                     or
+                   INTEGER FUNCTION READF( CHAN, FILESP )
+     Open  and  Lookup file specified in filestring literal.  If func-
+     tion, return error code.  If ’filespec’ is replaced  by  0,  read
+     the file spec from the terminal.
+
+
+                      SUBROUTINE WFILE( CHAN, FILESP )
+                                     or
+                   INTEGER FUNCTION WFILE( CHAN, FILESP )
+     Enter file specified in FILESP and associate file with CHAN (I.E.
+     prepare file for writing).
+
+
+                  SUBROUTINE WRITEF( CHAN, ’filestring’ )
+                                     or
+               INTEGER FUNCTION WRITEF( CHAN, ’filestring’ )
+     Open and Enter file specified in filestring  literal.   If  func-
+     tion, return error code.  If ’filespec is replaced by 0, read the
+     file spec from the terminal.
+
+
+                      SUBROUTINE AFILE( CHAN, FILESP )
+                                     or
+                   INTEGER FUNCTION AFILE( CHAN, FILESP )
+     Prepare file for appending on device open on CHAN.
+
+
+                  SUBROUTINE APPENF( CHAN, ’filestring’ )
+                                     or
+               INTEGER FUNCTION APPENF( CHAN, ’filestring’ )
+     Open Lookup, and Enter  file  specified  in  filestring  literal.
+     Skip  to  end  of  file.   If  function,  return  error code.  If
+     ’filestring’ is replaced by 0, read file spec from terminal.
+
+
+                     SUBROUTINE RNFILE( CHAN, FILESP )
+                                     or
+                  INTEGER FUNCTION RNFILE( CHAN, FILESP )
+     Rename file on CHAN to file specified in FILESP (must have called
+     RFILE on original file on CHAN).
+
+
+                   SUBROUTINE FILGET( CHAN, VALUE, EOF )
+     Read  one  value (may be word or byte depending on mode) from de-
+     vice openned on CHAN.  Return EOF as .true.  if  reached  end  of
+     file.
+
+
+                      SUBROUTINE FILPUT( CHAN, VALUE )
+     Write value (word or byte) to device openned on CHAN.
+
+
+                      SUBROUTINE XFER( CHAN1, CHAN2 )
+     Read the remainder of file from CHAN1 and write it to CHAN2.
+
+                         SUBROUTINE OUTBUF( CHAN )
+     Dump  any  buffers  set  up by the monitor out to the device.  If
+     writing to a terminal, OUTBUF should be called (or CURBUF) before
+     input is done so the user has all the information available.
+
+
+                    SUBROUTINE NBUFFR( NUMBUF, BUFLEN )
+     This routine allows the user to set the default number of buffers
+     per ring and the buffer length.  If no default is applied 200 oc-
+     tal words are used for buffer length, and 2 buffers per ring.
+
+
+                     SUBROUTINE ISEEK( ICHAN, RECNUM )
+                     SUBROUTINE OSEEK( ICHAN, RECNUM )
+     Position  input  or  output pointer for channel ICHAN to the REC-
+     NUMth record.  A record is defined as a seven  bit  byte  if  the
+     file  is openned in ASCII mode (default), or a 36 bit byte if the
+     file is openned in Binary.
+
+
+                      INTEGER FUNCTION IINPOS( ICHAN )
+                      INTEGER FUNCTION IOTPOS( ICHAN )
+     Return the current input or output position pointer of  the  file
+     openned on ICHAN.
+
+
+                SUBROUTINE SCAN( IND1, IND2, ARRAY, FILESP )
+     This  routine  "scan’s" the array ARRAY from IND1 to IND2 and re-
+     turns another 13 word array FILESP consisting of the following
+                items:
+                index                   contains
+                1                       number of items in array (13)
+                2                       node name in sixbit
+                3                       device name in sixbit
+                4                       file name in sixbit
+                5                       extension in sixbit
+                6                       protection  (octal,  0=PROTEC-
+                TION<=777)
+                7                       p (octal, from ppn)
+                8                       pn (octal, from ppn)
+                9                       sfd  1 in sixbit
+                10                      sfd  2 in sixbit
+                11                      sfd  3 in sixbit
+                12                      sfd  4 in sixbit
+                13                      sfd  5 in sixbit
+
+
+          ******************** module EXADEP ********************
+
+
+                        SUBROUTINE E( ADDRES, WORD )
+     Return  the contents of ADDRES in the users memory space in WORD.
+
+
+                        SUBROUTINE D( ADDRES, WORD )
+     Set the contents of ADDRES to WORD.
+
+
+                     SUBROUTINE CCORE( LOWADR, HGHADR )
+     Set the users core dimensions to LOWADR locations in the  lowseg-
+     ment and HGHADR locations in the hisegment.
+
+
+                        SUBROUTINE HIPROT( SWITCH )
+     Turn the hisegment write protect bit on if SWITCH is 1, else turn
+     it off.
+
+
+                         SUBROUTINE TCON( ADDRES )
+     Transfer execution to ADDRESS.
+
+
+                   SUBROUTINE SHIFTC( WORD1, WORD2, INC )
+     Glue WORD1 and WORD2 together and shift  them  INC  bits  to  the
+     left.
+
+
+                       SUBROUTINE SHIFT( WORD1, INC )
+                                     or
+                    INTEGER FUNCTION SHIFT( WORD1, INC )
+     Shift WORD1 INC bits to the left.
+
+
+                SUBROUTINE GETBYT( BIT1, BITn, WORD, BYTE )
+     RETURN  the bits BIT1...BITn from WORD in BYTE (right justified).
+
+
+                SUBROUTINE PUTBYT( BIT1, BITn, WORD, BYTE )
+     PLACE BYTE in BIT1...BITn of WORD.
+
+
+                       INTEGER FUNCTION ILEFT( WORD )
+                                     or
+                      INTEGER FUNCTION IRIGHT( WORD )
+     Return the left or right half of WORD right justified.
+
+
+                   INTEGER FUNCTION ICOMB( WORD1, WORD2 )
+     Return a word such that its left half is the right half of  WORD1
+     and its right half is the right half of WORD2.
+
+
+                         SUBROUTINE EXECUT( WORD )
+     Execute WORD as machine code.  Set error for function ERROR if it
+     did not skip.
+
+
+                     SUBROUTINE PUSHVL( WORD, PDLERR )
+     Push WORD onto a stack and return PDLERR .true.  if  stack  over-
+     flow.
+
+
+                     SUBROUTINE POPVAL( WORD, PDLERR )
+     Pop  WORD  off the stack and return PDLERR .true. if stack under-
+     flow.
+
+
+                   INTEGER FUNCTION IGTAB( INDEX, TABLE )
+     Return a element from the gettab table TABLE specified by the in-
+     dex INDEX.
+
+
+                 SUBROUTINE ARCOPY( ARRAY1, ARRAY2, SIZE )
+     Copy ARRAY1 (SIZE elements) into ARRAY2.
+
+
+                  SUBROUTINE ARFILL( ARRAY, SIZE, ELEMNT )
+     Fill  ARRAY  (size  ELEMNT) with ELEMNT (I.E. zero to zero out an
+     array).
+
+
+                  SUBROUTINE MCALL1( CALINM, AC, ERRFLG )
+     Execute the monitor call numerically specified by CALINM with  AC
+     for its accumulator and set ERRFLG on error return.
+
+
+           SUBROUTINE MCALL2( CALINM, AC, ERRFLG, LENGTH, ARRAY )
+     Execute the monitor call numerically specified by CALINM with the
+     accumulator initially loaded with LENGTH on the left side and the
+     address of ARRAY on the right.  AC is set to the value of the ac-
+     cumulator on return and ERRFLG is set if  the  error  return  was
+     taken.
+
+
+          ******************** module USRDDT ********************
+
+
+                  SUBROUTINE SYMWRD( WORD, SIXNAM, ACNUM,
+                             IND, INDAC, DEST )
+     Takes  the  sixbit instruction in SIXNAM with the AC specified in
+     ACNUM, the indirect AC in INDAC, the right half of  the  word  in
+     DEST,  and creates the machine code instruction WORD with the in-
+     direct bit set if IND is true.  The following  symbol  types  are
+     available:
+                     Normal instructions
+                     User I/O instructions
+                     Extended user functions
+                     MTAPE symbols
+                     UUO’s (Monitor calls), TOPS10 601 to 701
+                     Special JFCL symbols
+                     Special JRST symbols
+                     TTCALL symbols (i.e. CLRBFI’s etc)
+                     Special user I/O symbols (SWPIO, APRID, etc)
+      sixbit device names are returned in ACNUM with user I/O instruc-
+     tions.
+
+
+                  SUBROUTINE WRDSYM( WORD, SIXNAM, ACNUM,
+                        IND, INDAC, DEST [,SIMPLE] )
+     Parse the machine code instruction WORD into its sixbit name SIX-
+     NAM, AC ACNUM, indirect AC INDAC, right half of word DEST and set
+     IND if the indirect bit is on.  If SIMPLE is  zero,  all  symbols
+     available  are  returned  (i.e.  HALT vs. JRST 4,).  If SIMPLE is
+     negative one, use the simpler version.   If  SIMPLE  is  negative
+     two,  user I/O instructions will still return sixbit device names
+     in the accumulator field.
+
+
+          ******************** module RANDOM ********************
+
+
+                       INTEGER FUNCTION IRAN( RANGE )
+     Return a random integer between 1 and RANGE.
+
+
+                        REAL FUNCTION ARAN( RANGE )
+     Return a real random number between 0 and RANGE.
+
+
+            ******************** module UPP ********************
+
+
+                     SUBROUTINE PLOTON( PLTYPE, ICHAN )
+     Set plot destination to one of three places:  PLTYPE=1:  INTECOL-
+     OR, PLTYPE=2: TEKTRONIX, PLTYPE=3: CALCOMP plotter.  Output chan-
+     nel is specified in ICHAN.
+
+
+                             SUBROUTINE PENTER
+     Enter plotting mode.
+
+
+                          SUBROUTINE PORG( X, Y )
+     Set the origin to X-Y relative to the current origin.
+
+
+                        SUBROUTINE PFACTR( FACTOR )
+     Set the scaling factor to FACTOR times  the  current  factor  (if
+     FACTOR=0,  reset to scaling factor of 1.0).  Originally all coor-
+     dinates are based on a plane where X and Y range from 0.0 to 1.0.
+
+
+                          SUBROUTINE PMOVE( X, Y )
+     Move the "pen" to X-Y.
+
+
+                         SUBROUTINE PMOVER( X, Y )
+     Move the "pen" to X-Y relative to the current X-Y.
+
+
+                          SUBROUTINE PDRAW( X, Y )
+     Draw a line from the current position to X-Y.
+
+
+                         SUBROUTINE PDRAWR( X, Y )
+     Draw a line from the current position to X-Y relative to the cur-
+     rent X-Y.
+
+
+                              SUBROUTINE PEXIT
+     Exit plotting mode.
+
+
+               SUBROUTINE POFFST( XOFF, XFACT, YOFF, YFACT )
+     Set factors for position calculations:
+           NX=(XOFF+X)*XFACT
+           NY=(YOFF+Y)*YFACT
+
+
+                     SUBROUTINE PWHERE( X, Y, FACTOR )
+     Return the current X-Y position of the "pen" and the current fac-
+     tor.
+
+
+                         SUBROUTINE PCOLOR( COLOR )
+     Set the "pen" color to:
+           COLOR
+           1 - white(ISC), green(TEK), black(CALCOMP)
+           2 - dark blue, green(TEK)
+           3 - red, green(TEK)
+           4 - light blue(ISC), green(TEK), black(CALCOMP)
+           5 - purple(ISC), green(TEK), blue(CALCOMP)
+           6 - green, red(CALCOMP)
+           7 - yellow(ISC), green(TEK), black(CALCOMP)
+           8 - black(ISC), green(TEK), blue(CALCOMP)
+
+
+                         SUBROUTINE PBACK( COLOR )
+     Set background color on ISC to COLOR.
+
+
+                              SUBROUTINE PBLON
+     Turn blink on for ISC.
+
+                             SUBROUTINE PBLOFF
+     Turn blink off for ISC.
+
+
+                      SUBROUTINE PCURSR( ICHAR, X, Y )
+     For TEKTRONIX: Wait for the user to type a character (returned in
+     R1 format in ICHAR) and return the  X-Y  position  of  the  cross
+     hairs.
+
+
+              SUBROUTINE PLTSYM( ICHAR, X, Y, HEIGHT, ANGLE )
+     Plot the character ICHAR (R1 format) at X-Y at ANGLE degrees with
+     the character Height units tall.
+
+
+           SUBROUTINE PSTR( ARRAY, X, Y, HEIGHT, ANGLE, LENGTH )
+     Plot the A5  formatted  string  ARRAY  (LENGTH  characters  long)
+     starting  at  X-Y  at  ANGLE degrees with characters HEIGHT units
+     tall.
+
+
+            SUBROUTINE PNUM( FLONUM, X, Y, HEIGHT, ANGLE, NDEC )
+     Plot a floating point number with NDEC digits to the right of the
+     decimal point.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

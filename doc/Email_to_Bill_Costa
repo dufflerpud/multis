@@ -1,0 +1,75 @@
+Hey Bill,
+
+OK, put this in the "You've got to be kidding" file ...
+
+You may recall the UNH multi-user games of the late 70s and early 80s.
+You may also recall that I ported them to Linux/MacOS/Windows last year.
+
+Stop shuddering.  I said stop it!
+
+OK, these guys worked by sharing memory.  Since they accessed the shared
+memory through a small number of specific routines, it was relatively
+easy to make those routines access "remote" memory via tcp/socket calls.
+
+(We're going to ignore the fact that all of them were written around
+the idea that the shared memory was very fast access and doing socket
+calls violates that model in a big way.  If your network is fast enough,
+things seem to work OK for most of the games).
+
+I'd like to go the next (and I'm thinking last) step:  I'd like to port
+them to run on my iPhone/iPad.
+
+OK, NOW you can shudder.
+
+Forget about the a ton of coding issues, starting out with the fact that
+XCode/Cocoa, the programming environment provided by Apple, is NOT a
+superset of C.
+
+Forget about the fact that the fastest network connection I'm ever going
+to get to one of these guys is through WIFI.
+
+And while you're in a forgetting sort of mood, let's please forget that
+there is absolutely no point in doing this, as there are current
+versions of most of these games (though not derived from this code base)
+with much better graphics, specifically designed to run on smart phones.
+
+No no, I want to make a dinosaur drive a motorcycle.  I am doing exactly
+the opposite of what you are supposed to do:  You're supposed to design
+code carefully so that it calls lower level routines that care about
+presentation but the upper level code tries to remain hardware/environment
+clueless.
+
+This is tougher since my Fortran was arguably more hardware dependent
+than my assembler (yes, it CAN be done).
+
+Why am I telling you all this and then immediately telling you to forget it?
+
+Well ... With no keyboard, I need to design a data entry method and
+being basically lazy, I do not want to design 40 different data
+entry methods.
+
+As you may recall with the port to Linux etc, the idea was to NOT change
+the original code (written in Fortran).  I could change "hipak", the
+library used to access the OS, share data, etc.  For this part of the
+project, I am willing to ADD subroutine calls to the Fortran that
+do nothing on the Dec-10 simulator (using hipak.mac) but give the newer
+graphical world clues on how to display something or if it can be used
+to map a command.
+
+My big hook would be the "enter a character" routine.  I can simply map
+button pushes, finger sweeps, etc. to become a string of characters that
+gets entered into the program when it calls the "get me the next character
+from the keyboard".
+
+As I've noodled this around, I think probably the best way of handling
+it was to create a javascript library that interacts with .. uh ..
+something.  Perhaps something that pretends to be a web server.
+
+You can imagine (in the "Star" case), Pressing a "Torpedo" button and
+then one of a number of magic locations scattered around the screen to
+indicate direction.  "Cave" gets more complex since you are essentially
+typing in commands ("fire lbow at dragon").
+
+War (moving around in three dimensions with roll, etc.?)  No clue.  Ick.
+
+If you have any grand words of wisdom (other than "Don't.") ... --Chris
