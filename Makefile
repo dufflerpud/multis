@@ -92,11 +92,21 @@ BINARY_FOR_TEST=$(F2CSDIR)/$(TEST)
 
 libsearch = $(firstword $(wildcard $(addsuffix /lib$(1).*,$(CHECKLIBS))))
 
-ifneq ($(call libsearch,curses),)
+ifneq ($(call libsearch,ncurses),)
     CURSES=-lncurses
 else
     ifneq ($(call libsearch,curses),)
         CURSES=-lcurses
+    else
+	ifneq ($(shell ldconfig -p | grep ncurses),)
+	    CURSES=-lncurses
+	else
+	    ifneq ($(shell ldconfig -p | grep curses),)
+        	CURSES=-lcurses
+	    else
+		# This should not happen
+	    endif
+	endif
     endif
 endif
 
