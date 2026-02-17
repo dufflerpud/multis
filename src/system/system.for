@@ -1,13 +1,35 @@
-C	@HDR@	$Id$
-C	@HDR@		Copyright 1982-2025 by
-C	@HDR@		Christopher Caldwell/Brightsands
-C	@HDR@		P.O. Box 401, Bailey Island, ME 04003
-C	@HDR@		All Rights Reserved
-C	@HDR@
-C	@HDR@	This software comprises unpublished confidential information
-C	@HDR@	of Brightsands and may not be used, copied or made available
-C	@HDR@	to anyone, except in accordance with the license under which
-C	@HDR@	it is furnished.
+Cindx#	system.for - Multi-user game to program ships, ports, equipment to take over a galaxy
+C@HDR@	$Id$
+C@HDR@
+C@HDR@	Copyright (c) 1982-2026 Christopher Caldwell (Christopher.M.Caldwell0@gmail.com)
+C@HDR@
+C@HDR@	Permission is hereby granted, free of charge, to any person
+C@HDR@	obtaining a copy of this software and associated documentation
+C@HDR@	files (the "Software"), to deal in the Software without
+C@HDR@	restriction, including without limitation the rights to use,
+C@HDR@	copy, modify, merge, publish, distribute, sublicense, and/or
+C@HDR@	sell copies of the Software, and to permit persons to whom
+C@HDR@	the Software is furnished to do so, subject to the following
+C@HDR@	conditions:
+C@HDR@	
+C@HDR@	The above copyright notice and this permission notice shall be
+C@HDR@	included in all copies or substantial portions of the Software.
+C@HDR@	
+C@HDR@	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+C@HDR@	KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+C@HDR@	WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+C@HDR@	AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+C@HDR@	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+C@HDR@	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+C@HDR@	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+C@HDR@	OTHER DEALINGS IN THE SOFTWARE.
+C
+Chist#	2026-02-17 - Christopher.M.Caldwell0@gmail.com - Created
+C------------------------------------------------------------------------
+Cdoc#	system.for - Multi-user game to program ships, ports, equipment to take over a galaxy
+Cdoc#	Made with Roger Long's inspiration and Robert Kenney's HIPAK.MAC.
+Cdoc#	More of a programmer's game than a war game.
+C------------------------------------------------------------------------
 	SUBROUTINE BUGMSG( MSGARA, COM, MSGLEN )
 
 	IMPLICIT INTEGER ( A - Z )
