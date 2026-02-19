@@ -25,7 +25,7 @@ C@HDR@	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 C@HDR@	OTHER DEALINGS IN THE SOFTWARE.
 C
 Chist#	2026-02-17 - Christopher.M.Caldwell0@gmail.com - Created
-------------------------------------------------------------------------
+C------------------------------------------------------------------------
 Cdoc#	snake.for - A program for getting supervisory privileges at UNH Dec-10
 Cdoc#	Seriously.  Embedded in the original version was a routine that
 Cdoc#	would go any job with my account and "poke" the privilege bit on.
@@ -34,7 +34,7 @@ Cdoc#	it.  Moves a a string of text around the script.  Bad then, that
 Cdoc#	was a novel concept.
 Cdoc#	Made with Robert Kenney's USRPAK.MAC.  Bob was an operator.
 Cdoc#	I'm just saying.
-------------------------------------------------------------------------
+C------------------------------------------------------------------------
 	SUBROUTINE FMAIN
 
 	IMPLICIT INTEGER (A-Z)
