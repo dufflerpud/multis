@@ -25,10 +25,10 @@ C@HDR@	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 C@HDR@	OTHER DEALINGS IN THE SOFTWARE.
 C
 Chist#	2026-02-17 - Christopher.M.Caldwell0@gmail.com - Created
-------------------------------------------------------------------------
+C------------------------------------------------------------------------
 Cdoc#	debug.for - Routines to compile multi-user games against for debugging
 Cdoc#	Made with Robert Kenney's HIPAK.MAC.
-------------------------------------------------------------------------
+C------------------------------------------------------------------------
 	SUBROUTINE DUMP36( IV )
 	CALL NUMBER( ILEFT(IV), -6, 8 )
 	CALL STRING(',,^E')
