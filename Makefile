@@ -213,8 +213,8 @@ all:		bins
 		@: Done
 
 again:
-		make spotless
-		make all
+		$(MAKE) spotless
+		$(MAKE) all
 
 ifneq ($(F77VER),)
     INSTALL_DEPS=f77s
@@ -428,7 +428,7 @@ uploadlive:		upload
 			ssh $(HOMEHOST) "makelive $(PROJECT)"
 
 export:			clean
-			make f2ccs
+			$(MAKE) f2ccs
 			(cd $(HOME); $(TAR) cf - $(TARARGS) | bzip2 -9 > export.tbz2)
 
 download:
@@ -495,9 +495,9 @@ endif
 #########################################################################
 %:
 		@echo ""
-		@echo 'project/$(PROJECT)/Makefile does not support "make $@".'
+		@echo 'project/$(PROJECT)/Makefile does not support "$(MAKE) $@".'
 		@echo ""
-		@grep "^usage:" Makefile >/dev/null && make usage MAKELEVEL=0
+		@grep "^usage:" Makefile >/dev/null && $(MAKE) usage MAKELEVEL=0
 
 %:
 		@echo "Invoking std_$@ rule:"
