@@ -107,7 +107,7 @@ BACKUP_ARCHIVE=$(dir $(UNIQUE_ARCHIVE))$(DEFAULT_ARCHIVE)
 TARARGS=projects/$(PROJECT)
 INSTALL_DIR=/usr/local/multis
 INSTALLED_UNIVERSES=$(INSTALL_DIR)/universes
-F77VER=$(shell f77 -v 2>&1 | grep -v f2c | grep version)
+F77VER=$(shell f77 -v 2>&1 | grep f2c | grep version)
 F2CVER=$(shell f2c -v 2>&1 | grep version)
 ROOT_PRIVS=$(shell id | grep uid=0)
 
@@ -115,8 +115,8 @@ BINARY_FOR_TEST=$(F2CSDIR)/$(TEST)
 
 libsearch = $(firstword $(wildcard $(addsuffix /lib$(1).*,$(CHECKLIBS))))
 
-#define CURSES0 curses
-#define CURSES1 ncurses
+CURSES0=curses
+CURSES1=ncurses
 
 ifneq ($(call libsearch,$(CURSES1)),)
     CURSES=-l$(CURSES1)
