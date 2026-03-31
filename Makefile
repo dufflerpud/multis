@@ -115,17 +115,20 @@ BINARY_FOR_TEST=$(F2CSDIR)/$(TEST)
 
 libsearch = $(firstword $(wildcard $(addsuffix /lib$(1).*,$(CHECKLIBS))))
 
-ifneq ($(call libsearch,ncurses),)
-    CURSES=-lncurses
+#define CURSES0 curses
+#define CURSES1 ncurses
+
+ifneq ($(call libsearch,$(CURSES1)),)
+    CURSES=-l$(CURSES1)
 else
-    ifneq ($(call libsearch,curses),)
-        CURSES=-lcurses
+    ifneq ($(call libsearch,$(CURSES0)),)
+        CURSES=-l$(CURSES0)
     else
-	ifneq ($(shell ldconfig -p | grep ncurses),)
-	    CURSES=-lncurses
+	ifneq ($(shell ldconfig -p | grep $(CURSES1)),)
+	    CURSES=-l$(CURSES1)
 	else
-	    ifneq ($(shell ldconfig -p | grep curses),)
-        	CURSES=-lcurses
+	    ifneq ($(shell ldconfig -p | grep $(CURSES0)),)
+        	CURSES=-l$(CURSES0)
 	    else
 		# This should not happen
 	    endif
