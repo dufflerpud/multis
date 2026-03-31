@@ -113,7 +113,15 @@ FILE *debug_file = 0;
 #endif					/* else endif __CYGWIN__ */
 #endif					/* endif else linux */
 
-#ifdef linux				/* For STRERROR */
+#ifdef linux
+#define HAS_STRERROR
+#endif
+
+#ifdef __sun
+#define HAS_STRERROR
+#endif
+
+#ifdef HAS_STRERROR			/* For STRERROR */
 #include <errno.h>
 #define STRERROR(x) strerror(x)
 extern char *strerror(int);
@@ -128,6 +136,12 @@ extern int errno;
 #ifndef linux
 extern void *realloc(), *malloc(), *calloc();
 extern char *strchr();
+#endif
+
+#ifndef va_list
+#include <stdarg.h>
+#else
+#define HAVE_ASSUME_DEFAULT_COLORS
 #endif
 
 extern void fmain_();
@@ -979,7 +993,9 @@ struct display_struct *get_display( int screen_num )
 		    intrflush(curd->d_win,FALSE);
 		    keypad(curd->d_win,TRUE);
 		    wattron( curd->d_win, get_current_color_pair( curd ) );
+#ifdef HAVE_ASSUME_DEFAULT_COLORS
 		    assume_default_colors( curd->d_fg, curd->d_bg );
+#endif
 		    wbkgdset( curd->d_win, get_current_color_pair( curd ) );
 		    wbkgd( curd->d_win, get_current_color_pair( curd ) );
 		    }
@@ -1260,7 +1276,9 @@ void clrscr_( /* No arguments */ )
 	    {
 #ifdef USE_COLOR
 	    wattron( curd->d_win, get_current_color_pair( curd ) );
+#ifdef HAVE_ASSUME_DEFAULT_COLORS
 	    assume_default_colors( curd->d_fg, curd->d_bg );
+#endif
 	    /* wbkgdset( curd->d_win, get_current_color_pair( curd ) ); */
 	    /* wbkgd( curd->d_win, get_current_color_pair( curd ) ); */
 #endif
