@@ -3656,7 +3656,9 @@ void exprog_()
 	}
 
     grafof_();
+#ifdef notdef
     abort();
+#endif
     if( remote_host_name )
 	addusr_( &integer_neg_one );
     else if( shmp->sm_users_in_database-- <= 1 )
