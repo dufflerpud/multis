@@ -130,7 +130,7 @@ else
 	    ifneq ($(shell ldconfig -p | grep $(CURSES0)),)
         	CURSES=-l$(CURSES0)
 	    else
-		# This should not happen
+		# Curses, foiled again!
 	    endif
 	endif
     endif
