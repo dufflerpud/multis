@@ -219,13 +219,17 @@ again:
 		$(MAKE) spotless
 		$(MAKE) all
 
-ifneq ($(F77VER),)
-    INSTALL_DEPS=f77s
-    INSTALL_FROM=$(F77S_DIR)
-else
+# For now, we're going to depend on f2c rather than f77 because
+# at least in one case, the f77 comes WITH f2c, but it's a shell
+# script and it doesn't work.  I considered rejecting it if it
+# was a shell script but I think that's getting needlessly fancy.
 ifneq ($(F2CVER),)
     INSTALL_DEPS=f2cs
     INSTALL_FROM=$(F2CS_DIR)
+else
+ifneq ($(F77VER),)
+    INSTALL_DEPS=f77s
+    INSTALL_FROM=$(F77S_DIR)
 endif
 endif
 
