@@ -483,7 +483,7 @@ else
 			$(MKDIR) -p $(INSTALL_DIR) $(INSTALLED_UNIVERSES)
 			cd $(INSTALL_FROM); $(CP) * $(INSTALL_DIR)
 			cd $(INSTALL_DIR); \
-			    chown -R root:wheel .; \
+			    chown -R $(SYSTEMUSER):$(SYSTEMGROUP) .; \
 			    $(CHMOD) 644 *; \
 			    $(CHMOD) 777 .; \
 			    $(CHMOD) 4755 $(BASIC_PROGS); \
