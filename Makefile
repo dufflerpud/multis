@@ -136,6 +136,10 @@ else
     endif
 endif
 
+ifneq ($(call libsearch,socket),)
+    SOCKETLIBS=-lsocket -lnsl
+endif
+
 #CC=gcc
 CFLAGS=-Isrc/shared -g
 
@@ -198,6 +202,7 @@ vars:
 		@echo "ROOT_PRIVS		$(ROOT_PRIVS)"
 		@echo "BINARY_FOR_TEST		$(BINARY_FOR_TEST)"
 		@echo "CURSES			$(CURSES)"
+		@echo "SOCKETLIBS		$(SOCKETLIBS)"
 		@echo "CFLAGS			$(CFLAGS)"
 		@echo "FFLAGS			$(FFLAGS)"
 		@echo "F2C			$(F2C)"
@@ -336,7 +341,7 @@ $(F77S_DIR)/%:		$(F77S_OBJ)/%.o $(F77S_OBJ)/hipak.o
 			$(CC) $(LDFLAGS) \
 			    $(F77S_OBJ)/hipak.o \
 			    $(F77S_OBJ)/$(notdir $@).o \
-			    $(CURSES) -lm \
+			    $(CURSES) $(SOCKETLIBS) -lm \
 			    -o $@
 			@$(RM) -f $(UNV_DIR)/$(notdir $@).memory $(LOG_DIR)/$(notdir $@).log
 
@@ -367,7 +372,7 @@ $(F2CS_DIR)/%:		$(F2CS_OBJ)/hipak.o $(F2CS_OBJ)/%.o
 			$(CC) $(LDFLAGS) \
 			    $(F2CS_OBJ)/hipak.o \
 			    $(F2CS_OBJ)/$(notdir $@).o \
-			    $(CURSES) -lm \
+			    $(CURSES) $(SOCKETLIBS) -lm \
 			    -o $@
 			@$(RM) -f $(UNV_DIR)/$(notdir $@).memory $(LOG_DIR)/$(notdir $@).log
 

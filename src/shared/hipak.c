@@ -58,7 +58,13 @@
  ************************************************************************/
 #include <stdio.h>
 #include <ctype.h>
+
+#ifdef __sun
+#include <ncurses/ncurses.h>
+#else
 #include <curses.h>
+#endif
+
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
