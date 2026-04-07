@@ -1,4 +1,4 @@
-/*  -- translated by f2c (version 20160102).
+/*  -- translated by f2c (version 20200916).
    You must link the resulting object file with libf2c:
 	on Microsoft Windows system, link with libf2c.lib;
 	on Linux or Unix systems, link with .../path/to/libf2c.a -lm
@@ -34,16 +34,43 @@ static integer c__4 = 4;
 static integer c__32 = 32;
 static integer c__42 = 42;
 
-/* 	@HDR@	$Id$ */
-/* 	@HDR@		Copyright 1982-2025 by */
-/* 	@HDR@		Christopher Caldwell/Brightsands */
-/* 	@HDR@		P.O. Box 401, Bailey Island, ME 04003 */
-/* 	@HDR@		All Rights Reserved */
-/* 	@HDR@ */
-/* 	@HDR@	This software comprises unpublished confidential information */
-/* 	@HDR@	of Brightsands and may not be used, copied or made available */
-/* 	@HDR@	to anyone, except in accordance with the license under which */
-/* 	@HDR@	it is furnished. */
+/* indx#	snake.for - A program for getting supervisory privileges at UNH Dec-10 */
+/* @HDR@	$Id$ */
+/* @HDR@ */
+/* @HDR@	Copyright (c) 1982-2026 Christopher Caldwell (Christopher.M.Caldwell0@gmail.com) */
+/* @HDR@ */
+/* @HDR@	Permission is hereby granted, free of charge, to any person */
+/* @HDR@	obtaining a copy of this software and associated documentation */
+/* @HDR@	files (the "Software"), to deal in the Software without */
+/* @HDR@	restriction, including without limitation the rights to use, */
+/* @HDR@	copy, modify, merge, publish, distribute, sublicense, and/or */
+/* @HDR@	sell copies of the Software, and to permit persons to whom */
+/* @HDR@	the Software is furnished to do so, subject to the following */
+/* @HDR@	conditions: */
+/* @HDR@ */
+/* @HDR@	The above copyright notice and this permission notice shall be */
+/* @HDR@	included in all copies or substantial portions of the Software. */
+/* @HDR@ */
+/* @HDR@	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY */
+/* @HDR@	KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE */
+/* @HDR@	WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE */
+/* @HDR@	AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT */
+/* @HDR@	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, */
+/* @HDR@	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING */
+/* @HDR@	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR */
+/* @HDR@	OTHER DEALINGS IN THE SOFTWARE. */
+
+/* hist#	2026-02-17 - Christopher.M.Caldwell0@gmail.com - Created */
+/* ------------------------------------------------------------------------ */
+/* doc#	snake.for - A program for getting supervisory privileges at UNH Dec-10 */
+/* doc#	Seriously.  Embedded in the original version was a routine that */
+/* doc#	would go any job with my account and "poke" the privilege bit on. */
+/* doc#	Had to defang it as operators had stolen a copy and kept running */
+/* doc#	it.  Moves a a string of text around the script.  Bad then, that */
+/* doc#	was a novel concept. */
+/* doc#	Made with Robert Kenney's USRPAK.MAC.  Bob was an operator. */
+/* doc#	I'm just saying. */
+/* ------------------------------------------------------------------------ */
 /*< 	subroutine fmain >*/
 /* Subroutine */ int fmain_()
 {

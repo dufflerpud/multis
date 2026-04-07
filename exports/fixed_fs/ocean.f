@@ -1,13 +1,35 @@
-C	@HDR@	$Id$
-C	@HDR@		Copyright 1979-2024 by
-C	@HDR@		Christopher Caldwell/Brightsands
-C	@HDR@		P.O. Box 401, Bailey Island, ME 04003
-C	@HDR@		All Rights Reserved
-C	@HDR@
-C	@HDR@	This software comprises unpublished confidential information
-C	@HDR@	of Brightsands and may not be used, copied or made available
-C	@HDR@	to anyone, except in accordance with the license under which
-C	@HDR@	it is furnished.
+Cindx#	ocean.for - 3-d multi-user game of boats, subs and choppers in a great big lake
+C@HDR@	$Id$
+C@HDR@
+C@HDR@	Copyright (c) 1979-2026 Christopher Caldwell (Christopher.M.Caldwell0@gmail.com)
+C@HDR@
+C@HDR@	Permission is hereby granted, free of charge, to any person
+C@HDR@	obtaining a copy of this software and associated documentation
+C@HDR@	files (the "Software"), to deal in the Software without
+C@HDR@	restriction, including without limitation the rights to use,
+C@HDR@	copy, modify, merge, publish, distribute, sublicense, and/or
+C@HDR@	sell copies of the Software, and to permit persons to whom
+C@HDR@	the Software is furnished to do so, subject to the following
+C@HDR@	conditions:
+C@HDR@	
+C@HDR@	The above copyright notice and this permission notice shall be
+C@HDR@	included in all copies or substantial portions of the Software.
+C@HDR@	
+C@HDR@	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+C@HDR@	KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+C@HDR@	WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+C@HDR@	AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+C@HDR@	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+C@HDR@	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+C@HDR@	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+C@HDR@	OTHER DEALINGS IN THE SOFTWARE.
+C
+Chist#	2026-02-17 - Christopher.M.Caldwell0@gmail.com - Standard header
+Chist#	1979-12-01 - Christopher.M.Caldwell0@gmail.com - Created
+C------------------------------------------------------------------------
+Cdoc#	ocean.for - 3-d multi-user game of boats, subs and choppers in a great big lake
+Cdoc#	Made with Roger Long's inspiration and Robert Kenney's HIPAK.MAC.
+C------------------------------------------------------------------------
 C
 C
 C
@@ -84,15 +106,15 @@ C
 C***	GET INFORMATION ABOUT PORTS
 C
 	if( ip1c .ne. 0 ) goto 100
-	call getval(6, 0,87,  3, 1, 3, ip1x )
-	call getval(6, 0,88,  3, 1, 4, ip1y )
-	call getval(6, 0,89,  3, 1, 1, ip1cs )
+	call getval(6, 0,109,  3, 1, 3, ip1x )
+	call getval(6, 0,110,  3, 1, 4, ip1y )
+	call getval(6, 0,111,  3, 1, 1, ip1cs )
 	call convrt( ip1cs, 1, 6, ip1c, 0 )
 C	IP1C = SHIFT( IP1C, -30 )
 C	IP1C = IP1C + 32
-	call getval(6, 0,93,  3, 2, 3, ip2x )
-	call getval(6, 0,94,  3, 2, 4, ip2y )
-	call getval(6, 0,95,  3, 2, 1, ip2cs )
+	call getval(6, 0,115,  3, 2, 3, ip2x )
+	call getval(6, 0,116,  3, 2, 4, ip2y )
+	call getval(6, 0,117,  3, 2, 1, ip2cs )
 	call convrt( ip2cs, 1, 6, ip2c, 0 )
 C	IP2C = SHIFT( IP2C, -30 )
 C	IP2C = IP2C + 32
@@ -102,10 +124,10 @@ C
 100	iposy = 20
 	ishipx = shipx + 0.5
 	ishipy = shipy + 0.5
-	call getval(5, 0,105,  5, 1, iex )
-	call getval(5, 0,106,  5, 2, iey )
-	call getval(5, 0,107,  5, 3, ied )
-	call getval(5, 0,108,  5, 4, ief )
+	call getval(5, 0,127,  5, 1, iex )
+	call getval(5, 0,128,  5, 2, iey )
+	call getval(5, 0,129,  5, 3, ied )
+	call getval(5, 0,130,  5, 4, ief )
 	do 400 iytemp = ishipy+9, ishipy-9, -1
 	    next = .false.
 	    iy = iytemp
@@ -118,7 +140,7 @@ C
 		if( ichar .eq. 78 )  abvara(iposx,iposy)=32
 		if( ix .lt. 1 .or. ix .gt. 120 .or. iy .lt. 1 .or.
      &		    iy .gt. 120 ) goto 200
-		call getval(6, 0,121,  1, ix, iy, idep )
+		call getval(6, 0,143,  1, ix, iy, idep )
 		if( iright(idep) .ge. idepth ) goto 150
 		ipchar = 32
 		ipcolr = iclbla
@@ -138,9 +160,9 @@ C
 		if( ileft(idep) .eq. 0 ) goto 300
 		if( ileft(idep) .eq. 26+iport ) ipchar = 43
 		if( ileft(idep) .gt. 26 ) goto 300
-		call getval(6, 0,141,  2, ileft(idep), 7, ival )
+		call getval(6, 0,163,  2, ileft(idep), 7, ival )
 		if( ival .gt. 5100 ) ipchar = 46
-		call getval(6, 0,143,  2, ileft( idep ), 4, ival )
+		call getval(6, 0,165,  2, ileft( idep ), 4, ival )
 		if( ival .lt. idepth .and. ival .lt. 18 ) goto 300
 		ipchar = 64 + ileft( idep )
 		goto 300
@@ -177,11 +199,11 @@ C
 	    iy = shipy + smsin( float(degree) )*float(i-1)+.5
 	    ival = 21
 	    if( ix .gt. 1 .and. ix .le. 120 .and. iy .gt. 1 .and.
-     &		iy .le. 120 ) call getval(6, 0,180,  1, ix, iy, ival )
+     &		iy .le. 120 ) call getval(6, 0,202,  1, ix, iy, ival )
 	    id = ileft( ival )
 	    id1 = 0
 	    if( id .gt. 26 )goto 480
-	    if( id .ne. 0 )  call getval(6, 0,184,  2, id, 4, id1 )
+	    if( id .ne. 0 )  call getval(6, 0,206,  2, id, 4, id1 )
 	    ival = iright( ival )
 	    goto 490
 C
@@ -266,7 +288,7 @@ C
 C
 C***	MASTER ARRAY CONSISISTING OF DEPTHS IN RIGHT OF WORDS
 C***	AND ZEROS OR SHIP NUMBERS IN LEFT OF WORDS
-	call init(6, 0,268,  1, 36, 120, 120 )
+	call init(6, 0,290,  1, 36, 120, 120 )
 C
 C***	ARRAY CONTAINING SHIP INFORMATION
 C***	WORD		CONTAINING
@@ -280,7 +302,7 @@ C***	7		SOUND GENERATED BY SHIP
 C***	8		PROJECTILE HIT FLAG
 C***	9		SHIP'S  AFFILIATION
 C***	10		SHIP TYPE
-	call init(6, 0,282,  2, 36, 26, 10 )
+	call init(6, 0,304,  2, 36, 26, 10 )
 C
 C***	ARRAY CONTAINING PORT INFORMATION
 C***	WORD		CONTAINING
@@ -290,10 +312,10 @@ C***	3		X COORDINATE OF PORT
 C***	4		Y COORDINATE OF PORT
 C***	5		NUMBER OF SHIPS PLAYING FOR THAT PORT
 C***	6		NUMBER OF HITS ON PORT
-	call init(6, 0,292,  3, 36, 2, 6 )
+	call init(6, 0,314,  3, 36, 2, 6 )
 C
 C***	ARRAY CONSISTING OF PPNS OF PEOPLE WHO HAVE BEEN KILLED
-	call init(5, 0,295,  4, 36, 50 )
+	call init(5, 0,317,  4, 36, 50 )
 C
 C***	ARRAY CONSISTING OF EXPLOSION INFORMATION
 C***	AND GENERAL NON-ARRAY TYPE INFORMATION
@@ -304,7 +326,7 @@ C***	3		DEPTH OF EXPLOSION
 C***	4		FORCE OF EXPLOSION
 C***	5		FLAG INDICATING THAT PORT #1 HAD A PLAYER
 C***	6		FLAG INDICATING THAT PORT #2 HAD A PLAYER
-	call init(5, 0,306,  5, 18, 6 )
+	call init(5, 0,328,  5, 18, 6 )
 C
 C***	ARRAY CONSISTING OF MESSAGE INFO
 C***	WORD		CONTAINING
@@ -312,7 +334,7 @@ C***	1		WHO TO
 C***	2		LENGTH
 C***	3		WHO FROM
 C***	4-63		MESSAGE
-	call init(5, 0,314,  6, 36, 63 )
+	call init(5, 0,336,  6, 36, 63 )
 C
 C***	MAKE SURE ALL BORDERS ARE LAND
 C
@@ -320,10 +342,10 @@ C
 	if( debug )call string(1,'[Initializing borders]^M^J^E')
 	do 100 itemp = 1, 120
 	    i = itemp
-	    call putval(6, 0,322,  1, i, 1, 20 )
-	    call putval(6, 0,323,  1, i, 120, 20 )
-	    call putval(6, 0,324,  1, 1, i, 20 )
-	    call putval(6, 0,325,  1, 120, i, 20 )
+	    call putval(6, 0,344,  1, i, 1, 20 )
+	    call putval(6, 0,345,  1, i, 120, 20 )
+	    call putval(6, 0,346,  1, 1, i, 20 )
+	    call putval(6, 0,347,  1, 120, i, 20 )
 100	continue
 C
 C***	NOW GENERATE RANDOM DEPTHS EVERY 10 X 10 UNITS
@@ -337,7 +359,7 @@ C
 		if( debug )call colcur( x/2+1, y/10+9 )
 		idepth = iran( 20 )
 		if( debug )call number(2, idepth, 2 )
-		call putval(6, 0,339,  1, x, y, idepth )
+		call putval(6, 0,361,  1, x, y, idepth )
 200	continue
 C
 C***	NOW INTERPOLATE BETWEEN ALL THOSE POINTS
@@ -366,25 +388,25 @@ C
 		if( yrel .eq. 0 .and. xrel .ne. 0 ) goto 500
 		if( xrel .eq. 0 .and. yrel .eq. 0 ) goto 700
 C
-		call getval(6, 0,368,  1, xfpos, yfpos, x0y0 )
-		call getval(6, 0,369,  1, xpos+10, yfpos, x1y0 )
-		call getval(6, 0,370,  1, xfpos, ypos+10, x0y1 )
-		call getval(6, 0,371,  1, xpos+10, ypos+10, x1y1 )
+		call getval(6, 0,390,  1, xfpos, yfpos, x0y0 )
+		call getval(6, 0,391,  1, xpos+10, yfpos, x1y0 )
+		call getval(6, 0,392,  1, xfpos, ypos+10, x0y1 )
+		call getval(6, 0,393,  1, xpos+10, ypos+10, x1y1 )
 		depth1 = x0y0 + xrel*(x1y0-x0y0)/10
 		depth2 = x0y1 + xrel*(x1y1-x0y1)/10
 		depth = depth1 + yrel*(depth2-depth1)/10
 		goto 600
 C
-400		call getval(6, 0,377,  1, xfpos, yfpos, x0y0 )
-		call getval(6, 0,378,  1, xfpos, ypos+10, x0y1 )
+400		call getval(6, 0,399,  1, xfpos, yfpos, x0y0 )
+		call getval(6, 0,400,  1, xfpos, ypos+10, x0y1 )
 		depth = x0y0 + yrel*(x0y1-x0y0)/10
 		goto 600
 C
-500		call getval(6, 0,382,  1, xfpos, yfpos, x0y0 )
-		call getval(6, 0,383,  1, xpos+10, yfpos, x1y0 )
+500		call getval(6, 0,404,  1, xfpos, yfpos, x0y0 )
+		call getval(6, 0,405,  1, xpos+10, yfpos, x1y0 )
 		depth = x0y0 + xrel*(x1y0-x0y0)/10
 C
-600		call putval(6, 0,386,  1, x, y, depth )
+600		call putval(6, 0,408,  1, x, y, depth )
 700	continue
 C
 C***	SET UP PORTS
@@ -428,51 +450,51 @@ C
 C
 C***	PUT FIRST PORT IN BASE (MAKE UP ITS COORDINATES)
 C
-1000	call putval(6, 0,430,  3, 1, 1, sname1( 1 ) )
-	call putval(6, 0,431,  3, 1, 2, sname1( 2 ) )
+1000	call putval(6, 0,452,  3, 1, 1, sname1( 1 ) )
+	call putval(6, 0,453,  3, 1, 2, sname1( 2 ) )
 C
 1100	y = iran( 100 ) + 10
-	call putval(6, 0,434,  3, 1, 4, y )
+	call putval(6, 0,456,  3, 1, 4, y )
 	do 1200 tempx = 2, 120
 	    x = tempx
-	    call getval(6, 0,437,  1, x, y, ival )
+	    call getval(6, 0,459,  1, x, y, ival )
 	    if( ival .lt. 18 .and. x .eq. 2 ) goto 1100
 	    if( ival .le. 17 ) goto 1300
 1200	continue
 1300	x = x - 1
-	call putval(6, 0,442,  3, 1, 3, x )
-	call getval(6, 0,443,  1, x, y-1, ival )
-	if( ival .ge. 18 )  call putval(4, 0,444,  -1, 17 )
-	call getval(6, 0,445,  1, x+1, y-1, ival )
-	if( ival .ge. 18 )  call putval(4, 0,446,  -1, 17 )
-	call getval(6, 0,447,  1, x, y+1, ival )
-	if( ival .ge. 18 )  call putval(4, 0,448,  -1, 17 )
-	call getval(6, 0,449,  1, x+1, y+1, ival )
-	if( ival .ge. 18 )  call putval(4, 0,450,  -1, 17 )
+	call putval(6, 0,464,  3, 1, 3, x )
+	call getval(6, 0,465,  1, x, y-1, ival )
+	if( ival .ge. 18 )  call putval(4, 0,466,  -1, 17 )
+	call getval(6, 0,467,  1, x+1, y-1, ival )
+	if( ival .ge. 18 )  call putval(4, 0,468,  -1, 17 )
+	call getval(6, 0,469,  1, x, y+1, ival )
+	if( ival .ge. 18 )  call putval(4, 0,470,  -1, 17 )
+	call getval(6, 0,471,  1, x+1, y+1, ival )
+	if( ival .ge. 18 )  call putval(4, 0,472,  -1, 17 )
 C
 C***	PUT SECOND PORT IN DATA BASE (MAKE UP ITS COORDINATES)
 C
-	call putval(6, 0,454,  3, 2, 1, sname2( 1 ) )
-	call putval(6, 0,455,  3, 2, 2, sname2( 2 ) )
+	call putval(6, 0,476,  3, 2, 1, sname2( 1 ) )
+	call putval(6, 0,477,  3, 2, 2, sname2( 2 ) )
 C
 1400	y = iran( 100 ) + 10
-	call putval(6, 0,458,  3, 2, 4, y )
+	call putval(6, 0,480,  3, 2, 4, y )
 	do 1500 tempx = 119, 1, -1
 	    x = tempx
-	    call getval(6, 0,461,  1, x, y, ival )
+	    call getval(6, 0,483,  1, x, y, ival )
 	    if( ival .lt. 18 .and. x .eq. 119 ) goto 1400
 	    if( ival .le. 17 ) goto 1600
 1500	continue
 1600	x = x + 1
-	call putval(6, 0,466,  3, 2, 3, x )
-	call getval(6, 0,467,  1, x, y-1, ival )
-	if( ival .ge. 18 )  call putval(4, 0,468,  -1, 17 )
-	call getval(6, 0,469,  1, x-1, y-1, ival )
-	if( ival .ge. 18 )  call putval(4, 0,470,  -1, 17 )
-	call getval(6, 0,471,  1, x, y+1, ival )
-	if( ival .ge. 18 )  call putval(4, 0,472,  -1, 17 )
-	call getval(6, 0,473,  1, x-1, y+1, ival )
-	if( ival .ge. 18 )  call putval(4, 0,474,  -1, 17 )
+	call putval(6, 0,488,  3, 2, 3, x )
+	call getval(6, 0,489,  1, x, y-1, ival )
+	if( ival .ge. 18 )  call putval(4, 0,490,  -1, 17 )
+	call getval(6, 0,491,  1, x-1, y-1, ival )
+	if( ival .ge. 18 )  call putval(4, 0,492,  -1, 17 )
+	call getval(6, 0,493,  1, x, y+1, ival )
+	if( ival .ge. 18 )  call putval(4, 0,494,  -1, 17 )
+	call getval(6, 0,495,  1, x-1, y+1, ival )
+	if( ival .ge. 18 )  call putval(4, 0,496,  -1, 17 )
 C
 C***	UNLOCK DATA BASE SO OTHERS MAY PLAY AND RETURN
 C
@@ -495,12 +517,12 @@ C
 	call number(1, i2 )
 	call chrout(44)
 	call number(1, i3 )
-	call getval(6, 0,496,  i1, i2, i3, ival )
+	call getval(6, 0,518,  i1, i2, i3, ival )
 	goto 300
 200	call number(1, i1 )
 	call chrout(40)
 	call number(1, i2 )
-	call getval(5, 0,501,  i1, i2, ival )
+	call getval(5, 0,523,  i1, i2, ival )
 300	call string(1,') = ^E')
 	call number(1, ileft( ival ) )
 	call string(1,',,^E')
@@ -512,8 +534,8 @@ C
 	call string(1,'  Sixbit: ^E')
 	call string(3, ival, 6, 6 )
 	if( comara(1) .ne. 67 ) return
-	if( i1 .le. 3 ) call putval(4, 0,513,  -i1, i4 )
-	if( i1 .gt. 3 ) call putval(4, 0,514,  -i1, i3 )
+	if( i1 .le. 3 ) call putval(4, 0,535,  -i1, i4 )
+	if( i1 .gt. 3 ) call putval(4, 0,536,  -i1, i3 )
 	return
 	end
 C
@@ -533,15 +555,15 @@ C
 C
 C***	FIND OUT WHERE PORTS ARE
 C
-	call getval(6, 0,533,  3, 1, 3, ip1x )
-	call getval(6, 0,534,  3, 1, 4, ip1y )
-	call getval(6, 0,535,  3, 1, 1, ip1cs )
+	call getval(6, 0,555,  3, 1, 3, ip1x )
+	call getval(6, 0,556,  3, 1, 4, ip1y )
+	call getval(6, 0,557,  3, 1, 1, ip1cs )
 	call convrt( ip1cs, 1, 6, ip1c, 0 )
 C	IP1C = SHIFT( IP1C, -30 )
 C	IP1C = IP1C + 32
-	call getval(6, 0,539,  3, 2, 3, ip2x )
-	call getval(6, 0,540,  3, 2, 4, ip2y )
-	call getval(6, 0,541,  3, 2, 1, ip2cs )
+	call getval(6, 0,561,  3, 2, 3, ip2x )
+	call getval(6, 0,562,  3, 2, 4, ip2y )
+	call getval(6, 0,563,  3, 2, 1, ip2cs )
 	call convrt( ip2cs, 1, 6, ip2c, 0 )
 C	IP2C = SHIFT( IP2C, -30 )
 C	IP2C = IP2C + 32
@@ -611,7 +633,7 @@ C
 		x = xtemp
 		if( x .eq. ip1x .and. y .eq. ip1y ) goto 800
 		if( x .eq. ip2x .and. y .eq. ip2y ) goto 900
-		call getval(6, 0,611,  1, x, y, depth )
+		call getval(6, 0,633,  1, x, y, depth )
 		call chrout( scale1( iright( depth ) ) )
 		goto 1000
 C
@@ -635,7 +657,7 @@ C
 		x = xtemp
 		if( x .eq. ip1x .and. y .eq. ip1y ) goto 1300
 		if( x .eq. ip2x .and. y .eq. ip2y ) goto 1400
-		call getval(6, 0,635,  1, x, y, depth )
+		call getval(6, 0,657,  1, x, y, depth )
 		call chrout( scale2( iright( depth ) ))
 		goto 1500
 C
@@ -667,8 +689,8 @@ C
 C
 C***	PRINT OUT NAME OR PORT # 1 AND ITS COORDINATE
 C
-	call getval(6, 0,667,  3, 1, 1, stname(1) )
-	call getval(6, 0,668,  3, 1, 2, stname(2) )
+	call getval(6, 0,689,  3, 1, 1, stname(1) )
+	call getval(6, 0,690,  3, 1, 2, stname(2) )
 	call string(3, stname, 6, 12 )
 	call string(1,'  ^E')
 	call number(2, ip1x, -3 )
@@ -692,8 +714,8 @@ C
 C***	PRINT OUT NAME OF SECOND PORT AND ITS COORDINATES
 C
 	call string(1,'                            ^E')
-	call getval(6, 0,692,  3, 2, 1, stname(1) )
-	call getval(6, 0,693,  3, 2, 2, stname(2) )
+	call getval(6, 0,714,  3, 2, 1, stname(1) )
+	call getval(6, 0,715,  3, 2, 2, stname(2) )
 	call string(3, stname, 6, 12 )
 	call string(1,'  ^E')
 	call number(2, ip2x, -3 )
@@ -796,25 +818,25 @@ C
 C***	PRINT OUT INFORMATION ON PORTS
 C
 	call colcur( 64, 12 )
-	call getval(6, 0,795,  3, 1, 1, stname(1) )
-	call getval(6, 0,796,  3, 1, 2, stname(2) )
+	call getval(6, 0,817,  3, 1, 1, stname(1) )
+	call getval(6, 0,818,  3, 1, 2, stname(2) )
 	call string(3, stname, 6, 12 )
 	call colcur( 64, 11 )
-	call getval(6, 0,799,  3, 1, 3, ix )
+	call getval(6, 0,821,  3, 1, 3, ix )
 	call number(2, ix, -3 )
 	call chrout( 45 )
-	call getval(6, 0,802,  3, 1, 4, iy )
+	call getval(6, 0,824,  3, 1, 4, iy )
 	call number(2, iy, -3 )
 	call string(1,' State:^E')
 	call colcur( 64, 9 )
-	call getval(6, 0,806,  3, 2, 1, stname(1) )
-	call getval(6, 0,807,  3, 2, 2, stname(2) )
+	call getval(6, 0,828,  3, 2, 1, stname(1) )
+	call getval(6, 0,829,  3, 2, 2, stname(2) )
 	call string(3, stname, 6, 12 )
 	call colcur( 64, 8 )
-	call getval(6, 0,810,  3, 2, 3, ix )
+	call getval(6, 0,832,  3, 2, 3, ix )
 	call number(2, ix, -3 )
 	call chrout( 45 )
-	call getval(6, 0,813,  3, 2, 4, iy )
+	call getval(6, 0,835,  3, 2, 4, iy )
 	call number(2, iy, -3 )
 	call string(1,' State:^E')
 C
@@ -963,17 +985,17 @@ C
 	call unlock
 	call lock
 	call explod( ix, iy, 18, 0, ival )
-	call addval(6, 0,960,  1, ix, iy, -262144*iplayr )
-	call putval(6, 0,961,  2, iplayr, 1, 0 )
-	call getval(6, 0,962,  2, iplayr, 9, ival )
-	call addval(6, 0,963,  3, ival, 5, -1 )
-	call getval(6, 0,964,  2, iplayr, 10, ival )
+	call addval(6, 0,982,  1, ix, iy, -262144*iplayr )
+	call putval(6, 0,983,  2, iplayr, 1, 0 )
+	call getval(6, 0,984,  2, iplayr, 9, ival )
+	call addval(6, 0,985,  3, ival, 5, -1 )
+	call getval(6, 0,986,  2, iplayr, 10, ival )
 	if( ival .eq. 5 ) goto 10
-	call getval(5, 0,966,  4, 1, ival )
-	call addval(4, 0,967,  -4, 1 )
+	call getval(5, 0,988,  4, 1, ival )
+	call addval(4, 0,989,  -4, 1 )
 	call ppn( i, ipn )
 	ival = ival + 1
-	call putval(5, 0,970,  4, ival+1, ipn )
+	call putval(5, 0,992,  4, ival+1, ipn )
 10	call usrset( 1031, 0 )
 	call usrset( 1026, 0 )
 	call usrset( 1041, 1 )
@@ -1031,13 +1053,13 @@ C
      &			iclpur,iclgre,iclyel,iclbla
 
 	call lock
-	call getval(6, 0,1025,  2, victim, 2, isx )
-	call getval(6, 0,1026,  2, victim, 3, isy )
-	call getval(6, 0,1027,  1, isx, isy, ival )
-	call putval(4, 0,1028,  -1, iright( ival ) )
-	call getval(6, 0,1029,  2, victim, 9, iport )
-	call addval(6, 0,1030,  3, iport, 5, -1 )
-	call putval(6, 0,1031,  2, victim, 1, 0 )
+	call getval(6, 0,1047,  2, victim, 2, isx )
+	call getval(6, 0,1048,  2, victim, 3, isy )
+	call getval(6, 0,1049,  1, isx, isy, ival )
+	call putval(4, 0,1050,  -1, iright( ival ) )
+	call getval(6, 0,1051,  2, victim, 9, iport )
+	call addval(6, 0,1052,  3, iport, 5, -1 )
+	call putval(6, 0,1053,  2, victim, 1, 0 )
 	call addusr( -1 )
 	call unlock
 	call clrlin
@@ -1054,10 +1076,10 @@ C
 C
 C***	SET UP AN EXPLOSION
 C
-	call putval(5, 0,1047,  5, 1, ix )
-	call putval(5, 0,1048,  5, 2, iy )
-	call putval(5, 0,1049,  5, 3, iz )
-	call putval(5, 0,1050,  5, 4, iforce )
+	call putval(5, 0,1069,  5, 1, ix )
+	call putval(5, 0,1070,  5, 2, iy )
+	call putval(5, 0,1071,  5, 3, iz )
+	call putval(5, 0,1072,  5, 4, iforce )
 	iflag = 3
 	return
 	end
@@ -1098,14 +1120,14 @@ C
 	call chrout(32)
 	call chrout( icchar+64 )
 	call string(1,': ^E')
-	call getval(6, 0,1090,  2, icchar, 10, ival )
+	call getval(6, 0,1112,  2, icchar, 10, ival )
 	call pkind( ival )
 	if( ival .gt. 1 .and. ival .lt. 5 ) call chrout(32)
 	call chrout(32)
-	call getval(6, 0,1094,  2, icchar, 5, uname(1) )
-	call getval(6, 0,1095,  2, icchar, 6, uname(2) )
+	call getval(6, 0,1116,  2, icchar, 5, uname(1) )
+	call getval(6, 0,1117,  2, icchar, 6, uname(2) )
 	call string(3, uname, 6, 12 )
-	call getval(6, 0,1097,  2, icchar, 1, ijob )
+	call getval(6, 0,1119,  2, icchar, 1, ijob )
 	call chrout(32)
 	call syswho( ijob )
 	call crlf
@@ -1186,10 +1208,10 @@ c	call string(1,'^M^JPlease wait for initialization^M^J^E')
 	call initdb( debug, wannam )
 C
 150	notfrs = .false.
-	call getval(5, 0,1175,  4, 1, ival )
+	call getval(5, 0,1197,  4, 1, ival )
 	if(ival.eq.0 .or. ipn.eq.7963 ) goto 201
 	do 200 i = 1, ival
-	    call getval(5, 0,1178,  4, i+1, icpn )
+	    call getval(5, 0,1200,  4, i+1, icpn )
 	    if( icpn .eq. ipn ) notfrs = .true.
 200	continue
 201	continue
@@ -1206,36 +1228,36 @@ C
 C***	SET UP USER'S PORT OR ASK HIM WHO'S SIDE HE'S ON
 C
 	if( selprt ) goto 210
-	call getval(6, 0,1195,  3, 1, 5, ip1 )
-	call getval(6, 0,1196,  3, 2, 5, ip2 )
+	call getval(6, 0,1217,  3, 1, 5, ip1 )
+	call getval(6, 0,1218,  3, 2, 5, ip2 )
 	if( ip1 .lt. ip2 )  iport = 1
 	if( ip2 .lt. ip1 )  iport = 2
 	if( ip1 .eq. ip2 )  iport = iran( 2 )
 	goto 290
 C
 210	call string(1,'1: ^E')
-	call getval(6, 0,1203,  3, 1, 1, stname(1) )
-	call getval(6, 0,1204,  3, 1, 2, stname(2) )
+	call getval(6, 0,1225,  3, 1, 1, stname(1) )
+	call getval(6, 0,1226,  3, 1, 2, stname(2) )
 	call string(3, stname, 6, 12 )
 	call crlf
 	do 220 itemp = 1, 26
 	    i = itemp
-	    call getval(6, 0,1209,  2, i, 1, ival )
+	    call getval(6, 0,1231,  2, i, 1, ival )
 	    if( ival .eq. 0 ) goto 220
-	    call getval(6, 0,1211,  2, i, 9, ival )
+	    call getval(6, 0,1233,  2, i, 9, ival )
 	    if( ival .eq. 1 ) call who(i)
 220	continue
 C
 	call string(1,'2: ^E')
-	call getval(6, 0,1216,  3, 2, 1, stname(1) )
-	call getval(6, 0,1217,  3, 2, 2, stname(2) )
+	call getval(6, 0,1238,  3, 2, 1, stname(1) )
+	call getval(6, 0,1239,  3, 2, 2, stname(2) )
 	call string(3, stname, 6, 12 )
 	call crlf
 	do 230 itemp = 1, 26
 	    i = itemp
-	    call getval(6, 0,1222,  2, i, 1, ival )
+	    call getval(6, 0,1244,  2, i, 1, ival )
 	    if( ival .eq. 0 ) goto 230
-	    call getval(6, 0,1224,  2, i, 9, ival )
+	    call getval(6, 0,1246,  2, i, 9, ival )
 	    if( ival .eq. 2 ) call who(i)
 230	continue
 C
@@ -1275,10 +1297,10 @@ C
 	call convrt( comara, 12, 1, stname, 6 )
 	do 500 itemp = 1, 26
 	    i = itemp
-	    call getval(6, 0,1264,  2, i, 1, ival )
+	    call getval(6, 0,1286,  2, i, 1, ival )
 	    if( ival .eq. 0 ) goto 500
-	    call getval(6, 0,1266,  2, i, 5, name1 )
-	    call getval(6, 0,1267,  2, i, 6, name2 )
+	    call getval(6, 0,1288,  2, i, 5, name1 )
+	    call getval(6, 0,1289,  2, i, 6, name2 )
 	    if(stname(1).ne.name1 .or. stname(2).ne.name2) goto 500
 	    call string(1,'Craft name is already in use.  ^E')
 	    goto 400
@@ -1297,27 +1319,27 @@ C
 	if( iplayr .gt. 91 ) iplayr = iplayr - 32
 	iplayr = iplayr - 64
 	if( iplayr .lt. 1 .or. iplayr .gt. 26 ) goto 600
-	call getval(6, 0,1286,  2, iplayr, 1, i )
+	call getval(6, 0,1308,  2, iplayr, 1, i )
 	if( i .ne. 0 ) goto 600
 	call crlf
 C
-	call putval(6, 0,1290,  2, iplayr, 5, stname(1) )
-	call putval(6, 0,1291,  2, iplayr, 6, stname(2) )
-	call putval(6, 0,1292,  2, iplayr, 1, job(0) )
-	call addval(6, 0,1293,  3, iport, 5, 1 )
-	call putval(6, 0,1294,  2, iplayr, 9, iport )
-	if( kind .lt. 4 ) call putval(5, 0,1295,  5, 4+iport, 1 )
-	call putval(6, 0,1296,  2, iplayr, 10, kind )
+	call putval(6, 0,1312,  2, iplayr, 5, stname(1) )
+	call putval(6, 0,1313,  2, iplayr, 6, stname(2) )
+	call putval(6, 0,1314,  2, iplayr, 1, job(0) )
+	call addval(6, 0,1315,  3, iport, 5, 1 )
+	call putval(6, 0,1316,  2, iplayr, 9, iport )
+	if( kind .lt. 4 ) call putval(5, 0,1317,  5, 4+iport, 1 )
+	call putval(6, 0,1318,  2, iplayr, 10, kind )
 	if( kind .eq. 1 ) imissl = 12
 	if( kind .eq. 4 ) itorp = 4
 	if( kind .eq. 5 ) imissl = 15
 C
 C***	FIND OUT WHERE THE PORTS ARE
 C
-	call getval(6, 0,1303,  3, 1, 3, iprtx1 )
-	call getval(6, 0,1304,  3, 1, 4, iprty1 )
-	call getval(6, 0,1305,  3, 2, 3, iprtx2 )
-	call getval(6, 0,1306,  3, 2, 4, iprty2 )
+	call getval(6, 0,1325,  3, 1, 3, iprtx1 )
+	call getval(6, 0,1326,  3, 1, 4, iprty1 )
+	call getval(6, 0,1327,  3, 2, 3, iprtx2 )
+	call getval(6, 0,1328,  3, 2, 4, iprty2 )
 C
 C***	MAKE UP SHIP COORDINATES
 C
@@ -1326,7 +1348,7 @@ C
 	idepth = 18
 	if( kind .eq. 2 ) idepth = iran( 17 ) + 1
 	if( kind .eq. 5 ) idepth = iran( 16 ) + 18
-	call getval(6, 0,1315,  1, ishipx, ishipy, ival )
+	call getval(6, 0,1337,  1, ishipx, ishipy, ival )
 	if( ival .ge. idepth ) goto 1000
 	if(( iport .eq. 1 .and.
      &	sqrt((ishipx-iprtx2+0.)**2+(ishipy-iprty2+0.)**2) .le. 25 ) .or.
@@ -1336,11 +1358,11 @@ C
 	shipx = ishipx
 	shipy = ishipy
 	depth = idepth
-	call addval(4, 0,1325,  -1, iplayr*262144 )
-	call putval(6, 0,1326,  2, iplayr, 2, ishipx )
-	call putval(6, 0,1327,  2, iplayr, 3, ishipy )
-	call putval(6, 0,1328,  2, iplayr, 4, idepth )
-	call putval(6, 0,1329,  2, iplayr, 8, 0 )
+	call addval(4, 0,1347,  -1, iplayr*262144 )
+	call putval(6, 0,1348,  2, iplayr, 2, ishipx )
+	call putval(6, 0,1349,  2, iplayr, 3, ishipy )
+	call putval(6, 0,1350,  2, iplayr, 4, idepth )
+	call putval(6, 0,1351,  2, iplayr, 8, 0 )
 	iaz = iran( 360 )
 	itaz = iaz
 C
@@ -1380,14 +1402,14 @@ C
 C
 C***	CHECK TO SEE IF THE GAME HAS ENDED (A PORT HAS BEEN DESTROYED)
 C
-1103	call getval(6, 0,1369,  3, iport, 6, ival )
+1103	call getval(6, 0,1391,  3, iport, 6, ival )
 	if( ival .lt. 7 ) goto 1200
 	call clrlin
 	call colstr
      &(iclred,'***** Your port has been destroyed *****^G^E')
 	call cease( ishipx, ishipy, iplayr )
 C
-1200	call getval(6, 0,1376,  3, 3-iport, 6, ival )
+1200	call getval(6, 0,1398,  3, 3-iport, 6, ival )
 	if( ival .lt. 7 ) goto 1300
 	call clrlin
 	call colstr
@@ -1396,15 +1418,15 @@ C
 C
 C***	CHECK TO SEE IF ALL THE OPPONENTS ARE GONE
 C
-1300	call getval(5, 0,1385,  5, 7-iport, ival )
+1300	call getval(5, 0,1407,  5, 7-iport, ival )
 	if( ival .eq. 0 ) goto 1350
 	do 1330 itemp = 1, 26
 	    i = itemp
-	    call getval(6, 0,1389,  2, i, 1, ival )
+	    call getval(6, 0,1411,  2, i, 1, ival )
 	    if( ival .eq. 0 ) goto 1330
-	    call getval(6, 0,1391,  2, i, 9, ival )
+	    call getval(6, 0,1413,  2, i, 9, ival )
 	    if( ival .eq. iport ) goto 1330
-	    call getval(6, 0,1393,  2, i, 10, ival )
+	    call getval(6, 0,1415,  2, i, 10, ival )
 	    if( ival .ne. 0 .and. ival .lt. 5 ) goto 1350
 1330	continue
 	call clrlin
@@ -1426,9 +1448,9 @@ C
 C
 C***	CHECK TO SEE IF SHIP WAS HIT BY SOMETHING
 C
-1400	call getval(6, 0,1415,  2, iplayr, 8, ival )
+1400	call getval(6, 0,1437,  2, iplayr, 8, ival )
 	if( ival .eq. 0 ) goto 1500
-	call putval(4, 0,1417,  -1, 0 )
+	call putval(4, 0,1439,  -1, 0 )
 	call clrlin
 	call colstr(iclred,'*** ^E')
 	call pkind( kind )
@@ -1442,10 +1464,10 @@ C
 C
 C***	CHECK TO SEE IF THERE WAS AN EXPLOSION AROUND
 C
-1500	call getval(5, 0,1431,  5, 1, iex )
-	call getval(5, 0,1432,  5, 2, iey )
-	call getval(5, 0,1433,  5, 3, ied )
-	call getval(5, 0,1434,  5, 4, ief )
+1500	call getval(5, 0,1453,  5, 1, iex )
+	call getval(5, 0,1454,  5, 2, iey )
+	call getval(5, 0,1455,  5, 3, ied )
+	call getval(5, 0,1456,  5, 4, ief )
 	dist=sqrt((iex-ishipx+0.)**2+(iey-ishipy+0.)**2+(ied-idepth+0.)**2)
 	if( dist .gt. ief .or. ief .eq. 0 ) goto 1600
 	call clrlin
@@ -1465,7 +1487,7 @@ C
 C
 C***	MOVE THE SHIP USING HOME MADE TRIGONOMETRY
 C
-1700	call addval(6, 0,1454,  1, ishipx, ishipy, -iplayr*262144 )
+1700	call addval(6, 0,1476,  1, ishipx, ishipy, -iplayr*262144 )
 	oshipx = shipx
 	oshipy = shipy
 	odepth = depth
@@ -1490,7 +1512,7 @@ C
 C
 C***	CHECK TO SEE IF SHIP HIT SOMETHING
 C
-	call getval(6, 0,1479,  1, ishipx, ishipy, ival )
+	call getval(6, 0,1501,  1, ishipx, ishipy, ival )
 	if( kind .ne. 5 .or. idepth .gt. 18 .or.
      & iright(ival) .eq. 18 ) goto 1760
 	call clrlin
@@ -1540,10 +1562,10 @@ C
 	idfect = idfect + 1
 	if( idfect .gt. 1 ) goto 9100
 	call colstr(iclred,'*** You have defected ^E')
-	call addval(6, 0,1529,  3, iport, 5, -1 )
+	call addval(6, 0,1551,  3, iport, 5, -1 )
 	iport =3-iport
-	call addval(6, 0,1531,  3, iport, 5, 1 )
-	call putval(6, 0,1532,  2, iplayr, 9, iport )
+	call addval(6, 0,1553,  3, iport, 5, 1 )
+	call putval(6, 0,1554,  2, iplayr, 9, iport )
 C
 C***	IF CRAFT IS IN PORT, REPAIR AND RESUPPLY SHIP
 C
@@ -1552,11 +1574,11 @@ C
 	call print( kind )
 	ichar = 78
 	call colcur( 1, 2 )
-1902	call putval(6, 0,1541,  2, iplayr, 10, kind )
+1902	call putval(6, 0,1563,  2, iplayr, 10, kind )
 	call colstr(icllbl,'*** ^E')
 	call pkind( kind )
 	call string(1,' is in port ***^E')
-	call getval(6, 0,1545,  3, iport, 6, ival )
+	call getval(6, 0,1567,  3, iport, 6, ival )
 	if( ival .ge. 2 ) goto 2200
 	call string(1,' Supplies boarding ***^E')
 	itorp = 20
@@ -1576,7 +1598,7 @@ C***	****** KLUGE ****** SHIP CANNOT BE AT SAME X-Y AS ANOTHER
 C***	SHIP.  ( UNFORTUNATE RESULT OF 2-DIMENSIONAL ARRAYS )
 C
 2100	if( ileft( ival ) .gt. 26 ) goto 2150
-	call getval(6, 0,1565,  2, ileft( ival ), 4, itdep )
+	call getval(6, 0,1587,  2, ileft( ival ), 4, itdep )
 	if( itdep .ne. idepth ) goto 1750
 C
 	call hurt( kind,ihfac,iabs(ispeed)-ifix(dfactr*200.),damage )
@@ -1591,8 +1613,8 @@ C
 	itspd = 0
 	call clrlin
 	call string(1,'Collision with the ^E')
-	call getval(6, 0,1580,  2, ileft( ival ), 5, stname(1) )
-	call getval(6, 0,1581,  2, ileft( ival ), 6, stname(2) )
+	call getval(6, 0,1602,  2, ileft( ival ), 5, stname(1) )
+	call getval(6, 0,1603,  2, ileft( ival ), 6, stname(2) )
 	call string(3, stname, 6, 12 )
 	goto 1750
 C
@@ -1602,17 +1624,17 @@ C
 	call pkind( kind )
 	call string(1,' has hit a mine ***^E')
 	call explod( ishipx, ishipy, 18, 5, iexflg )
-	call putval(6, 0,1591,  1, ishipx, ishipy, iright( ival ) )
+	call putval(6, 0,1613,  1, ishipx, ishipy, iright( ival ) )
 C
 C***	PLACE SHIP IN HISEGMENT
 C
-2200	call addval(6, 0,1595,  1, ishipx, ishipy, iplayr*262144 )
+2200	call addval(6, 0,1617,  1, ishipx, ishipy, iplayr*262144 )
 	if( kind.lt.5 )
-     & call putval(6, 0,1597,  2, iplayr, 7, iabs(ispeed)*5000/kind+100)
-	if(kind.eq.5)call putval(6, 0,1598, 2,iplayr,7,iabs(ispeed)/10+1)
-	call putval(6, 0,1599,  2, iplayr, 2, ishipx )
-	call putval(6, 0,1600,  2, iplayr, 3, ishipy )
-	call putval(6, 0,1601,  2, iplayr, 4, idepth )
+     & call putval(6, 0,1619,  2, iplayr, 7, iabs(ispeed)*5000/kind+100)
+	if(kind.eq.5)call putval(6, 0,1620, 2,iplayr,7,iabs(ispeed)/10+1)
+	call putval(6, 0,1621,  2, iplayr, 2, ishipx )
+	call putval(6, 0,1622,  2, iplayr, 3, ishipy )
+	call putval(6, 0,1623,  2, iplayr, 4, idepth )
 C
 C***	CHECK TO SEE IF SHIP WAS HIT BY A PORT-TO-SHIP MISSILE
 C
@@ -1622,7 +1644,7 @@ C
      & idist = sqrt( (ishipx-iprtx1+0.)**2 + (ishipy-iprty1+0.)**2 )
 	if( idist .ge. 25 ) goto 2300
 	if( idepth .lt. 18 ) idist = idist ** ( 19-idepth )
-	call getval(6, 0,1611,  3, 3-iport, 6, ival )
+	call getval(6, 0,1633,  3, 3-iport, 6, ival )
 	if( ival .ge. 5 .or. iran(idist*3) .ne. 1 ) goto 2300
 	call clrlin
 	call colstr(iclred,'*** Ship hit by PTS missile ***^E')
@@ -1636,7 +1658,7 @@ C
      & i2torp = i2torp - 1
 	iturn = iturn + 1
 	iexflg = iexflg - 1
-	if( iexflg .eq. 0 ) call putval(5, 0,1625,  5, 4, 0 )
+	if( iexflg .eq. 0 ) call putval(5, 0,1647,  5, 4, 0 )
 2400	if( iturn .ne. 15 ) goto 2501
 	iturn = 0
 	eot = .not. ( eot )
@@ -1673,18 +1695,18 @@ C
 C
 C***	GET ANY MESSAGES FOR THE SHIP
 C
-	call getval(5, 0,1662,  6, 1, ival )
+	call getval(5, 0,1684,  6, 1, ival )
 	if( ival .ne. iplayr ) goto 2700
 	call lock
-	call putval(4, 0,1665,  -6, 0 )
+	call putval(4, 0,1687,  -6, 0 )
 	call clrlin
-	call getval(5, 0,1667,  6, 3, ival )
+	call getval(5, 0,1689,  6, 3, ival )
 	call chrout( ival+64 )
 	call string(1,': - ^G^E')
-	call getval(5, 0,1670,  6, 2, ival )
+	call getval(5, 0,1692,  6, 2, ival )
 	if( ival .eq. 0 ) goto 2601
 	do 2600 i = 1, ival
-	    call getval(5, 0,1673,  6, i+3, icchar )
+	    call getval(5, 0,1695,  6, i+3, icchar )
 	    call chrout( icchar )
 2600	continue
 2601	continue
@@ -1845,20 +1867,20 @@ C
 	highst = 0
 	do 3900 itemp = 1, 26
 	    i = itemp
-	    call getval(6, 0,1834,  2, i, 1, ival )
+	    call getval(6, 0,1856,  2, i, 1, ival )
 	    if( ival .eq. 0 ) goto 3900
-	    call getval(6, 0,1836,  2, i, 2, isx )
-	    call getval(6, 0,1837,  2, i, 3, isy )
-	    call getval(6, 0,1838,  2, i, 4, isd )
+	    call getval(6, 0,1858,  2, i, 2, isx )
+	    call getval(6, 0,1859,  2, i, 3, isy )
+	    call getval(6, 0,1860,  2, i, 4, isd )
 	    dist =
      & sqrt((ishipx-isx+0.)**2 + (ishipy-isy+0.)**2 +
      & (idepth-isd+0.)**2)
-	    call getval(6, 0,1842,  2, i, 7, ival )
+	    call getval(6, 0,1864,  2, i, 7, ival )
 	    sound = float(ival)/((dist+1.)**2)
 	    islvl = islvl + sound
 	    if( dist .eq. 0 ) goto 3900
 	    if( dist .le. 5 .and. atofir .and. isd .ge. 18 )
-     &		call putval(6, 0,1847,  2, i, 8, 11 )
+     &		call putval(6, 0,1869,  2, i, 8, 11 )
 	    if( sound .le. highst ) goto 3900
 	    ideg = 90
 	    if( ishipx .eq. isx .and. isy .lt. ishipy ) ideg = 270
@@ -1897,7 +1919,7 @@ C
 C
 C***	UPDATE NUMBER OF HITS ON PORT # 1
 C
-4200	call getval(6, 0,1886,  3, 1, 6, ipk1 )
+4200	call getval(6, 0,1908,  3, 1, 6, ipk1 )
 	if( ipk1 .eq. iopk1 .and. ichar .ne. 78 ) goto 4300
 	call colcur( 79, 11 )
 	call number(2, ipk1, 1 )
@@ -1908,14 +1930,14 @@ C
 C
 C***	UPDATE SHIPS BELONGING TO PORT # 1
 C
-4300	call getval(6, 0,1897,  3, 1, 5, ip1 )
+4300	call getval(6, 0,1919,  3, 1, 5, ip1 )
 	if( ip1 .eq. iop1 .and. ichar .ne. 78 ) goto 4500
 	call colcur( 64, 10 )
 	do 4400 itemp = 1, 26
 	    i = itemp
-	    call getval(6, 0,1902,  2, i, 1, ival )
+	    call getval(6, 0,1924,  2, i, 1, ival )
 	    if( ival .eq. 0 ) goto 4400
-	    call getval(6, 0,1904,  2, i, 9, ival )
+	    call getval(6, 0,1926,  2, i, 9, ival )
 	    if( ival .ne. 1 ) goto 4400
 	    call chrout( i+64 )
 4400	continue
@@ -1924,7 +1946,7 @@ C
 C
 C***	UPDATE NUMBER OF HITS ON PORT # 2
 C
-4500	call getval(6, 0,1913,  3, 2, 6, ipk2 )
+4500	call getval(6, 0,1935,  3, 2, 6, ipk2 )
 	if( ipk2 .eq. iopk2 .and. ichar .ne. 78 ) goto 4600
 	call colcur( 79, 8 )
 	call number(2, ipk2, 1 )
@@ -1935,14 +1957,14 @@ C
 C
 C***	UPDATE SHIPS BELONGING TO PORT # 2
 C
-4600	call getval(6, 0,1924,  3, 2, 5, ip2 )
+4600	call getval(6, 0,1946,  3, 2, 5, ip2 )
 	if( ip2 .eq. iop2 .and. ichar .ne. 78 ) goto 4800
 	call colcur( 64, 7 )
 	do 4700 itemp = 1, 26
 	    i = itemp
-	    call getval(6, 0,1929,  2, i, 1, ival )
+	    call getval(6, 0,1951,  2, i, 1, ival )
 	    if( ival .eq. 0 ) goto 4700
-	    call getval(6, 0,1931,  2, i, 9, ival )
+	    call getval(6, 0,1953,  2, i, 9, ival )
 	    if( ival .ne. 2 ) goto 4700
 	    call chrout( i+64 )
 4700	continue
@@ -1953,7 +1975,7 @@ C***	DECREMENT PORT REPAIR STATES IF THIS IS THE LAST JOB PLAYING
 C
 4800	do 4900 itemp = 1, 26
 	    i = itemp
-	    call getval(6, 0,1942,  2, i, 1, ival )
+	    call getval(6, 0,1964,  2, i, 1, ival )
 	    if( ival .eq. 0 ) goto 4900
 	    lastjb = i
 	    if( .not. logdin(ival) ) goto 4850
@@ -1963,10 +1985,10 @@ C
 4850	    call endhim( i )
 4900	continue
 	if( iturn .ne. 0 .or. lastjb .ne. iplayr .or. eot ) goto 5000
-	call getval(6, 0,1952,  3, 1, 6, ival )
-	if( ival .ne. 0 )  call addval(4, 0,1953,  -3, -1 )
-	call getval(6, 0,1954,  3, 2, 6, ival )
-	if( ival .ne. 0 )  call addval(4, 0,1955,  -3, -1 )
+	call getval(6, 0,1974,  3, 1, 6, ival )
+	if( ival .ne. 0 )  call addval(4, 0,1975,  -3, -1 )
+	call getval(6, 0,1976,  3, 2, 6, ival )
+	if( ival .ne. 0 )  call addval(4, 0,1977,  -3, -1 )
 C
 C***	UPDATE DAMAGE
 C
@@ -2015,7 +2037,7 @@ C
 C***	CHECK TO SEE IF THIS JOB IS STILL IN THE DATA BASE
 C***	IF IT ISN'T, THEN SOMETHING IS VERY WRONG ... EXIT
 C
-5300	call getval(6, 0,2004,  2, iplayr, 1, ijob )
+5300	call getval(6, 0,2026,  2, iplayr, 1, ijob )
 	if( ijob .eq. job(0) ) goto 5400
 	call clrscr
 	call string
@@ -2055,8 +2077,8 @@ C
 	stname(1) = 0
 	stname(2) = 0
 	call convrt( comara(2), index-1, 1, stname, 6 )
-	call putval(6, 0,2043,  2, iplayr, 5, stname(1) )
-	call putval(6, 0,2044,  2, iplayr, 6, stname(2) )
+	call putval(6, 0,2065,  2, iplayr, 5, stname(1) )
+	call putval(6, 0,2066,  2, iplayr, 6, stname(2) )
 	ichar = 0
 	goto 1100
 C
@@ -2151,33 +2173,33 @@ C
 	if( index .eq. 1 ) goto 6550
 	icchar = icon( comara(2) ) - 64
 	if( icchar .lt. 1 .or. icchar .gt. 26 ) goto 6600
-	call getval(6, 0,2139,  2, icchar, 1, ival )
+	call getval(6, 0,2161,  2, icchar, 1, ival )
 	if( ival .eq. 0 ) goto 6600
 	call who( icchar )
 	goto 1100
 C
 6550	do 6560 itemp = 1, 26
 	    i = itemp
-	    call getval(6, 0,2146,  2, i, 1, ival )
+	    call getval(6, 0,2168,  2, i, 1, ival )
 	    if( ival .eq. 0 ) goto 6560
-	    call getval(6, 0,2148,  2, i, 9, ival )
+	    call getval(6, 0,2170,  2, i, 9, ival )
 	    if( ival .ne. iport ) goto 6560
 	    call chrout( i+64 )
 	    call chrout(47)
-	    call getval(6, 0,2152,  2, i, 10, ival )
+	    call getval(6, 0,2174,  2, i, 10, ival )
 	    if( ival .eq. 1 ) call chrout(66)
 	    if( ival .eq. 2 ) call chrout(83)
 	    if( ival .eq. 3 ) call chrout(68)
 	    if( ival .eq. 4 ) call chrout(80)
 	    if( ival .eq. 5 ) call chrout(72)
 	    call chrout(58)
-	    call getval(6, 0,2159,  2, i, 2, ix )
+	    call getval(6, 0,2181,  2, i, 2, ix )
 	    call number(2, ix, -3 )
 	    call chrout(45)
-	    call getval(6, 0,2162,  2, i, 3, iy )
+	    call getval(6, 0,2184,  2, i, 3, iy )
 	    call number(2, iy, -3 )
 	    call chrout(59)
-	    call getval(6, 0,2165,  2, i, 4, id )
+	    call getval(6, 0,2187,  2, i, 4, id )
 	    call number(1, id-18 )
 	    call chrout(32)
 6560	continue
@@ -2220,10 +2242,10 @@ C
 	itorpd = torpd + 0.5
 	if( kind .eq. 2 ) itp = itp - inc
 	if( itorpx .eq. ishipx .and. itorpy .eq. ishipy ) goto 6900
-	call getval(6, 0,2208,  1, itorpx, itorpy, ival )
+	call getval(6, 0,2230,  1, itorpx, itorpy, ival )
 	if( iright( ival ) .ge. itorpd ) goto 7400
 	if( ileft( ival ) .eq. 0 .or. ileft( ival ) .gt. 26 ) goto 6900
-	call getval(6, 0,2211,  2, ileft( ival ), 4, ival1 )
+	call getval(6, 0,2233,  2, ileft( ival ), 4, ival1 )
 	if( itorpd .ne. ival1 ) goto 6900
 	call string(1,'Torpedo at ^E')
 	call number(2, itorpx, -3 )
@@ -2232,11 +2254,11 @@ C
 	call string(1,' at depth ^E')
 	call number(1, 18-itorpd )
 	call string(1,' strikes the ^E')
-	call getval(6, 0,2220,  2, ileft( ival ), 5, stname(1) )
-	call getval(6, 0,2221,  2, ileft( ival ), 6, stname(2) )
+	call getval(6, 0,2242,  2, ileft( ival ), 5, stname(1) )
+	call getval(6, 0,2243,  2, ileft( ival ), 6, stname(2) )
 	call string(3, stname, 6, 12 )
 	call explod( itorpx, itorpy, itorpd, 3, iexflg )
-	call putval(6, 0,2224,  2, ileft( ival ), 8, 10 )
+	call putval(6, 0,2246,  2, ileft( ival ), 8, 10 )
 	goto 1100
 C
 7100	call colstr(iclyel,'*** Torpedo is not ready for firing ***^E')
@@ -2263,20 +2285,20 @@ C
 7500	if( ichar .ne. 82 ) goto 7850
 	irec = icon( comara(2) ) - 64
 	if( irec .lt. 1 .or. irec .gt. 26 ) goto 7800
-	call getval(6, 0,2251,  2, irec, 1, ival )
+	call getval(6, 0,2273,  2, irec, 1, ival )
 	if( ival .eq. 0 ) goto 7800
 	iterat = 0
-7600	call getval(5, 0,2254,  6, 1, ival )
+7600	call getval(5, 0,2276,  6, 1, ival )
 	if( ival .ne. 0 ) call nap( 1000, 4 )
 	call unlock
 	call lock
-	call putval(4, 0,2258,  -6, irec )
-	call putval(5, 0,2259,  6, 2, index-2 )
-	if( index .gt. 60 )  call putval(5, 0,2260,  6, 2, 60 )
-	call putval(5, 0,2261,  6, 3, iplayr )
+	call putval(4, 0,2280,  -6, irec )
+	call putval(5, 0,2281,  6, 2, index-2 )
+	if( index .gt. 60 )  call putval(5, 0,2282,  6, 2, 60 )
+	call putval(5, 0,2283,  6, 3, iplayr )
 	if( index .lt. 3 ) goto 7701
 	do 7700 i = 1, index-2
-	    if( i .le. 60 )  call putval(5, 0,2264,  6, 3+i, comara(i+2) )
+	    if( i .le. 60 )  call putval(5, 0,2286,  6, 3+i, comara(i+2) )
 7700	continue
 7701	continue
 	call unlock
@@ -2381,11 +2403,11 @@ C
 C
 	if(misslx.lt.1.or.misslx.gt.120.or.missly.lt.1.or.
      & missly.gt.120) goto 8500
-	call getval(6, 0,2369,  1, misslx, missly, ival )
+	call getval(6, 0,2391,  1, misslx, missly, ival )
 	if( iright( ival ) .ge. missld ) goto 8100
 	if( ileft( ival ) .eq. 0 .or. ileft( ival ) .eq. iplayr .or.
      & ileft( ival ) .gt. 26 ) goto 8000
-	call getval(6, 0,2373,  2, ileft( ival ), 4, ival1 )
+	call getval(6, 0,2395,  2, ileft( ival ), 4, ival1 )
 	if( missld .ne. ival1 ) goto 8000
 	call string(1,'Missile at ^E')
 	call number(2, misslx, -3 )
@@ -2394,11 +2416,11 @@ C
 	call string(1,' at altitude ^E')
 	call number(1, missld-18 )
 	call colstr(icllbl,' strikes the ^E')
-	call getval(6, 0,2382,  2, ileft( ival ), 5, stname(1) )
-	call getval(6, 0,2383,  2, ileft( ival ), 6, stname(2) )
+	call getval(6, 0,2404,  2, ileft( ival ), 5, stname(1) )
+	call getval(6, 0,2405,  2, ileft( ival ), 6, stname(2) )
 	call string(3, stname, 6, 12 )
-	if(kind.ne.5)call putval(6, 0,2385,  2, ileft( ival ), 8, 20 )
-	if(kind.eq.5)call putval(6, 0,2386,  2, ileft( ival ), 8, 5 )
+	if(kind.ne.5)call putval(6, 0,2407,  2, ileft( ival ), 8, 20 )
+	if(kind.eq.5)call putval(6, 0,2408,  2, ileft( ival ), 8, 5 )
 	if(kind.ne.5)call explod( misslx, missly, missld, 6, iexflg )
 	if(kind.eq.5)call explod( misslx, missly, missld, 2, iexflg )
 	goto 1100
@@ -2416,20 +2438,20 @@ C
 	if(kind.eq.5)call explod( misslx, missly, missld, 2, iexflg )
 	goto 1100
 C
-8200	if(kind.ne.5)call addval(6, 0,2404,  3, 1, 6, 1 )
+8200	if(kind.ne.5)call addval(6, 0,2426,  3, 1, 6, 1 )
 	call colstr(icllbl,' strikes the port of ^E')
-	call getval(6, 0,2406,  3, 1, 1, stname(1) )
-	call getval(6, 0,2407,  3, 1, 2, stname(2) )
+	call getval(6, 0,2428,  3, 1, 1, stname(1) )
+	call getval(6, 0,2429,  3, 1, 2, stname(2) )
 	call string(3, stname, 6, 12 )
 	if(kind.ne.5)call explod( misslx, missly, missld, 6, iexflg )
 	if(kind.eq.5)call explod( misslx, missly, missld, 2, iexflg )
 	if( iport .eq. 1 ) goto 8400
 	goto 1100
 C
-8300	if(kind.ne.5)call addval(6, 0,2414,  3, 2, 6, 1 )
+8300	if(kind.ne.5)call addval(6, 0,2436,  3, 2, 6, 1 )
 	call colstr(iclred,' strikes the port of ^E')
-	call getval(6, 0,2416,  3, 2, 1, stname(1) )
-	call getval(6, 0,2417,  3, 2, 2, stname(2) )
+	call getval(6, 0,2438,  3, 2, 1, stname(1) )
+	call getval(6, 0,2439,  3, 2, 2, stname(2) )
 	call string(3, stname, 6, 12 )
 	if(kind.ne.5)call explod( misslx, missly, missld, 6, iexflg )
 	if(kind.eq.5)call explod( misslx, missly, missld, 2, iexflg )
@@ -2439,10 +2461,10 @@ C
 	if( idfect .gt. 1 ) goto 9100
 	call clrlin
 	call colstr(icllbl,'**** You have defected ****^E')
-	call addval(6, 0,2427,  3, iport, 5, -1 )
+	call addval(6, 0,2449,  3, iport, 5, -1 )
 	iport =3-iport
-	call addval(6, 0,2429,  3, iport, 5, 1 )
-	call putval(6, 0,2430,  2, iplayr, 9, iport )
+	call addval(6, 0,2451,  3, iport, 5, 1 )
+	call putval(6, 0,2452,  2, iplayr, 9, iport )
 	goto 1100
 C
 8500	call string(1,'Missile at ^E')
@@ -2479,9 +2501,9 @@ C
 	if
      &( ix .lt. 1 .or. ix .gt. 120 .or. iy .lt. 1 .or. iy .gt. 120 )
      & goto 8960
-	call getval(6, 0,2467,  1, ix, iy, ival )
+	call getval(6, 0,2489,  1, ix, iy, ival )
 	if( ival .gt. 17 ) goto 8960
-	call putval(6, 0,2469,  1, ix, iy, icomb( 26+iport, ival ) )
+	call putval(6, 0,2491,  1, ix, iy, icomb( 26+iport, ival ) )
 	goto 1100
 C
 8960	call explod( ix, iy, 18, 3, iexflg )
@@ -2506,7 +2528,7 @@ C
 	if( ifac1 .ge. 18 .or. ifac1 .lt. 1 ) ifac1 = 1
 	ix = shipx + smcos( float(iaz) )*inc + 0.5
 	iy = shipy + smsin( float(iaz) )*inc + 0.5
-	call getval(6, 0,2494,  1, ix, iy, ival )
+	call getval(6, 0,2516,  1, ix, iy, ival )
 	if( iright( ival ) .ge. ifac1 ) ifac1 = iright( ival )
 	call explod( ix, iy, ifac1, 4, iexflg )
 	goto 1100
@@ -2535,7 +2557,7 @@ C
 	    iy = float(ishipy) + gy*i + 0.5
 	    if( ix.lt.1 .or. ix.gt.120 .or. iy.lt.1 .or. iy.gt.120 ) 
      &		goto 9070
-	    call getval(6, 0,2523,  1, ix, iy, ival )
+	    call getval(6, 0,2545,  1, ix, iy, ival )
 	    ival = ileft( ival )
 	    if( ival .ne. 0 .and. ival .ne. iplayr .and. ival .le. 26 )
      &	    goto 9075
@@ -2543,14 +2565,14 @@ C
 	call string(1,'*** Shells fall harmlessly ***^E')
 	goto 1100
 C
-9075	call getval(6, 0,2531,  2, ival, 4, ifac2 )
+9075	call getval(6, 0,2553,  2, ival, 4, ifac2 )
 	if( ifac2 .lt. 18 ) goto 9070
 	if( kind .eq. 5 .and. iabs( ifac2-idepth ) .gt. 1 ) goto 9070
 	call string(1,'Shells strike the ^E')
-	call getval(6, 0,2535,  2, ival, 5, stname(1) )
-	call getval(6, 0,2536,  2, ival, 6, stname(2) )
+	call getval(6, 0,2557,  2, ival, 5, stname(1) )
+	call getval(6, 0,2558,  2, ival, 6, stname(2) )
 	call string(3, stname, 6, 12 )
-	call putval(6, 0,2538,  2, ival, 8, itemp*2+1 )
+	call putval(6, 0,2560,  2, ival, 8, itemp*2+1 )
 	goto 1100
 C
 9080	call colstr(iclyel,'*** Surface guns do not respond ***^E')
@@ -2565,11 +2587,11 @@ C
 	call allcap( comara, 3 )
 	ivic = icon( comara(3) ) - 64
 	if( ivic .lt. 1 .or. ivic .gt. 26 ) goto 9094
-	call getval(6, 0,2553,  2, ivic, 2, inc )
+	call getval(6, 0,2575,  2, ivic, 2, inc )
 	ifac1 = ifac1 + inc
-	call getval(6, 0,2555,  2, ivic, 3, inc )
+	call getval(6, 0,2577,  2, ivic, 3, inc )
 	ifac2 = ifac2 + inc
-	call getval(6, 0,2557,  2, ivic, 4, inc )
+	call getval(6, 0,2579,  2, ivic, 4, inc )
 	ifac3 = ifac3 + inc - 18
 9094	call explod( ifac1, ifac2, ifac3, ifac4, iexflg )
 	goto 1100

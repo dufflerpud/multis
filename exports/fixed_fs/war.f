@@ -1,13 +1,36 @@
-C	@HDR@	$Id$
-C	@HDR@		Copyright 1982-2025 by
-C	@HDR@		Christopher Caldwell/Brightsands
-C	@HDR@		P.O. Box 401, Bailey Island, ME 04003
-C	@HDR@		All Rights Reserved
-C	@HDR@
-C	@HDR@	This software comprises unpublished confidential information
-C	@HDR@	of Brightsands and may not be used, copied or made available
-C	@HDR@	to anyone, except in accordance with the license under which
-C	@HDR@	it is furnished.
+Cindx#	war.for - Multi-user game depicting the trench scene from the first Star Wars movie
+C@HDR@	$Id$
+C@HDR@
+C@HDR@	Copyright (c) 1982-2026 Christopher Caldwell (Christopher.M.Caldwell0@gmail.com)
+C@HDR@
+C@HDR@	Permission is hereby granted, free of charge, to any person
+C@HDR@	obtaining a copy of this software and associated documentation
+C@HDR@	files (the "Software"), to deal in the Software without
+C@HDR@	restriction, including without limitation the rights to use,
+C@HDR@	copy, modify, merge, publish, distribute, sublicense, and/or
+C@HDR@	sell copies of the Software, and to permit persons to whom
+C@HDR@	the Software is furnished to do so, subject to the following
+C@HDR@	conditions:
+C@HDR@	
+C@HDR@	The above copyright notice and this permission notice shall be
+C@HDR@	included in all copies or substantial portions of the Software.
+C@HDR@	
+C@HDR@	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+C@HDR@	KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+C@HDR@	WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+C@HDR@	AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+C@HDR@	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+C@HDR@	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+C@HDR@	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+C@HDR@	OTHER DEALINGS IN THE SOFTWARE.
+C
+Chist#	2026-02-17 - Christopher.M.Caldwell0@gmail.com - Created
+C------------------------------------------------------------------------
+Cdoc#	war.for - Multi-user game depicting the trench scene from the first Star Wars movie
+Cdoc#	Made with Roger Long's inspiration and Robert Kenney's HIPAK.MAC.
+Cdoc#	Note that this really wanted to be done with vector graphics
+Cdoc#	and not character cell graphics.  Waaaay ahead of the hardware.
+C------------------------------------------------------------------------
 	subroutine defcol
 
 	common /col/iclwhi,icldbl,iclred,icllbl,
@@ -50,16 +73,16 @@ C	@HDR@	it is furnished.
 	subroutine initdb
 C
 	call enable
-	call init(7, 0,53,  1, 1, 100, 100, 30 )
-	call init(6, 0,54,  2, 7, 400, 5 )
-	call init(5, 0,55,  3, 36, 5 )
-	call init(6, 0,56,  4, 7, 26, 2 )
+	call init(7, 0,76,  1, 1, 100, 100, 30 )
+	call init(6, 0,77,  2, 7, 400, 5 )
+	call init(5, 0,78,  3, 36, 5 )
+	call init(6, 0,79,  4, 7, 26, 2 )
 C
 	do 100 ixt = 1, 100
 	    ix = ixt
 	    do 100 iyt = 1, 100
 		iy = iyt
-		call putval(7, 0,62,  1, ix, iy, 5, 1 )
+		call putval(7, 0,85,  1, ix, iy, 5, 1 )
 		if( mod( ix-5,10 ).ne.0.or.mod( iy,10 ).ne.0 ) goto 100
 		call makobj( ix, iy, 6, 4 )
 100	continue
@@ -72,27 +95,27 @@ C
 		call makobj( 48, iy, iz, 3 )
 		call makobj( 52, iy, iz, 3 )
 		goto 300
-200		call putval(7, 0,75,  1, 48, iy, iz, 1 )
-		call putval(7, 0,76,  1, 52, iy, iz, 1 )
+200		call putval(7, 0,98,  1, 48, iy, iz, 1 )
+		call putval(7, 0,99,  1, 52, iy, iz, 1 )
 300	    continue
 	    do 400 ixt = 49, 51
 		ix = ixt
-		call putval(7, 0,80,  1, ix, iy, 5, 0 )
-		call putval(7, 0,81,  1, ix, iy, 1, 1 )
+		call putval(7, 0,103,  1, ix, iy, 5, 0 )
+		call putval(7, 0,104,  1, ix, iy, 1, 1 )
 400	continue
 C
 	do 500 ixt = 48, 52
 	    ix = ixt
 	    do 500 izt = 1, 4
 		iz = izt
-		call putval(7, 0,88,  1, ix, 76, iz, 1 )
+		call putval(7, 0,111,  1, ix, 76, iz, 1 )
 500	continue
 C
 	call makobj( 50, 76, 3, 2 )
 	call makobj( 50, 76, 6, 4 )
 C
-	call putval(5, 0,94,  3, 4, 60*30 )
-	call putval(5, 0,95,  3, 5, -1 )
+	call putval(5, 0,117,  3, 4, 60*30 )
+	call putval(5, 0,118,  3, 5, -1 )
 	call unlock
 	return
 	end
@@ -152,14 +175,14 @@ C
 	prilst(6) = ichcod( 43, iclwhi, iclbla )
 	prilst(7) = ichcod( 37, iclred, iclyel )	! explosion particle
 C
-3	call getval(5, 0,153,  3, 5, itim )
+3	call getval(5, 0,176,  3, 5, itim )
 	if( itim .lt. 0 ) goto 5
 	call colcur( 45, 20 )
 	call colstr(iclred,'Death star explodes in ^E')
 	call number(1, itim )
 	call string(1,' seconds. ^G^E')
 
-5	call getval(5, 0,160,  3, 4, itim )
+5	call getval(5, 0,183,  3, 4, itim )
 	call colcur( 51, 24 )
 	call number(2, itim/60, 2 )
 	call chrout(58)
@@ -230,18 +253,18 @@ C
 	    if( good )  screen( ifix(xp+1.), ifix(yp+1.) ) = 1
 800	continue
 C
-	call getval(5, 0,231,  3, 1, objnum )
+	call getval(5, 0,254,  3, 1, objnum )
 	do 900 i = 1, objnum
 	    iobj = i
-	    call getval(6, 0,234,  2, iobj, 1, x1 )
+	    call getval(6, 0,257,  2, iobj, 1, x1 )
 	    xr = x1
-	    call getval(6, 0,236,  2, iobj, 2, y1 )
+	    call getval(6, 0,259,  2, iobj, 2, y1 )
 	    yr = y1
-	    call getval(6, 0,238,  2, iobj, 3, z1 )
+	    call getval(6, 0,261,  2, iobj, 3, z1 )
 	    zr = z1
 	    dist =sqrt((xr-x+0.0)**2+(yr-y+0.0)**2+(zr-z+0.0)**2)
 	    if( dist .eq. 0 .or. dist .gt. 20 ) goto 900
-	    call getval(6, 0,242,  2, iobj, 4, ival )
+	    call getval(6, 0,265,  2, iobj, 4, ival )
 	    if( ival .eq. 0 ) goto 900
 	    call prspec( xr, yr, zr, xp, yp, good )
 	    if( good )  screen( ifix(xp+1.), ifix(yp+1.) ) = ival
@@ -389,10 +412,10 @@ C	handed to GNU g77.
 	call messag( icol, msgara )
 	call close( 1 )
 	call unlock
-	call getval(6, 0,387,  2, iship, 4, ival )
-	call putval(6, 0,388,  4, ival-6, 1, 0 )
-	call putval(6, 0,389,  4, ival-6, 2, 0 )
-	call addval(5, 0,390,  3, 3, -1 )
+	call getval(6, 0,410,  2, iship, 4, ival )
+	call putval(6, 0,411,  4, ival-6, 1, 0 )
+	call putval(6, 0,412,  4, ival-6, 2, 0 )
+	call addval(5, 0,413,  3, 3, -1 )
 	call delobj( iship )
 	call usrset( 1031, 0 )
 	call usrset( 1026, 0 )
@@ -406,36 +429,36 @@ C
 C
 	implicit integer ( a - z )
 C
-	call getval(5, 0,403,  3, 1, lastob )
-	call getval(5, 0,404,  3, 2, lastpt )
+	call getval(5, 0,426,  3, 1, lastob )
+	call getval(5, 0,427,  3, 2, lastpt )
 	lastpt = lastpt + 1
 	if( lastpt .ge. lastob ) goto 101
 	do 100 iobj = lastpt, lastob
-	    call getval(6, 0,408,  2, iobj+0, 4, ival )
+	    call getval(6, 0,431,  2, iobj+0, 4, ival )
 	    if( ival .eq. 0 ) goto 200
 100	continue
 101	continue
 	iobj = lastob + 1
-	call putval(5, 0,413,  3, 1, iobj )
+	call putval(5, 0,436,  3, 1, iobj )
 C
-200	call putval(5, 0,415,  3, 2, iobj )
-	call putval(6, 0,416,  2, iobj, 1, x )
-	call putval(6, 0,417,  2, iobj, 2, y )
-	call putval(6, 0,418,  2, iobj, 3, z )
-	call putval(6, 0,419,  2, iobj, 4, val )
-	call putval(7, 0,420,  1, x, y, z, 1 )
+200	call putval(5, 0,438,  3, 2, iobj )
+	call putval(6, 0,439,  2, iobj, 1, x )
+	call putval(6, 0,440,  2, iobj, 2, y )
+	call putval(6, 0,441,  2, iobj, 3, z )
+	call putval(6, 0,442,  2, iobj, 4, val )
+	call putval(7, 0,443,  1, x, y, z, 1 )
 	return
 	end
 C
 	subroutine delobj( iobj )
 C
-	call getval(6, 0,425,  2, iobj, 1, ix )
-	call getval(6, 0,426,  2, iobj, 2, iy )
-	call getval(6, 0,427,  2, iobj, 3, iz )
-	call putval(7, 0,428,  1, ix, iy, iz, 0 )
-	call putval(6, 0,429,  2, iobj, 4, 0 )
-	call getval(5, 0,430,  3, 2, ival )
-	if( ival .gt. iobj )  call putval(4, 0,431,  -3, iobj )
+	call getval(6, 0,448,  2, iobj, 1, ix )
+	call getval(6, 0,449,  2, iobj, 2, iy )
+	call getval(6, 0,450,  2, iobj, 3, iz )
+	call putval(7, 0,451,  1, ix, iy, iz, 0 )
+	call putval(6, 0,452,  2, iobj, 4, 0 )
+	call getval(5, 0,453,  3, 2, ival )
+	if( ival .gt. iobj )  call putval(4, 0,454,  -3, iobj )
 	return
 	end
 C
@@ -443,17 +466,17 @@ C
 C
 	implicit integer ( a - z )
 C
-	call getval(5, 0,438,  3, 1, numobj )
+	call getval(5, 0,461,  3, 1, numobj )
 C
 	do 100 iobj = 1, numobj
 	    numobj = iobj
-	    call getval(6, 0,442,  2, numobj, 1, ival )
+	    call getval(6, 0,465,  2, numobj, 1, ival )
 	    if( ival .ne. x ) goto 100
-	    call getval(6, 0,444,  2, numobj, 2, ival )
+	    call getval(6, 0,467,  2, numobj, 2, ival )
 	    if( ival .ne. y ) goto 100
-	    call getval(6, 0,446,  2, numobj, 3, ival )
+	    call getval(6, 0,469,  2, numobj, 3, ival )
 	    if( ival .ne. z ) goto 100
-	    call getval(6, 0,448,  2, numobj, 4, ival )
+	    call getval(6, 0,471,  2, numobj, 4, ival )
 	    if( ival .ne. 0 )  return
 100	continue
 	numobj = 0
@@ -484,10 +507,10 @@ C
 		nz = z + zdir*j
 		if( nx .lt. 1 .or. nx .gt. 100 .or. ny .lt. 1 .or.          ny .
      &gt. 100 .or. nz .lt. 1 .or. nz .gt. 30 ) goto 200
-		call getval(7, 0,477,  1, nx, ny, nz, ival )
+		call getval(7, 0,500,  1, nx, ny, nz, ival )
 		if( ival .ne. 0 ) goto 200
 		call makobj( nx, ny, nz, 6 )
-		call putval(6, 0,480,  2, numobj( nx, ny, nz ), 5, 10 )
+		call putval(6, 0,503,  2, numobj( nx, ny, nz ), 5, 10 )
 100	    continue
 200	continue
 	return
@@ -507,8 +530,8 @@ C
 	call wfile( 2, filesp )
 	nmthru = nmthru + 1
 	call select( 2 )
-	call getval(5, 0,499,  3, 1, nobj )
-	call getval(5, 0,500,  3, 2, val )
+	call getval(5, 0,522,  3, 1, nobj )
+	call getval(5, 0,523,  3, 2, val )
 	call string(1,'Maximum object: ^E')
 	call number(1, nobj )
 	call string(1,'.   Known to be filled in list: ^E')
@@ -516,17 +539,17 @@ C
 	call string(1,'.^M^J^E')
 	do 100 i = 1, nobj
 	    iobj = i
-	    call getval(6, 0,508,  2, iobj, 1, x )
-	    call getval(6, 0,509,  2, iobj, 2, y )
-	    call getval(6, 0,510,  2, iobj, 3, z )
-	    call getval(6, 0,511,  2, iobj, 4, val )
+	    call getval(6, 0,531,  2, iobj, 1, x )
+	    call getval(6, 0,532,  2, iobj, 2, y )
+	    call getval(6, 0,533,  2, iobj, 3, z )
+	    call getval(6, 0,534,  2, iobj, 4, val )
 	    call number(1, iobj )
 	    call coord( x, y, z )
 	    call number(1, val )
 	    call chrout(58)
-	    call getval(6, 0,516,  2, iobj, 5, val1 )
+	    call getval(6, 0,539,  2, iobj, 5, val1 )
 	    call number(1, val1 )
-	    call getval(7, 0,518,  1, x, y, z, val1 )
+	    call getval(7, 0,541,  1, x, y, z, val1 )
 	    call number(2, val1, 2 )
 	    if( (val.eq.0).ne.(val1.eq.0) ) call string(1,'   *^E')
 	    call crlf
@@ -545,7 +568,7 @@ C
 C
 	if( iobj .eq. 0 )  call string(1,'The death star^E')
 	if( iobj .eq. 0 )  return
-	call getval(6, 0,536,  2, iobj, 4, ival )
+	call getval(6, 0,559,  2, iobj, 4, ival )
 	if( ival .eq. 1 )  call string(1,'The death star^E')
 	if( ival .eq. 2 )  call string(1,'An exhaust port^E')
 	if( ival .eq. 3 )  call string(1,'A light laser tower^E')
@@ -777,7 +800,7 @@ C
 C***    SUBROUTINE PRINTS OUT STATISTICS ON USER
 C
 	ijob = 0
-	if(iletr.gt.0.and.iletr.le.27)call getval(6, 0,765, 4,iletr,1,ijob)
+	if(iletr.gt.0.and.iletr.le.27)call getval(6, 0,788, 4,iletr,1,ijob)
 	if( ijob .eq. 0 )  call messag(iclyel,'No one^E')
 	if( ijob .eq. 0 )  return
 	if( iletr .le. 13 ) call messag(icllbl,'Rebel-^E')
@@ -835,10 +858,10 @@ C
 	if( iplayr .gt. 96 ) iplayr = iplayr - 32
 	iplayr = iplayr - 64
 	if( iplayr .lt. 1 .or. iplayr .gt. 26 ) goto 200
-	call getval(6, 0,822,  4, iplayr, 1, ival )
+	call getval(6, 0,845,  4, iplayr, 1, ival )
 	if( ival .ne. 0 ) goto 200
-	call putval(4, 0,824,  -4, job(0) )
-	call putval(6, 0,825,  4, iplayr, 2, 0 )
+	call putval(4, 0,847,  -4, job(0) )
+	call putval(6, 0,848,  4, iplayr, 2, 0 )
 	ax = 1.
 	if( iplayr .gt. 13 )  ax = 100.
 	x = ax
@@ -851,11 +874,11 @@ C
 	if( .not. newang ) goto 305
 	d = 90 - d
 	if( d .lt. 0 ) d = d + 360
-305	call getval(7, 0,838,  1, x, y, z, ival )
+305	call getval(7, 0,861,  1, x, y, z, ival )
 	if( ival .ne. 0 ) goto 300
 	call makobj( ifix(ax+.5), ifix(ay+.5), ifix(az+.5), iplayr+6 )
 	shipnm = numobj( x, y, z )
-	call addval(5, 0,842,  3, 3, 1 )
+	call addval(5, 0,865,  3, 3, 1 )
 	continue ! call ctrap
 c	call cease( shipnm, icllbl, 'Stopping on user request.^E')
 C
@@ -875,12 +898,12 @@ C***********************
 C
 400	call usrset(1048,ttyspd)
 	call usrset(1049,ttyspd)
-	call getval(5, 0,862,  3, 4, ival )
+	call getval(5, 0,885,  3, 4, ival )
 	if( ival .gt. 0 ) goto 405
 	call cease( shipnm, iclred,
      & 'The rebel base has been destroyed.^E')
 
-405	call getval(5, 0,867,  3, 5, ival )
+405	call getval(5, 0,890,  3, 5, ival )
 	if( ival .ne. 0 ) goto 410
 	call cease( shipnm, iclred,
      & 'The death star has been destroyed.^E')
@@ -995,17 +1018,17 @@ C
 	    if( phasry .lt. 1 .or. phasry .gt. 100 ) goto 2400
 	    phasrz = az + sindeg(e)*dist + .5
 	    if( phasrz .lt. 1 .or. phasrz .gt. 30 ) goto 2400
-	    call getval(7, 0,982,  1, phasrx, phasry, phasrz, ival )
+	    call getval(7, 0,1005,  1, phasrx, phasry, phasrz, ival )
 	    if( ival .eq. 0 ) goto 2300
 	    if( phasrx .eq. x .and. phasry .eq. y .and. phasrz .eq. z )
      & goto 2300
 	    ival = numobj( phasrx, phasry, phasrz )
 	    ival1 = 0
-	    if( ival .gt. 0 ) call getval(6, 0,988,  2, ival, 4, ival1 )
+	    if( ival .gt. 0 ) call getval(6, 0,1011,  2, ival, 4, ival1 )
 	    if( ival1 .eq. 6 ) goto 2300
 	    miss = .false.
 	    if(ival1.lt.6)  call explod(phasrx,phasry,phasrz,ival1+1)
-	    if(ival1.gt.6)  call putval(6, 0,992, 4,ival1-6,2,1)
+	    if(ival1.gt.6)  call putval(6, 0,1015, 4,ival1-6,2,1)
 	    goto 2400
 2300	continue
 2400	if( ichar .eq. 48 ) goto 2450
@@ -1058,7 +1081,7 @@ C
 	if(ival1.gt.2.and.ival1.lt.7)call delobj( ival )
 	if( ival1.ne.2 .or. ichar.ne.84 ) goto 3100
 	if( iran( iabs(z-2) ) .gt. 1 ) goto 3100
-	call putval(5, 0,1045,  3, 5, 30 )
+	call putval(5, 0,1068,  3, 5, 30 )
 	goto 3100
 C
 2800	if( ichar .ne. 87 ) goto 2900
@@ -1076,16 +1099,16 @@ C
 	az = az + sindeg(e)*speed/10.
 	if(ifix(ax+.5).eq.x.and.ifix(ay+.5).eq.y.and.ifix(az+.5).eq.z)
      &  goto 3300
-	call putval(7, 0,1063,  1, x, y, z, 0 )
+	call putval(7, 0,1086,  1, x, y, z, 0 )
 	x = ax + 0.5
 	y = ay + 0.5
 	z = az + 0.5
 	if(x.lt.1 .or. x.gt.100 .or. y.lt.1 .or. y.gt.100 .or. z.gt.30)
      &  goto 4600
-	call getval(7, 0,1069,  1, x, y, z, ival )
+	call getval(7, 0,1092,  1, x, y, z, ival )
 	if( ival .eq. 0 ) goto 3200
 	ival = numobj( x, y, z )
-	if( ival .ne. 0 )  call getval(6, 0,1072,  2, ival, 4, ival )
+	if( ival .ne. 0 )  call getval(6, 0,1095,  2, ival, 4, ival )
 	if( ival .lt. 6 )  call explod( x, y, z, (ival+1)*2 )
 	if( ival .gt. 6 )  call cease( shipnm, iclred,
      & '*** Collision with a ship ***^G^E')
@@ -1104,10 +1127,10 @@ C
 	yaw = yaw + iran( iff*2+1 ) - iff-1
 	pitch = pitch + iran( iff*2+1 ) - iff-1
 	roll = roll + iran( iff*2+1 ) - iff-1
-3200	call putval(6, 0,1091,  2, shipnm, 1, x )
-	call putval(6, 0,1092,  2, shipnm, 2, y )
-	call putval(6, 0,1093,  2, shipnm, 3, z )
-	call putval(7, 0,1094,  1, x, y, z, 1 )
+3200	call putval(6, 0,1114,  2, shipnm, 1, x )
+	call putval(6, 0,1115,  2, shipnm, 2, y )
+	call putval(6, 0,1116,  2, shipnm, 3, z )
+	call putval(7, 0,1117,  1, x, y, z, 1 )
 3300	dvec = 90
 	if( pitch .lt. 0 )  dvec = 270
 C
@@ -1147,11 +1170,11 @@ C	END NEWANG WORK
 	call colcur( 36, 4 )
 	call number(2, roll, 3 )
 	oroll = roll
-3700	call getval(5, 0,1134,  3, 3, iuser )
+3700	call getval(5, 0,1157,  3, 3, iuser )
 	if( iuser .eq. ouser .and. ichar .ne. 78 ) goto 4000
 	call colcur( 58, 23 )
 	do 3800 i = 1, 13
-	    call getval(6, 0,1138,  4, i+0, 1, ival )
+	    call getval(6, 0,1161,  4, i+0, 1, ival )
 	    if( ival .eq. 0 ) goto 3800
 	    laston = i
 	    call chrout( laston+64 )
@@ -1159,14 +1182,14 @@ C	END NEWANG WORK
 	call string(1,'   ^E')
 	call colcur( 59, 22 )
 	do 3900 i = 14, 26
-	    call getval(6, 0,1146,  4, i+0, 1, ival )
+	    call getval(6, 0,1169,  4, i+0, 1, ival )
 	    if( ival .eq. 0 ) goto 3900
 	    laston = i
 	    call chrout( laston+64 )
 3900	continue
 	call string(1,'   ^E')
 	ouser = iuser
-4000	call getval(6, 0,1153,  4, iplayr, 2, ival )
+4000	call getval(6, 0,1176,  4, iplayr, 2, ival )
 	if( ival .ne. 0 )  call explod( x, y, z, 5 )
 	if( ival .ne. 0 )  call cease( shipnm,iclred,
      &'******** Ship has been hit *** Ship destroyed ********^G^E')
@@ -1181,17 +1204,17 @@ C	END NEWANG WORK
 	ival1 = 0
 	if( x0 .lt. 1 ) goto 4200
 	if( y0 .lt. 1 ) goto 4100
-	call getval(7, 0,1168,  1, x0, y0, 6, ival )
+	call getval(7, 0,1191,  1, x0, y0, 6, ival )
 	ival1 = ival1 + ival
 4100	if( y1 .gt. 100 ) goto 4200
-	call getval(7, 0,1171,  1, x0, y1, 6, ival )
+	call getval(7, 0,1194,  1, x0, y1, 6, ival )
 	ival1 = ival1 + ival
 4200	if( x1 .gt. 100 ) goto 4325
 	if( y0 .lt. 1 ) goto 4300
-	call getval(7, 0,1175,  1, x1, y0, 6, ival )
+	call getval(7, 0,1198,  1, x1, y0, 6, ival )
 	ival1 = ival1 + ival
 4300	if( y1 .gt. 100 ) goto 4325
-	call getval(7, 0,1178,  1, x1, y1, 6, ival )
+	call getval(7, 0,1201,  1, x1, y1, 6, ival )
 	ival1 = ival1 + ival
 4325	if( ival1 .eq. 0 ) goto 4350
 	do 4330 i = 1, ival1
@@ -1206,9 +1229,9 @@ C	END NEWANG WORK
      &goto 4400
 	y0 = (y-1)/5*5+1
 	ival1 = 0
-	call getval(7, 0,1193,  1, 48, y0, 2, ival )
+	call getval(7, 0,1216,  1, 48, y0, 2, ival )
 	ival1 = ival1 + ival
-	call getval(7, 0,1195,  1, 52, y0, 2, ival )
+	call getval(7, 0,1218,  1, 52, y0, 2, ival )
 	ival1 = ival1 + ival
 	if( ival1 .eq. 0 ) goto 4400
 	do 4355 i = 1, ival1
@@ -1218,16 +1241,16 @@ C	END NEWANG WORK
      &( shipnm,iclred,'*** Ship hit by light laser beam ***^G^E')
 4355	call explod( 48+iran(3), y+iran(3)-2, z+iran(3)-2, 1 )
 4400	if( laston .ne. iplayr ) goto 400
-	call addval(5, 0,1205,  3, 4, -1 )
-	call getval(5, 0,1206,  3, 5, ival )
-	if( ival .gt. 0 ) call addval(5, 0,1207,  3, 5, -1 )
-	call getval(5, 0,1208,  3, 1, objnum )
+	call addval(5, 0,1228,  3, 4, -1 )
+	call getval(5, 0,1229,  3, 5, ival )
+	if( ival .gt. 0 ) call addval(5, 0,1230,  3, 5, -1 )
+	call getval(5, 0,1231,  3, 1, objnum )
 	do 4500 i = 1, objnum
 	    iobj = i
-	    call getval(6, 0,1211,  2, iobj, 4, ival )
+	    call getval(6, 0,1234,  2, iobj, 4, ival )
 	    if( ival .ne. 6 ) goto 4500
-	    call addval(6, 0,1213,  2, iobj, 5, -1 )
-	    call getval(4, 0,1214,  -2, ival )
+	    call addval(6, 0,1236,  2, iobj, 5, -1 )
+	    call getval(4, 0,1237,  -2, ival )
 	    if( ival .le. 0 )  call delobj( iobj )
 4500	continue
 	goto 400

@@ -1,4 +1,4 @@
-/*  -- translated by f2c (version 20160102).
+/*  -- translated by f2c (version 20200916).
    You must link the resulting object file with libf2c:
 	on Microsoft Windows system, link with libf2c.lib;
 	on Linux or Unix systems, link with .../path/to/libf2c.a -lm
@@ -24,7 +24,7 @@ struct {
 
 static integer c__6 = 6;
 static integer c__0 = 0;
-static integer c__61 = 61;
+static integer c__82 = 82;
 static integer c__18 = 18;
 static integer c__24 = 24;
 static integer c__80 = 80;
@@ -41,132 +41,152 @@ static integer c__2 = 2;
 static integer c__26 = 26;
 static integer c__51 = 51;
 static integer c__5 = 5;
-static integer c__96 = 96;
+static integer c__117 = 117;
 static integer c__100 = 100;
-static integer c__98 = 98;
+static integer c__119 = 119;
+static integer c__121 = 121;
 static integer c__7 = 7;
-static integer c__101 = 101;
-static integer c__102 = 102;
-static integer c__103 = 103;
-static integer c__104 = 104;
+static integer c__122 = 122;
+static integer c__123 = 123;
+static integer c__125 = 125;
 static integer c__36 = 36;
-static integer c__105 = 105;
-static integer c__106 = 106;
-static integer c__107 = 107;
-static integer c__108 = 108;
-static integer c__109 = 109;
-static integer c__110 = 110;
-static integer c__111 = 111;
-static integer c__128 = 128;
-static integer c__133 = 133;
-static integer c__142 = 142;
-static integer c__143 = 143;
-static integer c__144 = 144;
+static integer c__126 = 126;
 static integer c__127 = 127;
-static integer c__145 = 145;
-static integer c__146 = 146;
-static integer c__147 = 147;
-static integer c__148 = 148;
+static integer c__128 = 128;
+static integer c__129 = 129;
+static integer c__130 = 130;
+static integer c__131 = 131;
+static integer c__132 = 132;
 static integer c__149 = 149;
-static integer c__150 = 150;
-static integer c__151 = 151;
-static integer c__162 = 162;
+static integer c__154 = 154;
 static integer c__163 = 163;
-static integer c__176 = 176;
-static logical c_true = TRUE_;
-static integer c__179 = 179;
-static integer c__41 = 41;
+static integer c__164 = 164;
+static integer c__165 = 165;
+static integer c__166 = 166;
+static integer c__167 = 167;
+static integer c__168 = 168;
+static integer c__169 = 169;
+static integer c__170 = 170;
+static integer c__171 = 171;
+static integer c__172 = 172;
+static integer c__183 = 183;
 static integer c__184 = 184;
+static integer c__197 = 197;
+static logical c_true = TRUE_;
+static integer c__200 = 200;
+static integer c__41 = 41;
+static integer c__205 = 205;
 static integer c__65 = 65;
-static integer c__193 = 193;
-static integer c__194 = 194;
-static logical c_false = FALSE_;
-static integer c__212 = 212;
 static integer c__214 = 214;
 static integer c__215 = 215;
-static integer c__218 = 218;
-static integer c__219 = 219;
-static integer c__223 = 223;
-static integer c__224 = 224;
-static integer c__4 = 4;
-static integer c__225 = 225;
-static integer c_n1 = -1;
-static integer c__231 = 231;
-static integer c__250 = 250;
-static integer c__237 = 237;
+static logical c_false = FALSE_;
+static integer c__233 = 233;
+static integer c__235 = 235;
+static integer c__236 = 236;
+static integer c__239 = 239;
 static integer c__240 = 240;
-static integer c__241 = 241;
-static integer c_n6 = -6;
-static integer c__247 = 247;
-static integer c__249 = 249;
-static integer c__251 = 251;
-static integer c__254 = 254;
-static integer c__255 = 255;
-static integer c__256 = 256;
-static integer c__257 = 257;
+static integer c__244 = 244;
+static integer c__245 = 245;
+static integer c__4 = 4;
+static integer c__246 = 246;
+static integer c_n1 = -1;
+static integer c__252 = 252;
+static integer c__250 = 250;
+static integer c__258 = 258;
 static integer c__261 = 261;
 static integer c__262 = 262;
+static integer c_n6 = -6;
 static integer c__268 = 268;
 static integer c__270 = 270;
 static integer c__272 = 272;
-static integer c__273 = 273;
 static integer c__275 = 275;
-static integer c__280 = 280;
-static integer c__281 = 281;
-static integer c__285 = 285;
+static integer c__276 = 276;
+static integer c__277 = 277;
+static integer c__278 = 278;
+static integer c__282 = 282;
+static integer c__283 = 283;
+static integer c__289 = 289;
 static integer c__291 = 291;
-static integer c__10 = 10;
 static integer c__293 = 293;
 static integer c__294 = 294;
+static integer c__296 = 296;
 static integer c__301 = 301;
-static integer c__303 = 303;
-static integer c__305 = 305;
-static integer c__309 = 309;
-static integer c__311 = 311;
+static integer c__302 = 302;
+static integer c__306 = 306;
 static integer c__312 = 312;
+static integer c__10 = 10;
 static integer c__314 = 314;
-static integer c__316 = 316;
-static integer c__317 = 317;
-static integer c__32 = 32;
+static integer c__315 = 315;
 static integer c__322 = 322;
 static integer c__324 = 324;
+static integer c__326 = 326;
+static integer c__330 = 330;
+static integer c__332 = 332;
+static integer c__333 = 333;
 static integer c__335 = 335;
-static integer c__336 = 336;
+static integer c__337 = 337;
+static integer c__338 = 338;
+static integer c__32 = 32;
 static integer c__343 = 343;
-static integer c__344 = 344;
-static integer c__346 = 346;
-static integer c__353 = 353;
-static integer c__354 = 354;
-static integer c__355 = 355;
+static integer c__345 = 345;
 static integer c__356 = 356;
-static integer c__46 = 46;
 static integer c__357 = 357;
-static integer c__358 = 358;
+static integer c__364 = 364;
 static integer c__365 = 365;
-static integer c__371 = 371;
-static integer c__372 = 372;
-static integer c__64 = 64;
+static integer c__367 = 367;
+static integer c__374 = 374;
+static integer c__375 = 375;
+static integer c__376 = 376;
+static integer c__377 = 377;
+static integer c__46 = 46;
+static integer c__378 = 378;
+static integer c__379 = 379;
 static integer c__386 = 386;
-static integer c__387 = 387;
-static integer c__388 = 388;
-static integer c__389 = 389;
-static integer c__390 = 390;
-static integer c__391 = 391;
 static integer c__392 = 392;
-static integer c__399 = 399;
-static integer c__400 = 400;
-static integer c__403 = 403;
+static integer c__393 = 393;
+static integer c__64 = 64;
+static integer c__407 = 407;
+static integer c__408 = 408;
+static integer c__409 = 409;
+static integer c__410 = 410;
+static integer c__411 = 411;
+static integer c__412 = 412;
+static integer c__413 = 413;
+static integer c__420 = 420;
+static integer c__421 = 421;
+static integer c__424 = 424;
 
-/* 	@HDR@	$Id$ */
-/* 	@HDR@		Copyright 1982-2025 by */
-/* 	@HDR@		Christopher Caldwell/Brightsands */
-/* 	@HDR@		P.O. Box 401, Bailey Island, ME 04003 */
-/* 	@HDR@		All Rights Reserved */
-/* 	@HDR@ */
-/* 	@HDR@	This software comprises unpublished confidential information */
-/* 	@HDR@	of Brightsands and may not be used, copied or made available */
-/* 	@HDR@	to anyone, except in accordance with the license under which */
-/* 	@HDR@	it is furnished. */
+/* indx#	greebl.for - Multi-user game where the ballons are out to get you! */
+/* @HDR@	$Id$ */
+/* @HDR@ */
+/* @HDR@	Copyright (c) 1982-2026 Christopher Caldwell (Christopher.M.Caldwell0@gmail.com) */
+/* @HDR@ */
+/* @HDR@	Permission is hereby granted, free of charge, to any person */
+/* @HDR@	obtaining a copy of this software and associated documentation */
+/* @HDR@	files (the "Software"), to deal in the Software without */
+/* @HDR@	restriction, including without limitation the rights to use, */
+/* @HDR@	copy, modify, merge, publish, distribute, sublicense, and/or */
+/* @HDR@	sell copies of the Software, and to permit persons to whom */
+/* @HDR@	the Software is furnished to do so, subject to the following */
+/* @HDR@	conditions: */
+/* @HDR@ */
+/* @HDR@	The above copyright notice and this permission notice shall be */
+/* @HDR@	included in all copies or substantial portions of the Software. */
+/* @HDR@ */
+/* @HDR@	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY */
+/* @HDR@	KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE */
+/* @HDR@	WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE */
+/* @HDR@	AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT */
+/* @HDR@	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, */
+/* @HDR@	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING */
+/* @HDR@	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR */
+/* @HDR@	OTHER DEALINGS IN THE SOFTWARE. */
+
+/* hist#	2026-02-17 - Christopher.M.Caldwell0@gmail.com - Created */
+/* ------------------------------------------------------------------------ */
+/* doc#	greebl.for - Multi-user game where the ballons are out to get you! */
+/* doc#	Made with Roger Long's inspiration and Robert Kenney's HIPAK.MAC. */
+/* ------------------------------------------------------------------------ */
 /*< 	subroutine defcol >*/
 /* Subroutine */ int defcol_()
 {
@@ -297,8 +317,8 @@ L3:
 	goto L10000;
     }
 /* ***************************** INITDB ******************************* */
-/*< 	call init(6, 0,61,  screen, 18, 24, 80 ) >*/
-    init_(&c__6, &c__0, &c__61, &screen, &c__18, &c__24, &c__80);
+/*< 	call init(6, 0,82,  screen, 18, 24, 80 ) >*/
+    init_(&c__6, &c__0, &c__82, &screen, &c__18, &c__24, &c__80);
 /*< 	call defadr( 1, iright(itbadr(screen)) ) >*/
     i__2 = itbadr_(&screen);
     i__1 = iright_(&i__2);
@@ -374,40 +394,40 @@ L150:
     cursor_(&c__51, &c__2);
 /*< 	call string(1,'Player kills:^E') >*/
     string_(&c__1, "Player kills:^E", (ftnlen)15);
-/*< 	call init(5, 0,96,  inuse, 1, 100 ) >*/
-    init_(&c__5, &c__0, &c__96, &inuse, &c__1, &c__100);
+/*< 	call init(5, 0,117,  inuse, 1, 100 ) >*/
+    init_(&c__5, &c__0, &c__117, &inuse, &c__1, &c__100);
 /*< 	do 210 i = 1, 100 >*/
     for (i__ = 1; i__ <= 100; ++i__) {
-/*< 	    call putval(5, 0,98,  inuse, i+0, 0 ) >*/
+/*< 	    call putval(5, 0,119,  inuse, i+0, 0 ) >*/
 	i__1 = i__;
-	putval_(&c__5, &c__0, &c__98, &inuse, &i__1, &c__0);
+	putval_(&c__5, &c__0, &c__119, &inuse, &i__1, &c__0);
 /*< 210	continue >*/
 /* L210: */
     }
-/*< 	call init(6, 0,100,  pos, 7, 100, 2 ) >*/
-    init_(&c__6, &c__0, &c__100, &pos, &c__7, &c__100, &c__2);
-/*< 	call init(5, 0,101,  direxn, 7, 100 ) >*/
-    init_(&c__5, &c__0, &c__101, &direxn, &c__7, &c__100);
-/*< 	call init(5, 0,102,  conflg, 1, 100 ) >*/
-    init_(&c__5, &c__0, &c__102, &conflg, &c__1, &c__100);
-/*< 	call init(5, 0,103,  type, 6, 100 ) >*/
-    init_(&c__5, &c__0, &c__103, &type__, &c__6, &c__100);
-/*< 	call init(5, 0,104,  useful, 36, 3 ) >*/
-    init_(&c__5, &c__0, &c__104, &useful, &c__36, &c__3);
-/*< 	call putval(5, 0,105,  useful, 1, 0 ) >*/
-    putval_(&c__5, &c__0, &c__105, &useful, &c__1, &c__0);
-/*< 	call putval(5, 0,106,  useful, 2, 0 ) >*/
-    putval_(&c__5, &c__0, &c__106, &useful, &c__2, &c__0);
-/*< 	call putval(5, 0,107,  useful, 3, 0 ) >*/
-    putval_(&c__5, &c__0, &c__107, &useful, &c__3, &c__0);
-/*< 	call init(5, 0,108,  charep, 7, 100 ) >*/
-    init_(&c__5, &c__0, &c__108, &charep, &c__7, &c__100);
-/*< 	call init(5, 0,109,  recovr, 5, 100 ) >*/
-    init_(&c__5, &c__0, &c__109, &recovr, &c__5, &c__100);
-/*< 	call init(5, 0,110,  whosen, 7, 100 ) >*/
-    init_(&c__5, &c__0, &c__110, &whosen, &c__7, &c__100);
-/*< 	call init(6, 0,111,  score, 18, 100, 2 ) >*/
-    init_(&c__6, &c__0, &c__111, &score, &c__18, &c__100, &c__2);
+/*< 	call init(6, 0,121,  pos, 7, 100, 2 ) >*/
+    init_(&c__6, &c__0, &c__121, &pos, &c__7, &c__100, &c__2);
+/*< 	call init(5, 0,122,  direxn, 7, 100 ) >*/
+    init_(&c__5, &c__0, &c__122, &direxn, &c__7, &c__100);
+/*< 	call init(5, 0,123,  conflg, 1, 100 ) >*/
+    init_(&c__5, &c__0, &c__123, &conflg, &c__1, &c__100);
+/*< 	call init(5, 0,124,  type, 6, 100 ) >*/
+    init_(&c__5, &c__0, &c__124, &type__, &c__6, &c__100);
+/*< 	call init(5, 0,125,  useful, 36, 3 ) >*/
+    init_(&c__5, &c__0, &c__125, &useful, &c__36, &c__3);
+/*< 	call putval(5, 0,126,  useful, 1, 0 ) >*/
+    putval_(&c__5, &c__0, &c__126, &useful, &c__1, &c__0);
+/*< 	call putval(5, 0,127,  useful, 2, 0 ) >*/
+    putval_(&c__5, &c__0, &c__127, &useful, &c__2, &c__0);
+/*< 	call putval(5, 0,128,  useful, 3, 0 ) >*/
+    putval_(&c__5, &c__0, &c__128, &useful, &c__3, &c__0);
+/*< 	call init(5, 0,129,  charep, 7, 100 ) >*/
+    init_(&c__5, &c__0, &c__129, &charep, &c__7, &c__100);
+/*< 	call init(5, 0,130,  recovr, 5, 100 ) >*/
+    init_(&c__5, &c__0, &c__130, &recovr, &c__5, &c__100);
+/*< 	call init(5, 0,131,  whosen, 7, 100 ) >*/
+    init_(&c__5, &c__0, &c__131, &whosen, &c__7, &c__100);
+/*< 	call init(6, 0,132,  score, 18, 100, 2 ) >*/
+    init_(&c__6, &c__0, &c__132, &score, &c__18, &c__100, &c__2);
 /*< 	call unlock >*/
     unlock_();
 /*< 	goto 10010 >*/
@@ -444,9 +464,9 @@ L10020:
     }
 /*< 	do 10025 i = 100, 1, -1 >*/
     for (i__ = 100; i__ >= 1; --i__) {
-/*< 	    call getval(5, 0,128,  inuse, i+0, ival ) >*/
+/*< 	    call getval(5, 0,149,  inuse, i+0, ival ) >*/
 	i__1 = i__;
-	getval_(&c__5, &c__0, &c__128, &inuse, &i__1, &ival);
+	getval_(&c__5, &c__0, &c__149, &inuse, &i__1, &ival);
 /*< 	    if( ival .eq. 1 ) goto 10023 >*/
 	if (ival == 1) {
 	    goto L10023;
@@ -455,10 +475,10 @@ L10020:
 	player = i__;
 /*< 	    goto 10025 >*/
 	goto L10025;
-/*< 10023	    call getval(5, 0,133,  charep, i+0, ival ) >*/
+/*< 10023	    call getval(5, 0,154,  charep, i+0, ival ) >*/
 L10023:
 	i__1 = i__;
-	getval_(&c__5, &c__0, &c__133, &charep, &i__1, &ival);
+	getval_(&c__5, &c__0, &c__154, &charep, &i__1, &ival);
 /*< 	    if( ival .eq. ichar ) goto 10030 >*/
 	if (ival == ichar) {
 	    goto L10030;
@@ -476,27 +496,27 @@ L10030:
     string_(&c__1, "^M^JCharacter in use.  ^E", (ftnlen)25);
 /*< 	goto 10020 >*/
     goto L10020;
-/*< 10040	call putval(5, 0,142,  inuse, player, 1 ) >*/
+/*< 10040	call putval(5, 0,163,  inuse, player, 1 ) >*/
 L10040:
-    putval_(&c__5, &c__0, &c__142, &inuse, &player, &c__1);
-/*< 	call putval(5, 0,143,  charep, player, ichar ) >*/
-    putval_(&c__5, &c__0, &c__143, &charep, &player, &ichar);
-/*< 	call putval(6, 0,144,  pos, player, 1, 127 ) >*/
-    putval_(&c__6, &c__0, &c__144, &pos, &player, &c__1, &c__127);
-/*< 	call putval(6, 0,145,  pos, player, 2, 127 ) >*/
-    putval_(&c__6, &c__0, &c__145, &pos, &player, &c__2, &c__127);
-/*< 	call putval(5, 0,146,  type, player, 1 ) >*/
-    putval_(&c__5, &c__0, &c__146, &type__, &player, &c__1);
-/*< 	call putval(5, 0,147,  direxn, player, 5 ) >*/
-    putval_(&c__5, &c__0, &c__147, &direxn, &player, &c__5);
-/*< 	call putval(5, 0,148,  conflg, player, 0 ) >*/
-    putval_(&c__5, &c__0, &c__148, &conflg, &player, &c__0);
-/*< 	call putval(5, 0,149,  recovr, player, 0 ) >*/
-    putval_(&c__5, &c__0, &c__149, &recovr, &player, &c__0);
-/*< 	call putval(6, 0,150,  score, player, 1, 0 ) >*/
-    putval_(&c__6, &c__0, &c__150, &score, &player, &c__1, &c__0);
-/*< 	call putval(6, 0,151,  score, player, 2, 0 ) >*/
-    putval_(&c__6, &c__0, &c__151, &score, &player, &c__2, &c__0);
+    putval_(&c__5, &c__0, &c__163, &inuse, &player, &c__1);
+/*< 	call putval(5, 0,164,  charep, player, ichar ) >*/
+    putval_(&c__5, &c__0, &c__164, &charep, &player, &ichar);
+/*< 	call putval(6, 0,165,  pos, player, 1, 127 ) >*/
+    putval_(&c__6, &c__0, &c__165, &pos, &player, &c__1, &c__127);
+/*< 	call putval(6, 0,166,  pos, player, 2, 127 ) >*/
+    putval_(&c__6, &c__0, &c__166, &pos, &player, &c__2, &c__127);
+/*< 	call putval(5, 0,167,  type, player, 1 ) >*/
+    putval_(&c__5, &c__0, &c__167, &type__, &player, &c__1);
+/*< 	call putval(5, 0,168,  direxn, player, 5 ) >*/
+    putval_(&c__5, &c__0, &c__168, &direxn, &player, &c__5);
+/*< 	call putval(5, 0,169,  conflg, player, 0 ) >*/
+    putval_(&c__5, &c__0, &c__169, &conflg, &player, &c__0);
+/*< 	call putval(5, 0,170,  recovr, player, 0 ) >*/
+    putval_(&c__5, &c__0, &c__170, &recovr, &player, &c__0);
+/*< 	call putval(6, 0,171,  score, player, 1, 0 ) >*/
+    putval_(&c__6, &c__0, &c__171, &score, &player, &c__1, &c__0);
+/*< 	call putval(6, 0,172,  score, player, 2, 0 ) >*/
+    putval_(&c__6, &c__0, &c__172, &score, &player, &c__2, &c__0);
 /*< 	call unlock >*/
     unlock_();
 /*< 	call setdis( 1 ) >*/
@@ -518,10 +538,10 @@ L10050:
     lock_();
 /*< 	call cursor( ix, iy ) >*/
     cursor_(&ix, &iy);
-/*< 	call putval(6, 0,162,  pos, player, 1, ix ) >*/
-    putval_(&c__6, &c__0, &c__162, &pos, &player, &c__1, &ix);
-/*< 	call putval(6, 0,163,  pos, player, 2, iy ) >*/
-    putval_(&c__6, &c__0, &c__163, &pos, &player, &c__2, &iy);
+/*< 	call putval(6, 0,183,  pos, player, 1, ix ) >*/
+    putval_(&c__6, &c__0, &c__183, &pos, &player, &c__1, &ix);
+/*< 	call putval(6, 0,184,  pos, player, 2, iy ) >*/
+    putval_(&c__6, &c__0, &c__184, &pos, &player, &c__2, &iy);
 /*< 	call pback( iclbla ) >*/
     pback_(&col_1.iclbla);
 /*< 	call pcolor( iclwhi ) >*/
@@ -547,16 +567,16 @@ L10100:
     }
 /*< 	new = .false. >*/
     new__ = FALSE_;
-/*< 	call getval(5, 0,176,  inuse, player, ival ) >*/
-    getval_(&c__5, &c__0, &c__176, &inuse, &player, &ival);
+/*< 	call getval(5, 0,197,  inuse, player, ival ) >*/
+    getval_(&c__5, &c__0, &c__197, &inuse, &player, &ival);
 /*< 	if( ival .ne. 1 ) call cease( .true. ) >*/
     if (ival != 1) {
 	cease_(&c_true);
     }
 /*< 	call setdis( 0 ) >*/
     setdis_(&c__0);
-/*< 	call getval(6, 0,179,  score, player, 1, ival ) >*/
-    getval_(&c__6, &c__0, &c__179, &score, &player, &c__1, &ival);
+/*< 	call getval(6, 0,200,  score, player, 1, ival ) >*/
+    getval_(&c__6, &c__0, &c__200, &score, &player, &c__1, &ival);
 /*< 	if( ival .eq. igrebl ) goto 10102 >*/
     if (ival == igrebl) {
 	goto L10102;
@@ -567,9 +587,9 @@ L10100:
     number_(&c__1, &ival);
 /*< 	igrebl = ival >*/
     igrebl = ival;
-/*< 10102	call getval(6, 0,184,  score, player, 2, ival ) >*/
+/*< 10102	call getval(6, 0,205,  score, player, 2, ival ) >*/
 L10102:
-    getval_(&c__6, &c__0, &c__184, &score, &player, &c__2, &ival);
+    getval_(&c__6, &c__0, &c__205, &score, &player, &c__2, &ival);
 /*< 	if( ival .eq. iplayr ) goto 10103 >*/
     if (ival == iplayr) {
 	goto L10103;
@@ -594,10 +614,10 @@ L10110:
     if (reping && ichar > 48 && ichar <= 57) {
 	goto L10300;
     }
-/*< 	call putval(5, 0,193,  conflg, player, 0 ) >*/
-    putval_(&c__5, &c__0, &c__193, &conflg, &player, &c__0);
-/*< 	call putval(5, 0,194,  direxn, player, 5 ) >*/
-    putval_(&c__5, &c__0, &c__194, &direxn, &player, &c__5);
+/*< 	call putval(5, 0,214,  conflg, player, 0 ) >*/
+    putval_(&c__5, &c__0, &c__214, &conflg, &player, &c__0);
+/*< 	call putval(5, 0,215,  direxn, player, 5 ) >*/
+    putval_(&c__5, &c__0, &c__215, &direxn, &player, &c__5);
 /*< 	reping = .false. >*/
     reping = FALSE_;
 /*< 	if( firing .and. ichar .gt. 48 .and. ichar .le. 57 ) goto 10200 >*/
@@ -648,36 +668,36 @@ L10200:
     if (ichar == 53) {
 	goto L10110;
     }
-/*< 	call getval(5, 0,212,  recovr, player, ival ) >*/
-    getval_(&c__5, &c__0, &c__212, &recovr, &player, &ival);
+/*< 	call getval(5, 0,233,  recovr, player, ival ) >*/
+    getval_(&c__5, &c__0, &c__233, &recovr, &player, &ival);
 /*< 	if( ival .gt. 0 ) goto 10110 >*/
     if (ival > 0) {
 	goto L10110;
     }
-/*< 	call getval(6, 0,214,  pos, player, 1, ix ) >*/
-    getval_(&c__6, &c__0, &c__214, &pos, &player, &c__1, &ix);
-/*< 	call getval(6, 0,215,  pos, player, 2, iy ) >*/
-    getval_(&c__6, &c__0, &c__215, &pos, &player, &c__2, &iy);
+/*< 	call getval(6, 0,235,  pos, player, 1, ix ) >*/
+    getval_(&c__6, &c__0, &c__235, &pos, &player, &c__1, &ix);
+/*< 	call getval(6, 0,236,  pos, player, 2, iy ) >*/
+    getval_(&c__6, &c__0, &c__236, &pos, &player, &c__2, &iy);
 /*< 	idir = ichar-48 >*/
     idir = ichar - 48;
 /*< 	call torp >*/
     torp_();
-/*< 	call putval(5, 0,218,  whosen, itorp, player ) >*/
-    putval_(&c__5, &c__0, &c__218, &whosen, &itorp, &player);
-/*< 	call putval(5, 0,219,  recovr, player, 5 ) >*/
-    putval_(&c__5, &c__0, &c__219, &recovr, &player, &c__5);
+/*< 	call putval(5, 0,239,  whosen, itorp, player ) >*/
+    putval_(&c__5, &c__0, &c__239, &whosen, &itorp, &player);
+/*< 	call putval(5, 0,240,  recovr, player, 5 ) >*/
+    putval_(&c__5, &c__0, &c__240, &recovr, &player, &c__5);
 /*< 	goto 10110 >*/
     goto L10110;
 /*< 10300	continue >*/
 L10300:
-/*< 	call putval(5, 0,223,  direxn, player, ichar-48 ) >*/
+/*< 	call putval(5, 0,244,  direxn, player, ichar-48 ) >*/
     i__1 = ichar - 48;
-    putval_(&c__5, &c__0, &c__223, &direxn, &player, &i__1);
-/*< 	call putval(5, 0,224,  conflg, player, 0 ) >*/
-    putval_(&c__5, &c__0, &c__224, &conflg, &player, &c__0);
-/*< 	if( reping ) call putval(4, 0,225,  -1, 1 ) >*/
+    putval_(&c__5, &c__0, &c__244, &direxn, &player, &i__1);
+/*< 	call putval(5, 0,245,  conflg, player, 0 ) >*/
+    putval_(&c__5, &c__0, &c__245, &conflg, &player, &c__0);
+/*< 	if( reping ) call putval(4, 0,246,  -1, 1 ) >*/
     if (reping) {
-	putval_(&c__4, &c__0, &c__225, &c_n1, &c__1);
+	putval_(&c__4, &c__0, &c__246, &c_n1, &c__1);
     }
 /*< 	reping = .false. >*/
     reping = FALSE_;
@@ -688,8 +708,8 @@ L10300:
 /*< 20000	call lock >*/
 L20000:
     lock_();
-/*< 	call getval(5, 0,231,  useful, 1, ival ) >*/
-    getval_(&c__5, &c__0, &c__231, &useful, &c__1, &ival);
+/*< 	call getval(5, 0,252,  useful, 1, ival ) >*/
+    getval_(&c__5, &c__0, &c__252, &useful, &c__1, &ival);
 /*< 	if( ival .eq. 0 ) goto 20001 >*/
     if (ival == 0) {
 	goto L20001;
@@ -700,17 +720,17 @@ L20000:
     nap_(&c__250, &c__4);
 /*< 	goto 10100 >*/
     goto L10100;
-/*< 20001	call putval(5, 0,237,  useful, 1, 1 ) >*/
+/*< 20001	call putval(5, 0,258,  useful, 1, 1 ) >*/
 L20001:
-    putval_(&c__5, &c__0, &c__237, &useful, &c__1, &c__1);
+    putval_(&c__5, &c__0, &c__258, &useful, &c__1, &c__1);
 /*< 	call unlock >*/
     unlock_();
 /*< 	call nap( 250, 4 ) >*/
     nap_(&c__250, &c__4);
-/*< 	call getval(5, 0,240,  useful, 3, ival ) >*/
-    getval_(&c__5, &c__0, &c__240, &useful, &c__3, &ival);
-/*< 	call addval(4, 0,241,  -1, 1 ) >*/
-    addval_(&c__4, &c__0, &c__241, &c_n1, &c__1);
+/*< 	call getval(5, 0,261,  useful, 3, ival ) >*/
+    getval_(&c__5, &c__0, &c__261, &useful, &c__3, &ival);
+/*< 	call addval(4, 0,262,  -1, 1 ) >*/
+    addval_(&c__4, &c__0, &c__262, &c_n1, &c__1);
 /*< 	call colcur( 7, 2 ) >*/
     colcur_(&c__7, &c__2);
 /*< 	call number(2, ival, -6 ) >*/
@@ -723,31 +743,31 @@ L20001:
     for (i__ = 1; i__ <= 100; ++i__) {
 /*< 	    iobj = i >*/
 	iobj = i__;
-/*< 	    call getval(5, 0,247,  inuse, iobj, ival ) >*/
-	getval_(&c__5, &c__0, &c__247, &inuse, &iobj, &ival);
+/*< 	    call getval(5, 0,268,  inuse, iobj, ival ) >*/
+	getval_(&c__5, &c__0, &c__268, &inuse, &iobj, &ival);
 /*< 	    if( ival .eq. 0 ) goto 20100 >*/
 	if (ival == 0) {
 	    goto L20100;
 	}
-/*< 	    call getval(5, 0,249,  recovr, iobj, ival ) >*/
-	getval_(&c__5, &c__0, &c__249, &recovr, &iobj, &ival);
+/*< 	    call getval(5, 0,270,  recovr, iobj, ival ) >*/
+	getval_(&c__5, &c__0, &c__270, &recovr, &iobj, &ival);
 /*< 	    if( ival .le. 0 ) goto 20002 >*/
 	if (ival <= 0) {
 	    goto L20002;
 	}
-/*< 	    call addval(4, 0,251,  -1, -1 ) >*/
-	addval_(&c__4, &c__0, &c__251, &c_n1, &c_n1);
+/*< 	    call addval(4, 0,272,  -1, -1 ) >*/
+	addval_(&c__4, &c__0, &c__272, &c_n1, &c_n1);
 /*< 	    goto 20100 >*/
 	goto L20100;
-/*< 20002	    call getval(5, 0,254,  type, iobj, itype ) >*/
+/*< 20002	    call getval(5, 0,275,  type, iobj, itype ) >*/
 L20002:
-	getval_(&c__5, &c__0, &c__254, &type__, &iobj, &itype);
-/*< 	    call getval(5, 0,255,  direxn, iobj, idir ) >*/
-	getval_(&c__5, &c__0, &c__255, &direxn, &iobj, &idir);
-/*< 	    call getval(6, 0,256,  pos, iobj, 1, ix ) >*/
-	getval_(&c__6, &c__0, &c__256, &pos, &iobj, &c__1, &ix);
-/*< 	    call getval(6, 0,257,  pos, iobj, 2, iy ) >*/
-	getval_(&c__6, &c__0, &c__257, &pos, &iobj, &c__2, &iy);
+	getval_(&c__5, &c__0, &c__275, &type__, &iobj, &itype);
+/*< 	    call getval(5, 0,276,  direxn, iobj, idir ) >*/
+	getval_(&c__5, &c__0, &c__276, &direxn, &iobj, &idir);
+/*< 	    call getval(6, 0,277,  pos, iobj, 1, ix ) >*/
+	getval_(&c__6, &c__0, &c__277, &pos, &iobj, &c__1, &ix);
+/*< 	    call getval(6, 0,278,  pos, iobj, 2, iy ) >*/
+	getval_(&c__6, &c__0, &c__278, &pos, &iobj, &c__2, &iy);
 /*< 	    if( itype .ne. 2 ) goto 20010 >*/
 	if (itype != 2) {
 	    goto L20010;
@@ -756,13 +776,13 @@ L20002:
 	jobj = idir;
 /*< 	    ival = 0 >*/
 	ival = 0;
-/*< 	    if( jobj .ne. 0 ) call getval(5, 0,261,  inuse, jobj, ival ) >*/
+/*< 	    if( jobj .ne. 0 ) call getval(5, 0,282,  inuse, jobj, ival ) >*/
 	if (jobj != 0) {
-	    getval_(&c__5, &c__0, &c__261, &inuse, &jobj, &ival);
+	    getval_(&c__5, &c__0, &c__282, &inuse, &jobj, &ival);
 	}
-/*< 	    if( ival .ne. 0 ) call getval(5, 0,262,  type, jobj, ival ) >*/
+/*< 	    if( ival .ne. 0 ) call getval(5, 0,283,  type, jobj, ival ) >*/
 	if (ival != 0) {
-	    getval_(&c__5, &c__0, &c__262, &type__, &jobj, &ival);
+	    getval_(&c__5, &c__0, &c__283, &type__, &jobj, &ival);
 	}
 /*< 	    if( ival .eq. 1 ) goto 20005 >*/
 	if (ival == 1) {
@@ -779,29 +799,29 @@ L20003:
 	}
 /*< 	    jobj = iran( 100 ) >*/
 	jobj = iran_(&c__100);
-/*< 	    call getval(5, 0,268,  inuse, jobj, ival ) >*/
-	getval_(&c__5, &c__0, &c__268, &inuse, &jobj, &ival);
+/*< 	    call getval(5, 0,289,  inuse, jobj, ival ) >*/
+	getval_(&c__5, &c__0, &c__289, &inuse, &jobj, &ival);
 /*< 	    if( ival .eq. 0 ) goto 20003 >*/
 	if (ival == 0) {
 	    goto L20003;
 	}
-/*< 	    call getval(5, 0,270,  type, jobj, ival ) >*/
-	getval_(&c__5, &c__0, &c__270, &type__, &jobj, &ival);
+/*< 	    call getval(5, 0,291,  type, jobj, ival ) >*/
+	getval_(&c__5, &c__0, &c__291, &type__, &jobj, &ival);
 /*< 	    if( ival .ne. 1 ) goto 20003 >*/
 	if (ival != 1) {
 	    goto L20003;
 	}
-/*< 	    call putval(5, 0,272,  direxn, iobj, jobj ) >*/
-	putval_(&c__5, &c__0, &c__272, &direxn, &iobj, &jobj);
-/*< 20005	    call getval(6, 0,273,  pos, jobj, 1, imx ) >*/
+/*< 	    call putval(5, 0,293,  direxn, iobj, jobj ) >*/
+	putval_(&c__5, &c__0, &c__293, &direxn, &iobj, &jobj);
+/*< 20005	    call getval(6, 0,294,  pos, jobj, 1, imx ) >*/
 L20005:
-	getval_(&c__6, &c__0, &c__273, &pos, &jobj, &c__1, &imx);
+	getval_(&c__6, &c__0, &c__294, &pos, &jobj, &c__1, &imx);
 /*< 	    if( imx .gt. 100 ) goto 20003 >*/
 	if (imx > 100) {
 	    goto L20003;
 	}
-/*< 	    call getval(6, 0,275,  pos, jobj, 2, imy ) >*/
-	getval_(&c__6, &c__0, &c__275, &pos, &jobj, &c__2, &imy);
+/*< 	    call getval(6, 0,296,  pos, jobj, 2, imy ) >*/
+	getval_(&c__6, &c__0, &c__296, &pos, &jobj, &c__2, &imy);
 /*< 	    idir = isgn(imx-ix) + 3*isgn(imy-iy) + 5 >*/
 	i__1 = imx - ix;
 	i__2 = imy - iy;
@@ -813,10 +833,10 @@ L20005:
 	}
 /*< 	    call torp >*/
 	torp_();
-/*< 	    call putval(5, 0,280,  whosen, itorp, iobj ) >*/
-	putval_(&c__5, &c__0, &c__280, &whosen, &itorp, &iobj);
-/*< 	    call putval(5, 0,281,  recovr, iobj, 6 ) >*/
-	putval_(&c__5, &c__0, &c__281, &recovr, &iobj, &c__6);
+/*< 	    call putval(5, 0,301,  whosen, itorp, iobj ) >*/
+	putval_(&c__5, &c__0, &c__301, &whosen, &itorp, &iobj);
+/*< 	    call putval(5, 0,302,  recovr, iobj, 6 ) >*/
+	putval_(&c__5, &c__0, &c__302, &recovr, &iobj, &c__6);
 /*< 	    goto 20100 >*/
 	goto L20100;
 /*< 20010	    if( idir .eq. 5 ) goto 20100 >*/
@@ -824,8 +844,8 @@ L20010:
 	if (idir == 5) {
 	    goto L20100;
 	}
-/*< 	    call getval(5, 0,285,  charep, iobj, ichar ) >*/
-	getval_(&c__5, &c__0, &c__285, &charep, &iobj, &ichar);
+/*< 	    call getval(5, 0,306,  charep, iobj, ichar ) >*/
+	getval_(&c__5, &c__0, &c__306, &charep, &iobj, &ichar);
 /*< 	    inx = ix + xdir( idir ) >*/
 	inx = ix + xdir[idir - 1];
 /*< 	    iny = iy + ydir( idir ) >*/
@@ -838,16 +858,16 @@ L20010:
 	}
 /*< 	    i >*/
 	if (inchar == 42 && itype == 2) {
-	    putval_(&c__5, &c__0, &c__291, &recovr, &iobj, &c__10);
+	    putval_(&c__5, &c__0, &c__312, &recovr, &iobj, &c__10);
 	}
 /*< 	    if( inchar .eq. 42 .and. itype .eq. 2 ) goto 20050 >*/
 	if (inchar == 42 && itype == 2) {
 	    goto L20050;
 	}
-/*< 	    call putval(5, 0,293,  conflg, iobj, 0 ) >*/
-	putval_(&c__5, &c__0, &c__293, &conflg, &iobj, &c__0);
-/*< 	    call putval(5, 0,294,  direxn, iobj, 5 ) >*/
-	putval_(&c__5, &c__0, &c__294, &direxn, &iobj, &c__5);
+/*< 	    call putval(5, 0,314,  conflg, iobj, 0 ) >*/
+	putval_(&c__5, &c__0, &c__314, &conflg, &iobj, &c__0);
+/*< 	    call putval(5, 0,315,  direxn, iobj, 5 ) >*/
+	putval_(&c__5, &c__0, &c__315, &direxn, &iobj, &c__5);
 /*< 	    if( itype .ne. 3 ) goto 20100 >*/
 	if (itype != 3) {
 	    goto L20100;
@@ -864,20 +884,20 @@ L20010:
 	for (j = 1; j <= 100; ++j) {
 /*< 		jobj = j >*/
 	    jobj = j;
-/*< 		call getval(5, 0,301,  inuse, jobj, ival ) >*/
-	    getval_(&c__5, &c__0, &c__301, &inuse, &jobj, &ival);
+/*< 		call getval(5, 0,322,  inuse, jobj, ival ) >*/
+	    getval_(&c__5, &c__0, &c__322, &inuse, &jobj, &ival);
 /*< 		if( ival .eq. 0 ) goto 20013 >*/
 	    if (ival == 0) {
 		goto L20013;
 	    }
-/*< 		call getval(6, 0,303,  pos, jobj, 1, ival ) >*/
-	    getval_(&c__6, &c__0, &c__303, &pos, &jobj, &c__1, &ival);
+/*< 		call getval(6, 0,324,  pos, jobj, 1, ival ) >*/
+	    getval_(&c__6, &c__0, &c__324, &pos, &jobj, &c__1, &ival);
 /*< 		if( ival .ne. inx ) goto 20013 >*/
 	    if (ival != inx) {
 		goto L20013;
 	    }
-/*< 		call getval(6, 0,305,  pos, jobj, 2, ival ) >*/
-	    getval_(&c__6, &c__0, &c__305, &pos, &jobj, &c__2, &ival);
+/*< 		call getval(6, 0,326,  pos, jobj, 2, ival ) >*/
+	    getval_(&c__6, &c__0, &c__326, &pos, &jobj, &c__2, &ival);
 /*< 		if( ival .eq. iny ) goto 20015 >*/
 	    if (ival == iny) {
 		goto L20015;
@@ -888,33 +908,33 @@ L20013:
 	}
 /*< 20015	    continue >*/
 L20015:
-/*< 	    call putval(5, 0,309,  inuse, jobj, 0 ) >*/
-	putval_(&c__5, &c__0, &c__309, &inuse, &jobj, &c__0);
+/*< 	    call putval(5, 0,330,  inuse, jobj, 0 ) >*/
+	putval_(&c__5, &c__0, &c__330, &inuse, &jobj, &c__0);
 /*< 	    if( inchar .eq. 46 ) goto 20020 >*/
 	if (inchar == 46) {
 	    goto L20020;
 	}
-/*< 	    call getval(5, 0,311,  whosen, iobj, jobj ) >*/
-	getval_(&c__5, &c__0, &c__311, &whosen, &iobj, &jobj);
-/*< 	    call getval(5, 0,312,  inuse, jobj, ival ) >*/
-	getval_(&c__5, &c__0, &c__312, &inuse, &jobj, &ival);
+/*< 	    call getval(5, 0,332,  whosen, iobj, jobj ) >*/
+	getval_(&c__5, &c__0, &c__332, &whosen, &iobj, &jobj);
+/*< 	    call getval(5, 0,333,  inuse, jobj, ival ) >*/
+	getval_(&c__5, &c__0, &c__333, &inuse, &jobj, &ival);
 /*< 	    if( ival .eq. 0 ) goto 20020 >*/
 	if (ival == 0) {
 	    goto L20020;
 	}
-/*< 	    call getval(5, 0,314,  type, jobj, ival ) >*/
-	getval_(&c__5, &c__0, &c__314, &type__, &jobj, &ival);
+/*< 	    call getval(5, 0,335,  type, jobj, ival ) >*/
+	getval_(&c__5, &c__0, &c__335, &type__, &jobj, &ival);
 /*< 	    if( ival .ne. 1 ) goto 20020 >*/
 	if (ival != 1) {
 	    goto L20020;
 	}
-/*< 	    if( inchar .eq. 64 ) call addval(6, 0,316,  score, jobj, 1, 1 ) >*/
+/*< 	    if( inchar .eq. 64 ) call addval(6, 0,337,  score, jobj, 1, 1 ) >*/
 	if (inchar == 64) {
-	    addval_(&c__6, &c__0, &c__316, &score, &jobj, &c__1, &c__1);
+	    addval_(&c__6, &c__0, &c__337, &score, &jobj, &c__1, &c__1);
 	}
-/*< 	    if( inchar .ne. 64 ) call addval(6, 0,317,  score, jobj, 2, 1 ) >*/
+/*< 	    if( inchar .ne. 64 ) call addval(6, 0,338,  score, jobj, 2, 1 ) >*/
 	if (inchar != 64) {
-	    addval_(&c__6, &c__0, &c__317, &score, &jobj, &c__2, &c__1);
+	    addval_(&c__6, &c__0, &c__338, &score, &jobj, &c__2, &c__1);
 	}
 /*< 20020	    call cursor( inx, iny ) >*/
 L20020:
@@ -927,15 +947,15 @@ L20020:
 	if (inchar != 64) {
 	    goto L20025;
 	}
-/*< 	    call addval(5, 0,322,  useful, 2, -1 ) >*/
-	addval_(&c__5, &c__0, &c__322, &useful, &c__2, &c_n1);
+/*< 	    call addval(5, 0,343,  useful, 2, -1 ) >*/
+	addval_(&c__5, &c__0, &c__343, &useful, &c__2, &c_n1);
 /*< 	    if( nuser(0) .le. 1 ) call makmon >*/
 	if (nuser_(&c__0) <= 1) {
 	    makmon_();
 	}
-/*< 20025	    call putval(5, 0,324,  inuse, iobj, 0 ) >*/
+/*< 20025	    call putval(5, 0,345,  inuse, iobj, 0 ) >*/
 L20025:
-	putval_(&c__5, &c__0, &c__324, &inuse, &iobj, &c__0);
+	putval_(&c__5, &c__0, &c__345, &inuse, &iobj, &c__0);
 /*< 	    if( ichrat( ix, iy ) .ne. ichar ) goto 20100 >*/
 	if (ichrat_(&ix, &iy) != ichar) {
 	    goto L20100;
@@ -959,11 +979,11 @@ L20050:
 	pback_(&col_1.iclbla);
 /*< 	    call chrout(32) >*/
 	chrout_(&c__32);
-/*< 20055	    call putval(6, 0,335,  pos, iobj, 1, inx ) >*/
+/*< 20055	    call putval(6, 0,356,  pos, iobj, 1, inx ) >*/
 L20055:
-	putval_(&c__6, &c__0, &c__335, &pos, &iobj, &c__1, &inx);
-/*< 	    call putval(6, 0,336,  pos, iobj, 2, iny ) >*/
-	putval_(&c__6, &c__0, &c__336, &pos, &iobj, &c__2, &iny);
+	putval_(&c__6, &c__0, &c__356, &pos, &iobj, &c__1, &inx);
+/*< 	    call putval(6, 0,357,  pos, iobj, 2, iny ) >*/
+	putval_(&c__6, &c__0, &c__357, &pos, &iobj, &c__2, &iny);
 /*< 	    call cursor( inx, iny ) >*/
 	cursor_(&inx, &iny);
 /*< 	    call pback( iclbla ) >*/
@@ -982,18 +1002,18 @@ L20055:
 	}
 /*< 	    call chrout( ichar ) >*/
 	chrout_(&ichar);
-/*< 	    call getval(5, 0,343,  conflg, iobj, ival ) >*/
-	getval_(&c__5, &c__0, &c__343, &conflg, &iobj, &ival);
-/*< 	    if( ival .eq. 0 ) call putval(5, 0,344,  direxn, iobj, 5 ) >*/
+/*< 	    call getval(5, 0,364,  conflg, iobj, ival ) >*/
+	getval_(&c__5, &c__0, &c__364, &conflg, &iobj, &ival);
+/*< 	    if( ival .eq. 0 ) call putval(5, 0,365,  direxn, iobj, 5 ) >*/
 	if (ival == 0) {
-	    putval_(&c__5, &c__0, &c__344, &direxn, &iobj, &c__5);
+	    putval_(&c__5, &c__0, &c__365, &direxn, &iobj, &c__5);
 	}
 /*< 20100	continue >*/
 L20100:
 	;
     }
-/*< 	call putval(5, 0,346,  useful, 1, 0 ) >*/
-    putval_(&c__5, &c__0, &c__346, &useful, &c__1, &c__0);
+/*< 	call putval(5, 0,367,  useful, 1, 0 ) >*/
+    putval_(&c__5, &c__0, &c__367, &useful, &c__1, &c__0);
 /*< 	goto 10100 >*/
     goto L10100;
 
@@ -1006,18 +1026,18 @@ L_torph:
     if (itorp == 0) {
 	goto L30290;
     }
-/*< 	call putval(6, 0,353,  pos, itorp, 1, ix ) >*/
-    putval_(&c__6, &c__0, &c__353, &pos, &itorp, &c__1, &ix);
-/*< 	call putval(6, 0,354,  pos, itorp, 2, iy ) >*/
-    putval_(&c__6, &c__0, &c__354, &pos, &itorp, &c__2, &iy);
-/*< 	call putval(5, 0,355,  type, itorp, 3 ) >*/
-    putval_(&c__5, &c__0, &c__355, &type__, &itorp, &c__3);
-/*< 	call putval(5, 0,356,  charep, itorp, 46 ) >*/
-    putval_(&c__5, &c__0, &c__356, &charep, &itorp, &c__46);
-/*< 	call putval(5, 0,357,  direxn, itorp, idir ) >*/
-    putval_(&c__5, &c__0, &c__357, &direxn, &itorp, &idir);
-/*< 	call putval(5, 0,358,  conflg, itorp, 1 ) >*/
-    putval_(&c__5, &c__0, &c__358, &conflg, &itorp, &c__1);
+/*< 	call putval(6, 0,374,  pos, itorp, 1, ix ) >*/
+    putval_(&c__6, &c__0, &c__374, &pos, &itorp, &c__1, &ix);
+/*< 	call putval(6, 0,375,  pos, itorp, 2, iy ) >*/
+    putval_(&c__6, &c__0, &c__375, &pos, &itorp, &c__2, &iy);
+/*< 	call putval(5, 0,376,  type, itorp, 3 ) >*/
+    putval_(&c__5, &c__0, &c__376, &type__, &itorp, &c__3);
+/*< 	call putval(5, 0,377,  charep, itorp, 46 ) >*/
+    putval_(&c__5, &c__0, &c__377, &charep, &itorp, &c__46);
+/*< 	call putval(5, 0,378,  direxn, itorp, idir ) >*/
+    putval_(&c__5, &c__0, &c__378, &direxn, &itorp, &idir);
+/*< 	call putval(5, 0,379,  conflg, itorp, 1 ) >*/
+    putval_(&c__5, &c__0, &c__379, &conflg, &itorp, &c__1);
 /*< 30290	call unlock >*/
 L30290:
     unlock_();
@@ -1031,9 +1051,9 @@ L_ifindr:
     lock_();
 /*< 	do 40100 iobjp = 1, 100 >*/
     for (*iobjp = 1; *iobjp <= 100; ++(*iobjp)) {
-/*< 	    call getval(5, 0,365,  inuse, iobjp+0, ival ) >*/
+/*< 	    call getval(5, 0,386,  inuse, iobjp+0, ival ) >*/
 	i__1 = *iobjp;
-	getval_(&c__5, &c__0, &c__365, &inuse, &i__1, &ival);
+	getval_(&c__5, &c__0, &c__386, &inuse, &i__1, &ival);
 /*< 	    if( ival .eq. 0 ) goto 40200 >*/
 	if (ival == 0) {
 	    goto L40200;
@@ -1045,11 +1065,11 @@ L_ifindr:
     *iobjp = 0;
 /*< 	return >*/
     return 0;
-/*< 40200	call putval(4, 0,371,  -1, 1 ) >*/
+/*< 40200	call putval(4, 0,392,  -1, 1 ) >*/
 L40200:
-    putval_(&c__4, &c__0, &c__371, &c_n1, &c__1);
-/*< 	call putval(5, 0,372,  recovr, iobjp, 0 ) >*/
-    putval_(&c__5, &c__0, &c__372, &recovr, iobjp, &c__0);
+    putval_(&c__4, &c__0, &c__392, &c_n1, &c__1);
+/*< 	call putval(5, 0,393,  recovr, iobjp, 0 ) >*/
+    putval_(&c__5, &c__0, &c__393, &recovr, iobjp, &c__0);
 /*< 	return >*/
     return 0;
 
@@ -1083,20 +1103,20 @@ L50100:
     pcolor_(&col_1.iclyel);
 /*< 	call chrout( 64 ) >*/
     chrout_(&c__64);
-/*< 	call putval(6, 0,386,  pos, imon, 1, imx ) >*/
-    putval_(&c__6, &c__0, &c__386, &pos, &imon, &c__1, &imx);
-/*< 	call putval(6, 0,387,  pos, imon, 2, imy ) >*/
-    putval_(&c__6, &c__0, &c__387, &pos, &imon, &c__2, &imy);
-/*< 	call putval(5, 0,388,  direxn, imon, 0 ) >*/
-    putval_(&c__5, &c__0, &c__388, &direxn, &imon, &c__0);
-/*< 	call putval(5, 0,389,  conflg, imon, 0 ) >*/
-    putval_(&c__5, &c__0, &c__389, &conflg, &imon, &c__0);
-/*< 	call putval(5, 0,390,  type, imon, 2 ) >*/
-    putval_(&c__5, &c__0, &c__390, &type__, &imon, &c__2);
-/*< 	call putval(5, 0,391,  charep, imon, 64 ) >*/
-    putval_(&c__5, &c__0, &c__391, &charep, &imon, &c__64);
-/*< 	call addval(5, 0,392,  useful, 2, 1 ) >*/
-    addval_(&c__5, &c__0, &c__392, &useful, &c__2, &c__1);
+/*< 	call putval(6, 0,407,  pos, imon, 1, imx ) >*/
+    putval_(&c__6, &c__0, &c__407, &pos, &imon, &c__1, &imx);
+/*< 	call putval(6, 0,408,  pos, imon, 2, imy ) >*/
+    putval_(&c__6, &c__0, &c__408, &pos, &imon, &c__2, &imy);
+/*< 	call putval(5, 0,409,  direxn, imon, 0 ) >*/
+    putval_(&c__5, &c__0, &c__409, &direxn, &imon, &c__0);
+/*< 	call putval(5, 0,410,  conflg, imon, 0 ) >*/
+    putval_(&c__5, &c__0, &c__410, &conflg, &imon, &c__0);
+/*< 	call putval(5, 0,411,  type, imon, 2 ) >*/
+    putval_(&c__5, &c__0, &c__411, &type__, &imon, &c__2);
+/*< 	call putval(5, 0,412,  charep, imon, 64 ) >*/
+    putval_(&c__5, &c__0, &c__412, &charep, &imon, &c__64);
+/*< 	call addval(5, 0,413,  useful, 2, 1 ) >*/
+    addval_(&c__5, &c__0, &c__413, &useful, &c__2, &c__1);
 /*< 	call unlock >*/
     unlock_();
 /*< 	return >*/
@@ -1109,16 +1129,16 @@ L_kilchr:
     unlock_();
 /*< 	call lock >*/
     lock_();
-/*< 	call getval(6, 0,399,  pos, player, 1, ix ) >*/
-    getval_(&c__6, &c__0, &c__399, &pos, &player, &c__1, &ix);
-/*< 	call getval(6, 0,400,  pos, player, 2, iy ) >*/
-    getval_(&c__6, &c__0, &c__400, &pos, &player, &c__2, &iy);
+/*< 	call getval(6, 0,420,  pos, player, 1, ix ) >*/
+    getval_(&c__6, &c__0, &c__420, &pos, &player, &c__1, &ix);
+/*< 	call getval(6, 0,421,  pos, player, 2, iy ) >*/
+    getval_(&c__6, &c__0, &c__421, &pos, &player, &c__2, &iy);
 /*< 	call cursor( ix, iy ) >*/
     cursor_(&ix, &iy);
 /*< 	call chrout(32) >*/
     chrout_(&c__32);
-/*< 	call putval(5, 0,403,  inuse, player, 0 ) >*/
-    putval_(&c__5, &c__0, &c__403, &inuse, &player, &c__0);
+/*< 	call putval(5, 0,424,  inuse, player, 0 ) >*/
+    putval_(&c__5, &c__0, &c__424, &inuse, &player, &c__0);
 /*< 	call unlock >*/
     unlock_();
 /*< 	return >*/

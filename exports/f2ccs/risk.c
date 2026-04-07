@@ -1,4 +1,4 @@
-/*  -- translated by f2c (version 20160102).
+/*  -- translated by f2c (version 20200916).
    You must link the resulting object file with libf2c:
 	on Microsoft Windows system, link with libf2c.lib;
 	on Linux or Unix systems, link with .../path/to/libf2c.a -lm
@@ -25,148 +25,171 @@ struct {
 static integer c__1 = 1;
 static integer c__5 = 5;
 static integer c__0 = 0;
-static integer c__55 = 55;
-static integer c__56 = 56;
+static integer c__76 = 76;
+static integer c__77 = 77;
 static integer c__2 = 2;
-static integer c__57 = 57;
+static integer c__78 = 78;
 static integer c__7 = 7;
-static integer c__61 = 61;
+static integer c__82 = 82;
 static integer c__3 = 3;
 static integer c__4 = 4;
-static integer c__62 = 62;
+static integer c__83 = 83;
 static integer c_n1 = -1;
 static integer c__26 = 26;
 static integer c__6 = 6;
-static integer c__73 = 73;
-static integer c__75 = 75;
-static integer c__77 = 77;
-static integer c__78 = 78;
-static integer c__1000 = 1000;
-static integer c__82 = 82;
-static integer c__90 = 90;
-static integer c__91 = 91;
+static integer c__94 = 94;
+static integer c__96 = 96;
+static integer c__98 = 98;
 static integer c__99 = 99;
+static integer c__1000 = 1000;
 static integer c__103 = 103;
-static integer c__105 = 105;
-static integer c__109 = 109;
 static integer c__111 = 111;
-static integer c__113 = 113;
+static integer c__112 = 112;
+static integer c__120 = 120;
+static integer c__124 = 124;
+static integer c__126 = 126;
+static integer c__130 = 130;
+static integer c__132 = 132;
+static integer c__134 = 134;
+static integer c__73 = 73;
 static integer c__32 = 32;
 static integer c__8 = 8;
+static integer c__62 = 62;
 static integer c__58 = 58;
-static integer c__137 = 137;
-static integer c__139 = 139;
+static integer c__158 = 158;
+static integer c__160 = 160;
 static integer c__20 = 20;
 static integer c__12 = 12;
 static integer c__10 = 10;
-static integer c__193 = 193;
-static integer c__195 = 195;
-static integer c__197 = 197;
-static integer c__200 = 200;
-static integer c__201 = 201;
-static integer c__205 = 205;
-static integer c__210 = 210;
-static integer c__211 = 211;
-static integer c__212 = 212;
-static integer c__213 = 213;
 static integer c__214 = 214;
-static integer c__215 = 215;
-static integer c__227 = 227;
-static integer c__36 = 36;
-static integer c__228 = 228;
-static integer c__18 = 18;
-static integer c__24 = 24;
-static integer c__80 = 80;
-static integer c__229 = 229;
-static integer c__230 = 230;
+static integer c__216 = 216;
+static integer c__218 = 218;
+static integer c__221 = 221;
+static integer c__222 = 222;
+static integer c__226 = 226;
 static integer c__231 = 231;
 static integer c__232 = 232;
 static integer c__233 = 233;
+static integer c__234 = 234;
 static integer c__235 = 235;
 static integer c__236 = 236;
+static integer c__248 = 248;
+static integer c__36 = 36;
+static integer c__249 = 249;
+static integer c__18 = 18;
+static integer c__24 = 24;
+static integer c__80 = 80;
+static integer c__250 = 250;
+static integer c__251 = 251;
+static integer c__252 = 252;
+static integer c__253 = 253;
+static integer c__254 = 254;
+static integer c__256 = 256;
+static integer c__257 = 257;
 static integer c__100 = 100;
-static integer c__237 = 237;
-static integer c__238 = 238;
-static integer c__239 = 239;
-static integer c__240 = 240;
-static integer c__279 = 279;
-static integer c__282 = 282;
-static integer c__283 = 283;
-static integer c__286 = 286;
-static integer c__294 = 294;
-static integer c__301 = 301;
+static integer c__258 = 258;
+static integer c__259 = 259;
+static integer c__260 = 260;
+static integer c__261 = 261;
+static integer c__300 = 300;
+static integer c__303 = 303;
 static integer c__304 = 304;
-static integer c__308 = 308;
+static integer c__307 = 307;
+static integer c__315 = 315;
+static integer c__322 = 322;
+static integer c__325 = 325;
+static integer c__329 = 329;
 static integer c__9 = 9;
-static integer c__323 = 323;
-static integer c__326 = 326;
-static integer c__328 = 328;
-static integer c__332 = 332;
-static integer c__337 = 337;
-static integer c__341 = 341;
-static integer c__342 = 342;
-static integer c__343 = 343;
-static integer c__345 = 345;
-static integer c__346 = 346;
+static integer c__344 = 344;
 static integer c__347 = 347;
 static integer c__349 = 349;
-static integer c__350 = 350;
 static integer c__353 = 353;
-static integer c__357 = 357;
 static integer c__358 = 358;
-static integer c__360 = 360;
-static integer c__361 = 361;
 static integer c__362 = 362;
 static integer c__363 = 363;
 static integer c__364 = 364;
-static integer c__11 = 11;
+static integer c__366 = 366;
+static integer c__367 = 367;
+static integer c__368 = 368;
+static integer c__370 = 370;
+static integer c__371 = 371;
+static integer c__374 = 374;
+static integer c__378 = 378;
+static integer c__379 = 379;
 static integer c__381 = 381;
+static integer c__382 = 382;
 static integer c__383 = 383;
-static integer c__388 = 388;
-static integer c__389 = 389;
-static integer c__391 = 391;
-static integer c__393 = 393;
-static integer c__394 = 394;
+static integer c__384 = 384;
+static integer c__385 = 385;
+static integer c__11 = 11;
 static integer c__402 = 402;
 static integer c__404 = 404;
-static integer c__406 = 406;
+static integer c__409 = 409;
 static integer c__410 = 410;
-static integer c__413 = 413;
+static integer c__412 = 412;
+static integer c__414 = 414;
 static integer c__415 = 415;
-static integer c__421 = 421;
+static integer c__423 = 423;
 static integer c__425 = 425;
 static integer c__427 = 427;
-static integer c__432 = 432;
+static integer c__431 = 431;
 static integer c__434 = 434;
-static integer c__435 = 435;
-static integer c__444 = 444;
+static integer c__436 = 436;
+static integer c__442 = 442;
 static integer c__446 = 446;
 static integer c__448 = 448;
-static integer c__449 = 449;
-static integer c__450 = 450;
-static integer c__451 = 451;
-static integer c__452 = 452;
+static integer c__453 = 453;
 static integer c__455 = 455;
 static integer c__456 = 456;
-static integer c__463 = 463;
-static integer c__464 = 464;
 static integer c__465 = 465;
-static integer c_n2 = -2;
+static integer c__467 = 467;
 static integer c__469 = 469;
+static integer c__470 = 470;
+static integer c__471 = 471;
+static integer c__472 = 472;
+static integer c__473 = 473;
 static integer c__476 = 476;
+static integer c__477 = 477;
+static integer c__484 = 484;
+static integer c__485 = 485;
+static integer c__486 = 486;
+static integer c_n2 = -2;
+static integer c__490 = 490;
+static integer c__497 = 497;
 static integer c__3000 = 3000;
-static integer c__587 = 587;
+static integer c__608 = 608;
 
-/* 	@HDR@	$Id$ */
-/* 	@HDR@		Copyright 1982-2025 by */
-/* 	@HDR@		Christopher Caldwell/Brightsands */
-/* 	@HDR@		P.O. Box 401, Bailey Island, ME 04003 */
-/* 	@HDR@		All Rights Reserved */
-/* 	@HDR@ */
-/* 	@HDR@	This software comprises unpublished confidential information */
-/* 	@HDR@	of Brightsands and may not be used, copied or made available */
-/* 	@HDR@	to anyone, except in accordance with the license under which */
-/* 	@HDR@	it is furnished. */
+/* indx#	risk.for - A computerized version of the 1957 Hasbro game of Risk */
+/* @HDR@	$Id$ */
+/* @HDR@ */
+/* @HDR@	Copyright (c) 1982-2026 Christopher Caldwell (Christopher.M.Caldwell0@gmail.com) */
+/* @HDR@ */
+/* @HDR@	Permission is hereby granted, free of charge, to any person */
+/* @HDR@	obtaining a copy of this software and associated documentation */
+/* @HDR@	files (the "Software"), to deal in the Software without */
+/* @HDR@	restriction, including without limitation the rights to use, */
+/* @HDR@	copy, modify, merge, publish, distribute, sublicense, and/or */
+/* @HDR@	sell copies of the Software, and to permit persons to whom */
+/* @HDR@	the Software is furnished to do so, subject to the following */
+/* @HDR@	conditions: */
+/* @HDR@ */
+/* @HDR@	The above copyright notice and this permission notice shall be */
+/* @HDR@	included in all copies or substantial portions of the Software. */
+/* @HDR@ */
+/* @HDR@	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY */
+/* @HDR@	KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE */
+/* @HDR@	WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE */
+/* @HDR@	AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT */
+/* @HDR@	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, */
+/* @HDR@	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING */
+/* @HDR@	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR */
+/* @HDR@	OTHER DEALINGS IN THE SOFTWARE. */
+
+/* hist#	2026-02-17 - Christopher.M.Caldwell0@gmail.com - Created */
+/* ------------------------------------------------------------------------ */
+/* doc#	risk.for - A computerized version of the 1957 Hasbro game of Risk */
+/* doc#	Made with Robert Kenney's HIPAK.MAC. */
+/* ------------------------------------------------------------------------ */
 /*< 	subroutine defcol >*/
 /* Subroutine */ int defcol_()
 {
@@ -305,21 +328,21 @@ L3:
     i__2 = itbadr_(&screen);
     i__1 = iright_(&i__2);
     defadr_(&c__1, &i__1);
-/*< 20	call getval(5, 0,55,  useful, 1, maxreg ) >*/
+/*< 20	call getval(5, 0,76,  useful, 1, maxreg ) >*/
 L20:
-    getval_(&c__5, &c__0, &c__55, &useful, &c__1, &maxreg);
-/*< 	call getval(5, 0,56,  useful, 2, maxusr ) >*/
-    getval_(&c__5, &c__0, &c__56, &useful, &c__2, &maxusr);
-/*< 	call getval(5, 0,57,  useful, 7, maxcon ) >*/
-    getval_(&c__5, &c__0, &c__57, &useful, &c__7, &maxcon);
+    getval_(&c__5, &c__0, &c__76, &useful, &c__1, &maxreg);
+/*< 	call getval(5, 0,77,  useful, 2, maxusr ) >*/
+    getval_(&c__5, &c__0, &c__77, &useful, &c__2, &maxusr);
+/*< 	call getval(5, 0,78,  useful, 7, maxcon ) >*/
+    getval_(&c__5, &c__0, &c__78, &useful, &c__7, &maxcon);
 /*< 	continue ! call ctrap >*/
 /* 	    call cease( useful ) */
 /*< 	call lock >*/
     lock_();
-/*< 	call addval(5, 0,61,  useful, 3, 1 ) >*/
-    addval_(&c__5, &c__0, &c__61, &useful, &c__3, &c__1);
-/*< 	call getval(4, 0,62,  -1, numusr ) >*/
-    getval_(&c__4, &c__0, &c__62, &c_n1, &numusr);
+/*< 	call addval(5, 0,82,  useful, 3, 1 ) >*/
+    addval_(&c__5, &c__0, &c__82, &useful, &c__3, &c__1);
+/*< 	call getval(4, 0,83,  -1, numusr ) >*/
+    getval_(&c__4, &c__0, &c__83, &c_n1, &numusr);
 /*< 	if( numusr .gt. maxusr ) call pstop >*/
     if (numusr > maxusr) {
 	pstop_();
@@ -347,29 +370,29 @@ L20:
 /*< 30	regnum = iran( 26 ) >*/
 L30:
     regnum = iran_(&c__26);
-/*< 	call getval(6, 0,73,  coord, regnum, 1, ival ) >*/
-    getval_(&c__6, &c__0, &c__73, &coord, &regnum, &c__1, &ival);
+/*< 	call getval(6, 0,94,  coord, regnum, 1, ival ) >*/
+    getval_(&c__6, &c__0, &c__94, &coord, &regnum, &c__1, &ival);
 /*< 	if( ival .eq. 0 ) goto 30 >*/
     if (ival == 0) {
 	goto L30;
     }
-/*< 	call getval(5, 0,75,  numat, regnum, ival ) >*/
-    getval_(&c__5, &c__0, &c__75, &numat, &regnum, &ival);
+/*< 	call getval(5, 0,96,  numat, regnum, ival ) >*/
+    getval_(&c__5, &c__0, &c__96, &numat, &regnum, &ival);
 /*< 	if( ival .ne. 0 ) goto 30 >*/
     if (ival != 0) {
 	goto L30;
     }
-/*< 	call putval(4, 0,77,  -1, strtnm ) >*/
-    putval_(&c__4, &c__0, &c__77, &c_n1, &strtnm);
-/*< 	call putval(5, 0,78,  owner, regnum, numusr ) >*/
-    putval_(&c__5, &c__0, &c__78, &owner, &regnum, &numusr);
+/*< 	call putval(4, 0,98,  -1, strtnm ) >*/
+    putval_(&c__4, &c__0, &c__98, &c_n1, &strtnm);
+/*< 	call putval(5, 0,99,  owner, regnum, numusr ) >*/
+    putval_(&c__5, &c__0, &c__99, &owner, &regnum, &numusr);
 /*< 	call unlock >*/
     unlock_();
 /*< 35	call nap( 1000, 4 ) >*/
 L35:
     nap_(&c__1000, &c__4);
-/*< 	call getval(5, 0,82,  useful, 3, ival ) >*/
-    getval_(&c__5, &c__0, &c__82, &useful, &c__3, &ival);
+/*< 	call getval(5, 0,103,  useful, 3, ival ) >*/
+    getval_(&c__5, &c__0, &c__103, &useful, &c__3, &ival);
 /*< 	if( ival .lt. maxusr ) goto 35 >*/
     if (ival < maxusr) {
 	goto L35;
@@ -381,10 +404,10 @@ L35:
 /*< 100	call lock >*/
 L100:
     lock_();
-/*< 	call addval(5, 0,90,  useful, 5, 1 ) >*/
-    addval_(&c__5, &c__0, &c__90, &useful, &c__5, &c__1);
-/*< 	call getval(4, 0,91,  -1, ival ) >*/
-    getval_(&c__4, &c__0, &c__91, &c_n1, &ival);
+/*< 	call addval(5, 0,111,  useful, 5, 1 ) >*/
+    addval_(&c__5, &c__0, &c__111, &useful, &c__5, &c__1);
+/*< 	call getval(4, 0,112,  -1, ival ) >*/
+    getval_(&c__4, &c__0, &c__112, &c_n1, &ival);
 /*< 	call unlock >*/
     unlock_();
 /*< 	if( ival .eq. 1 ) goto 20000 >*/
@@ -404,8 +427,8 @@ L110:
     compos = 0;
 /*< 	numarm = 0 >*/
     numarm = 0;
-/*< 	call getval(5, 0,99,  useful, 4, maxcom ) >*/
-    getval_(&c__5, &c__0, &c__99, &useful, &c__4, &maxcom);
+/*< 	call getval(5, 0,120,  useful, 4, maxcom ) >*/
+    getval_(&c__5, &c__0, &c__120, &useful, &c__4, &maxcom);
 /*< 	do 140 i = 1, maxcom >*/
     i__1 = maxcom;
     for (i__ = 1; i__ <= i__1; ++i__) {
@@ -415,14 +438,14 @@ L110:
 	if (compos >= 22) {
 	    goto L140;
 	}
-/*< 	    call getval(5, 0,103,  whos, numcom, ival ) >*/
-	getval_(&c__5, &c__0, &c__103, &whos, &numcom, &ival);
+/*< 	    call getval(5, 0,124,  whos, numcom, ival ) >*/
+	getval_(&c__5, &c__0, &c__124, &whos, &numcom, &ival);
 /*< 	    if( ival .ne. numusr ) goto 140 >*/
 	if (ival != numusr) {
 	    goto L140;
 	}
-/*< 	    call getval(5, 0,105,  timlft, numcom, timeto ) >*/
-	getval_(&c__5, &c__0, &c__105, &timlft, &numcom, &timeto);
+/*< 	    call getval(5, 0,126,  timlft, numcom, timeto ) >*/
+	getval_(&c__5, &c__0, &c__126, &timlft, &numcom, &timeto);
 /*< 	    if( timeto .eq. 0 ) goto 140 >*/
 	if (timeto == 0) {
 	    goto L140;
@@ -431,16 +454,16 @@ L110:
 	++compos;
 /*< 	    itest = timeto >*/
 	itest = timeto;
-/*< 	    call getval(5, 0,109,  regfrm, numcom, r1 ) >*/
-	getval_(&c__5, &c__0, &c__109, &regfrm, &numcom, &r1);
+/*< 	    call getval(5, 0,130,  regfrm, numcom, r1 ) >*/
+	getval_(&c__5, &c__0, &c__130, &regfrm, &numcom, &r1);
 /*< 	    itest = 4096*itest + r1 >*/
 	itest = (itest << 12) + r1;
-/*< 	    call getval(5, 0,111,  regto, numcom, r2 ) >*/
-	getval_(&c__5, &c__0, &c__111, &regto, &numcom, &r2);
+/*< 	    call getval(5, 0,132,  regto, numcom, r2 ) >*/
+	getval_(&c__5, &c__0, &c__132, &regto, &numcom, &r2);
 /*< 	    itest = 128*itest + r2 >*/
 	itest = (itest << 7) + r2;
-/*< 	    call getval(5, 0,113,  amtmov, numcom, numove ) >*/
-	getval_(&c__5, &c__0, &c__113, &amtmov, &numcom, &numove);
+/*< 	    call getval(5, 0,134,  amtmov, numcom, numove ) >*/
+	getval_(&c__5, &c__0, &c__134, &amtmov, &numcom, &numove);
 /*< 	    itest = 128*itest + numove >*/
 	itest = (itest << 7) + numove;
 /*< 	    numarm = numarm + numove >*/
@@ -505,14 +528,14 @@ L151:
     for (i__ = 1; i__ <= i__1; ++i__) {
 /*< 	    numreg = i >*/
 	numreg = i__;
-/*< 	    call getval(5, 0,137,  owner, numreg, ival ) >*/
-	getval_(&c__5, &c__0, &c__137, &owner, &numreg, &ival);
+/*< 	    call getval(5, 0,158,  owner, numreg, ival ) >*/
+	getval_(&c__5, &c__0, &c__158, &owner, &numreg, &ival);
 /*< 	    if( ival .ne. numusr ) goto 160 >*/
 	if (ival != numusr) {
 	    goto L160;
 	}
-/*< 	    call getval(5, 0,139,  numat, numreg, ival ) >*/
-	getval_(&c__5, &c__0, &c__139, &numat, &numreg, &ival);
+/*< 	    call getval(5, 0,160,  numat, numreg, ival ) >*/
+	getval_(&c__5, &c__0, &c__160, &numat, &numreg, &ival);
 /*< 	    numarm = numarm + ival >*/
 	numarm += ival;
 /*< 	    if( ival .gt. 0 ) numrgs = numrgs + 1 >*/
@@ -634,20 +657,20 @@ L450:
     }
 /*< 	call lock >*/
     lock_();
-/*< 	call getval(6, 0,193,  disto, r1, r2, timeto ) >*/
-    getval_(&c__6, &c__0, &c__193, &disto, &r1, &r2, &timeto);
+/*< 	call getval(6, 0,214,  disto, r1, r2, timeto ) >*/
+    getval_(&c__6, &c__0, &c__214, &disto, &r1, &r2, &timeto);
 /*< 	if( timeto .eq. 0 ) goto 520 >*/
     if (timeto == 0) {
 	goto L520;
     }
-/*< 	call getval(5, 0,195,  owner, r1, ival ) >*/
-    getval_(&c__5, &c__0, &c__195, &owner, &r1, &ival);
+/*< 	call getval(5, 0,216,  owner, r1, ival ) >*/
+    getval_(&c__5, &c__0, &c__216, &owner, &r1, &ival);
 /*< 	if( ival .ne. numusr ) goto 520 >*/
     if (ival != numusr) {
 	goto L520;
     }
-/*< 	call getval(5, 0,197,  numat, r1, ival ) >*/
-    getval_(&c__5, &c__0, &c__197, &numat, &r1, &ival);
+/*< 	call getval(5, 0,218,  numat, r1, ival ) >*/
+    getval_(&c__5, &c__0, &c__218, &numat, &r1, &ival);
 /*< 	if( ival .eq. 0 ) goto 520 >*/
     if (ival == 0) {
 	goto L520;
@@ -658,11 +681,11 @@ L450:
     i__3 = min(ival,nummen);
     i__1 = 1, i__2 = min(i__3,127);
     nummen = max(i__1,i__2);
-/*< 	call addval(4, 0,200,  -1, -nummen ) >*/
+/*< 	call addval(4, 0,221,  -1, -nummen ) >*/
     i__1 = -nummen;
-    addval_(&c__4, &c__0, &c__200, &c_n1, &i__1);
-/*< 	call getval(5, 0,201,  useful, 4, maxcom ) >*/
-    getval_(&c__5, &c__0, &c__201, &useful, &c__4, &maxcom);
+    addval_(&c__4, &c__0, &c__221, &c_n1, &i__1);
+/*< 	call getval(5, 0,222,  useful, 4, maxcom ) >*/
+    getval_(&c__5, &c__0, &c__222, &useful, &c__4, &maxcom);
 /*< 	if( maxcom .eq. 0 ) goto 501 >*/
     if (maxcom == 0) {
 	goto L501;
@@ -672,8 +695,8 @@ L450:
     for (i__ = 1; i__ <= i__1; ++i__) {
 /*< 	    numcom = i >*/
 	numcom = i__;
-/*< 	    call getval(5, 0,205,  timlft, numcom, ival ) >*/
-	getval_(&c__5, &c__0, &c__205, &timlft, &numcom, &ival);
+/*< 	    call getval(5, 0,226,  timlft, numcom, ival ) >*/
+	getval_(&c__5, &c__0, &c__226, &timlft, &numcom, &ival);
 /*< 	    if( ival .eq. 0 ) goto 510 >*/
 	if (ival == 0) {
 	    goto L510;
@@ -685,20 +708,20 @@ L450:
 L501:
 /*< 	numcom = maxcom + 1 >*/
     numcom = maxcom + 1;
-/*< 	call putval(5, 0,210,  useful, 4, numcom ) >*/
-    putval_(&c__5, &c__0, &c__210, &useful, &c__4, &numcom);
-/*< 510	call putval(5, 0,211,  regfrm, numcom, r1 ) >*/
+/*< 	call putval(5, 0,231,  useful, 4, numcom ) >*/
+    putval_(&c__5, &c__0, &c__231, &useful, &c__4, &numcom);
+/*< 510	call putval(5, 0,232,  regfrm, numcom, r1 ) >*/
 L510:
-    putval_(&c__5, &c__0, &c__211, &regfrm, &numcom, &r1);
-/*< 	call putval(5, 0,212,  regto, numcom, r2 ) >*/
-    putval_(&c__5, &c__0, &c__212, &regto, &numcom, &r2);
-/*< 	call putval(5, 0,213,  amtmov, numcom, nummen ) >*/
-    putval_(&c__5, &c__0, &c__213, &amtmov, &numcom, &nummen);
-/*< 	call putval(5, 0,214,  timlft, numcom, ifix(sqrt(float(nummen))*timeto) ) >*/
+    putval_(&c__5, &c__0, &c__232, &regfrm, &numcom, &r1);
+/*< 	call putval(5, 0,233,  regto, numcom, r2 ) >*/
+    putval_(&c__5, &c__0, &c__233, &regto, &numcom, &r2);
+/*< 	call putval(5, 0,234,  amtmov, numcom, nummen ) >*/
+    putval_(&c__5, &c__0, &c__234, &amtmov, &numcom, &nummen);
+/*< 	call putval(5, 0,235,  timlft, numcom, ifix(sqrt(float(nummen))*timeto) ) >*/
     i__1 = (integer) (sqrt((real) nummen) * timeto);
-    putval_(&c__5, &c__0, &c__214, &timlft, &numcom, &i__1);
-/*< 	call putval(5, 0,215,  whos, numcom, numusr ) >*/
-    putval_(&c__5, &c__0, &c__215, &whos, &numcom, &numusr);
+    putval_(&c__5, &c__0, &c__235, &timlft, &numcom, &i__1);
+/*< 	call putval(5, 0,236,  whos, numcom, numusr ) >*/
+    putval_(&c__5, &c__0, &c__236, &whos, &numcom, &numusr);
 /*< 520	call unlock >*/
 L520:
     unlock_();
@@ -725,33 +748,33 @@ L10000:
     if (lerror_(&c__0)) {
 	bug_("Cannot lookup file.^E", (ftnlen)21);
     }
-/*< 	call init(5, 0,227,  useful, 36, 8 ) >*/
-    init_(&c__5, &c__0, &c__227, &useful, &c__36, &c__8);
-/*< 	call init(6, 0,228,  screen, 18, 24, 80 ) >*/
-    init_(&c__6, &c__0, &c__228, &screen, &c__18, &c__24, &c__80);
-/*< 	call init(6, 0,229,  coord, 7, 26, 2 ) >*/
-    init_(&c__6, &c__0, &c__229, &coord, &c__7, &c__26, &c__2);
-/*< 	call init(6, 0,230,  disto, 7, 26, 26 ) >*/
-    init_(&c__6, &c__0, &c__230, &disto, &c__7, &c__26, &c__26);
-/*< 	call init(5, 0,231,  owner, 3, 26 ) >*/
-    init_(&c__5, &c__0, &c__231, &owner, &c__3, &c__26);
-/*< 	call init(5, 0,232,  numat, 36, 26 ) >*/
-    init_(&c__5, &c__0, &c__232, &numat, &c__36, &c__26);
-/*< 	call init(6, 0,233,  contan, 1, 26, 26 ) >*/
-    init_(&c__6, &c__0, &c__233, &contan, &c__1, &c__26, &c__26);
-/* 	CALL INIT(6, 0,234,  CONARM, 7, 26, 10 ) */
-/*< 	call init(5, 0,235,  conarm, 7, 26 ) >*/
-    init_(&c__5, &c__0, &c__235, &conarm, &c__7, &c__26);
-/*< 	call init(5, 0,236,  regfrm, 5, 100 ) >*/
-    init_(&c__5, &c__0, &c__236, &regfrm, &c__5, &c__100);
-/*< 	call init(5, 0,237,  regto, 5, 100 ) >*/
-    init_(&c__5, &c__0, &c__237, &regto, &c__5, &c__100);
-/*< 	call init(5, 0,238,  amtmov, 7, 100 ) >*/
-    init_(&c__5, &c__0, &c__238, &amtmov, &c__7, &c__100);
-/*< 	call init(5, 0,239,  timlft, 12, 100 ) >*/
-    init_(&c__5, &c__0, &c__239, &timlft, &c__12, &c__100);
-/*< 	call init(5, 0,240,  whos, 7, 100 ) >*/
-    init_(&c__5, &c__0, &c__240, &whos, &c__7, &c__100);
+/*< 	call init(5, 0,248,  useful, 36, 8 ) >*/
+    init_(&c__5, &c__0, &c__248, &useful, &c__36, &c__8);
+/*< 	call init(6, 0,249,  screen, 18, 24, 80 ) >*/
+    init_(&c__6, &c__0, &c__249, &screen, &c__18, &c__24, &c__80);
+/*< 	call init(6, 0,250,  coord, 7, 26, 2 ) >*/
+    init_(&c__6, &c__0, &c__250, &coord, &c__7, &c__26, &c__2);
+/*< 	call init(6, 0,251,  disto, 7, 26, 26 ) >*/
+    init_(&c__6, &c__0, &c__251, &disto, &c__7, &c__26, &c__26);
+/*< 	call init(5, 0,252,  owner, 3, 26 ) >*/
+    init_(&c__5, &c__0, &c__252, &owner, &c__3, &c__26);
+/*< 	call init(5, 0,253,  numat, 36, 26 ) >*/
+    init_(&c__5, &c__0, &c__253, &numat, &c__36, &c__26);
+/*< 	call init(6, 0,254,  contan, 1, 26, 26 ) >*/
+    init_(&c__6, &c__0, &c__254, &contan, &c__1, &c__26, &c__26);
+/* 	CALL INIT(6, 0,255,  CONARM, 7, 26, 10 ) */
+/*< 	call init(5, 0,256,  conarm, 7, 26 ) >*/
+    init_(&c__5, &c__0, &c__256, &conarm, &c__7, &c__26);
+/*< 	call init(5, 0,257,  regfrm, 5, 100 ) >*/
+    init_(&c__5, &c__0, &c__257, &regfrm, &c__5, &c__100);
+/*< 	call init(5, 0,258,  regto, 5, 100 ) >*/
+    init_(&c__5, &c__0, &c__258, &regto, &c__5, &c__100);
+/*< 	call init(5, 0,259,  amtmov, 7, 100 ) >*/
+    init_(&c__5, &c__0, &c__259, &amtmov, &c__7, &c__100);
+/*< 	call init(5, 0,260,  timlft, 12, 100 ) >*/
+    init_(&c__5, &c__0, &c__260, &timlft, &c__12, &c__100);
+/*< 	call init(5, 0,261,  whos, 7, 100 ) >*/
+    init_(&c__5, &c__0, &c__261, &whos, &c__7, &c__100);
 /*< 	call defadr( 1, iright( itbadr( screen ) ) ) >*/
     i__2 = itbadr_(&screen);
     i__1 = iright_(&i__2);
@@ -851,19 +874,19 @@ L10090:
 	    if (ix > 68) {
 		bug_("Region mark out of bounds.^E", (ftnlen)28);
 	    }
-/*< 		call getval(6, 0,279,  coord, regnum, 1, ival ) >*/
-	    getval_(&c__6, &c__0, &c__279, &coord, &regnum, &c__1, &ival);
+/*< 		call getval(6, 0,300,  coord, regnum, 1, ival ) >*/
+	    getval_(&c__6, &c__0, &c__300, &coord, &regnum, &c__1, &ival);
 /*< 		if( ival .ne. 0 )call bug('Two regions with same name.^E') >*/
 	    if (ival != 0) {
 		bug_("Two regions with same name.^E", (ftnlen)29);
 	    }
 /*< 		maxreg = maxreg + 1 >*/
 	    ++maxreg;
-/*< 		call putval(4, 0,282,  -1, ix+1 ) >*/
+/*< 		call putval(4, 0,303,  -1, ix+1 ) >*/
 	    i__1 = ix + 1;
-	    putval_(&c__4, &c__0, &c__282, &c_n1, &i__1);
-/*< 		call putval(6, 0,283,  coord, regnum, 2, iy ) >*/
-	    putval_(&c__6, &c__0, &c__283, &coord, &regnum, &c__2, &iy);
+	    putval_(&c__4, &c__0, &c__303, &c_n1, &i__1);
+/*< 		call putval(6, 0,304,  coord, regnum, 2, iy ) >*/
+	    putval_(&c__6, &c__0, &c__304, &coord, &regnum, &c__2, &iy);
 /*< 10100	    continue >*/
 L10100:
 	    ;
@@ -871,8 +894,8 @@ L10100:
 /*< 10200	continue >*/
 /* L10200: */
     }
-/*< 	call putval(5, 0,286,  useful, 1, maxreg ) >*/
-    putval_(&c__5, &c__0, &c__286, &useful, &c__1, &maxreg);
+/*< 	call putval(5, 0,307,  useful, 1, maxreg ) >*/
+    putval_(&c__5, &c__0, &c__307, &useful, &c__1, &maxreg);
 /*< 	do 10400 i = 1, maxreg >*/
     i__1 = maxreg;
     for (i__ = 1; i__ <= i__1; ++i__) {
@@ -888,8 +911,8 @@ L10100:
 	if (regnum < 1 || regnum > 26) {
 	    bug_("Illegal region name in distances.^E", (ftnlen)35);
 	}
-/*< 	    call getval(6, 0,294,  coord, regnum, 1, ival ) >*/
-	getval_(&c__6, &c__0, &c__294, &coord, &regnum, &c__1, &ival);
+/*< 	    call getval(6, 0,315,  coord, regnum, 1, ival ) >*/
+	getval_(&c__6, &c__0, &c__315, &coord, &regnum, &c__1, &ival);
 /*< 	    if( ival .eq. 0 ) call bug('Unknown region name.^E') >*/
 	if (ival == 0) {
 	    bug_("Unknown region name.^E", (ftnlen)22);
@@ -907,14 +930,14 @@ L10100:
 	    if (reginq < 1 || reginq > 26) {
 		bug_("Illegal region name in list.^E", (ftnlen)30);
 	    }
-/*< 		call getval(6, 0,301,  coord, reginq, 1, ival ) >*/
-	    getval_(&c__6, &c__0, &c__301, &coord, &reginq, &c__1, &ival);
+/*< 		call getval(6, 0,322,  coord, reginq, 1, ival ) >*/
+	    getval_(&c__6, &c__0, &c__322, &coord, &reginq, &c__1, &ival);
 /*< 		if(  >*/
 	    if (ival == 0) {
 		bug_("Illegal region name in list.^E", (ftnlen)30);
 	    }
-/*< 		call getval(6, 0,304,  disto, regnum, reginq, ival ) >*/
-	    getval_(&c__6, &c__0, &c__304, &disto, &regnum, &reginq, &ival);
+/*< 		call getval(6, 0,325,  disto, regnum, reginq, ival ) >*/
+	    getval_(&c__6, &c__0, &c__325, &disto, &regnum, &reginq, &ival);
 /*< 		if( ival .ne. 0 ) call bug('Distance defined.^E') >*/
 	    if (ival != 0) {
 		bug_("Distance defined.^E", (ftnlen)19);
@@ -926,8 +949,8 @@ L10100:
 	    if (ival < 1) {
 		bug_("Invalid destance.^E", (ftnlen)19);
 	    }
-/*< 		call putval(4, 0,308,  -1, ival ) >*/
-	    putval_(&c__4, &c__0, &c__308, &c_n1, &ival);
+/*< 		call putval(4, 0,329,  -1, ival ) >*/
+	    putval_(&c__4, &c__0, &c__329, &c_n1, &ival);
 /*< 10300	    continue >*/
 L10300:
 	    ;
@@ -966,20 +989,20 @@ L10500:
 	if (regnum < 1 || regnum > 26) {
 	    bug_("Illegal region in continent.^E", (ftnlen)30);
 	}
-/*< 		call getval(6, 0,323,  coord, regnum, 1, ival ) >*/
-	getval_(&c__6, &c__0, &c__323, &coord, &regnum, &c__1, &ival);
+/*< 		call getval(6, 0,344,  coord, regnum, 1, ival ) >*/
+	getval_(&c__6, &c__0, &c__344, &coord, &regnum, &c__1, &ival);
 /*< 		if(  >*/
 	if (ival == 0) {
 	    bug_("Illegal region in continent.^E", (ftnlen)30);
 	}
-/*< 		call getval(6, 0,326,  contan, maxcon, regnum, ival ) >*/
-	getval_(&c__6, &c__0, &c__326, &contan, &maxcon, &regnum, &ival);
+/*< 		call getval(6, 0,347,  contan, maxcon, regnum, ival ) >*/
+	getval_(&c__6, &c__0, &c__347, &contan, &maxcon, &regnum, &ival);
 /*< 		if( ival .ne. 0 ) call bug('Repeated region.^E') >*/
 	if (ival != 0) {
 	    bug_("Repeated region.^E", (ftnlen)18);
 	}
-/*< 		call putval(4, 0,328,  -1, 1 ) >*/
-	putval_(&c__4, &c__0, &c__328, &c_n1, &c__1);
+/*< 		call putval(4, 0,349,  -1, 1 ) >*/
+	putval_(&c__4, &c__0, &c__349, &c_n1, &c__1);
 /*< 10600	    continue >*/
 /* L10600: */
     }
@@ -990,8 +1013,8 @@ L10500:
     if (ival < 0) {
 	bug_("Illegal content-army number.^E", (ftnlen)30);
     }
-/*< 	    call putval(5, 0,332,  conarm, maxcon, ival ) >*/
-    putval_(&c__5, &c__0, &c__332, &conarm, &maxcon, &ival);
+/*< 	    call putval(5, 0,353,  conarm, maxcon, ival ) >*/
+    putval_(&c__5, &c__0, &c__353, &conarm, &maxcon, &ival);
 /*< 	goto 10500 >*/
     goto L10500;
 /*< 10700	call close( 2 ) >*/
@@ -999,8 +1022,8 @@ L10700:
     close_(&c__2);
 /*< 	call setdis( 0 ) >*/
     setdis_(&c__0);
-/*< 	call putval(5, 0,337,  useful, 7, maxcon ) >*/
-    putval_(&c__5, &c__0, &c__337, &useful, &c__7, &maxcon);
+/*< 	call putval(5, 0,358,  useful, 7, maxcon ) >*/
+    putval_(&c__5, &c__0, &c__358, &useful, &c__7, &maxcon);
 /*< 10800	call string(1,'Input number of players: ^B') >*/
 L10800:
     string_(&c__1, "Input number of players: ^B", (ftnlen)27);
@@ -1010,37 +1033,37 @@ L10800:
     if (maxusr < 1 || maxusr > 6) {
 	goto L10800;
     }
-/*< 	call putval(5, 0,341,  useful, 2, maxusr ) >*/
-    putval_(&c__5, &c__0, &c__341, &useful, &c__2, &maxusr);
-/*< 	call putval(5, 0,342,  useful, 3, 0 ) >*/
-    putval_(&c__5, &c__0, &c__342, &useful, &c__3, &c__0);
-/*< 	call putval(5, 0,343,  useful, 8, 0 ) >*/
-    putval_(&c__5, &c__0, &c__343, &useful, &c__8, &c__0);
+/*< 	call putval(5, 0,362,  useful, 2, maxusr ) >*/
+    putval_(&c__5, &c__0, &c__362, &useful, &c__2, &maxusr);
+/*< 	call putval(5, 0,363,  useful, 3, 0 ) >*/
+    putval_(&c__5, &c__0, &c__363, &useful, &c__3, &c__0);
+/*< 	call putval(5, 0,364,  useful, 8, 0 ) >*/
+    putval_(&c__5, &c__0, &c__364, &useful, &c__8, &c__0);
 /*< 	if( maxusr .gt. 1 ) goto 11000 >*/
     if (maxusr > 1) {
 	goto L11000;
     }
-/*< 	call putval(4, 0,345,  -1, 1 ) >*/
-    putval_(&c__4, &c__0, &c__345, &c_n1, &c__1);
-/*< 	call addval(5, 0,346,  useful, 2, 1 ) >*/
-    addval_(&c__5, &c__0, &c__346, &useful, &c__2, &c__1);
-/*< 	call addval(5, 0,347,  useful, 3, 1 ) >*/
-    addval_(&c__5, &c__0, &c__347, &useful, &c__3, &c__1);
+/*< 	call putval(4, 0,366,  -1, 1 ) >*/
+    putval_(&c__4, &c__0, &c__366, &c_n1, &c__1);
+/*< 	call addval(5, 0,367,  useful, 2, 1 ) >*/
+    addval_(&c__5, &c__0, &c__367, &useful, &c__2, &c__1);
+/*< 	call addval(5, 0,368,  useful, 3, 1 ) >*/
+    addval_(&c__5, &c__0, &c__368, &useful, &c__3, &c__1);
 /*< 	i = iran( maxreg ) >*/
     i__ = iran_(&maxreg);
-/*< 	call putval(5, 0,349,  owner, i, 1 ) >*/
-    putval_(&c__5, &c__0, &c__349, &owner, &i__, &c__1);
-/*< 	call putval(5, 0,350,  numat, i, 10 ) >*/
-    putval_(&c__5, &c__0, &c__350, &numat, &i__, &c__10);
+/*< 	call putval(5, 0,370,  owner, i, 1 ) >*/
+    putval_(&c__5, &c__0, &c__370, &owner, &i__, &c__1);
+/*< 	call putval(5, 0,371,  numat, i, 10 ) >*/
+    putval_(&c__5, &c__0, &c__371, &numat, &i__, &c__10);
 /*< 11000	call unlock >*/
 L11000:
     unlock_();
 /*< 	goto 20 >*/
     goto L20;
 
-/*< 20000	call getval(5, 0,353,  useful, 4, maxcom ) >*/
+/*< 20000	call getval(5, 0,374,  useful, 4, maxcom ) >*/
 L20000:
-    getval_(&c__5, &c__0, &c__353, &useful, &c__4, &maxcom);
+    getval_(&c__5, &c__0, &c__374, &useful, &c__4, &maxcom);
 /*< 	if( maxcom .eq. 0 ) goto 20101 >*/
     if (maxcom == 0) {
 	goto L20101;
@@ -1050,26 +1073,26 @@ L20000:
     for (i__ = 1; i__ <= i__1; ++i__) {
 /*< 	    numcom = i >*/
 	numcom = i__;
-/*< 	    call getval(5, 0,357,  timlft, numcom, ival ) >*/
-	getval_(&c__5, &c__0, &c__357, &timlft, &numcom, &ival);
-/*< 	    if( ival .gt. 0 ) call addval(4, 0,358,  -1, -1 ) >*/
+/*< 	    call getval(5, 0,378,  timlft, numcom, ival ) >*/
+	getval_(&c__5, &c__0, &c__378, &timlft, &numcom, &ival);
+/*< 	    if( ival .gt. 0 ) call addval(4, 0,379,  -1, -1 ) >*/
 	if (ival > 0) {
-	    addval_(&c__4, &c__0, &c__358, &c_n1, &c_n1);
+	    addval_(&c__4, &c__0, &c__379, &c_n1, &c_n1);
 	}
 /*< 	    if( ival .ne. 1 ) goto 20100 >*/
 	if (ival != 1) {
 	    goto L20100;
 	}
-/*< 	    call getval(5, 0,360,  whos, numcom, invadr ) >*/
-	getval_(&c__5, &c__0, &c__360, &whos, &numcom, &invadr);
-/*< 	    call getval(5, 0,361,  amtmov, numcom, numinv ) >*/
-	getval_(&c__5, &c__0, &c__361, &amtmov, &numcom, &numinv);
-/*< 	    call getval(5, 0,362,  regto, numcom, r2 ) >*/
-	getval_(&c__5, &c__0, &c__362, &regto, &numcom, &r2);
-/*< 	    call getval(5, 0,363,  owner, r2, defndr ) >*/
-	getval_(&c__5, &c__0, &c__363, &owner, &r2, &defndr);
-/*< 	    call getval(5, 0,364,  numat, r2, numdef ) >*/
-	getval_(&c__5, &c__0, &c__364, &numat, &r2, &numdef);
+/*< 	    call getval(5, 0,381,  whos, numcom, invadr ) >*/
+	getval_(&c__5, &c__0, &c__381, &whos, &numcom, &invadr);
+/*< 	    call getval(5, 0,382,  amtmov, numcom, numinv ) >*/
+	getval_(&c__5, &c__0, &c__382, &amtmov, &numcom, &numinv);
+/*< 	    call getval(5, 0,383,  regto, numcom, r2 ) >*/
+	getval_(&c__5, &c__0, &c__383, &regto, &numcom, &r2);
+/*< 	    call getval(5, 0,384,  owner, r2, defndr ) >*/
+	getval_(&c__5, &c__0, &c__384, &owner, &r2, &defndr);
+/*< 	    call getval(5, 0,385,  numat, r2, numdef ) >*/
+	getval_(&c__5, &c__0, &c__385, &numat, &r2, &numdef);
 /* 	    IF THE ARMIES INCOMING BELONG TO SOMEONE OTHER THAN THE */
 /* 	    THE ARMIES ALREADY THERE, WE HAVE A BATTLE.  SKIP TO BATTLE */
 /* 	    LOOP, OTHERWISE SIMPLY INCREASE THE NUMBER AT THE LOCATION. */
@@ -1103,37 +1126,37 @@ L20020:
 	}
 /*< 	    numdef = numinv			! defenders gone, switch sides >*/
 	numdef = numinv;
-/*< 20030	    call putval(5, 0,381,  owner, r2, invadr ) >*/
+/*< 20030	    call putval(5, 0,402,  owner, r2, invadr ) >*/
 L20030:
-	putval_(&c__5, &c__0, &c__381, &owner, &r2, &invadr);
-/*< 20040	    call putval(5, 0,383,  numat, r2, numdef ) >*/
+	putval_(&c__5, &c__0, &c__402, &owner, &r2, &invadr);
+/*< 20040	    call putval(5, 0,404,  numat, r2, numdef ) >*/
 L20040:
-	putval_(&c__5, &c__0, &c__383, &numat, &r2, &numdef);
+	putval_(&c__5, &c__0, &c__404, &numat, &r2, &numdef);
 /*< 20100	continue >*/
 L20100:
 	;
     }
 /*< 20101	continue >*/
 L20101:
-/*< 	call addval(5, 0,388,  useful, 6, 1 ) >*/
-    addval_(&c__5, &c__0, &c__388, &useful, &c__6, &c__1);
-/*< 	call getval(4, 0,389,  -1, curtim ) >*/
-    getval_(&c__4, &c__0, &c__389, &c_n1, &curtim);
+/*< 	call addval(5, 0,409,  useful, 6, 1 ) >*/
+    addval_(&c__5, &c__0, &c__409, &useful, &c__6, &c__1);
+/*< 	call getval(4, 0,410,  -1, curtim ) >*/
+    getval_(&c__4, &c__0, &c__410, &c_n1, &curtim);
 /*< 	if( curtim .le. intrvl ) goto 20150 >*/
     if (curtim <= intrvl) {
 	goto L20150;
     }
-/*< 	call putval(4, 0,391,  -1, 0 ) >*/
-    putval_(&c__4, &c__0, &c__391, &c_n1, &c__0);
+/*< 	call putval(4, 0,412,  -1, 0 ) >*/
+    putval_(&c__4, &c__0, &c__412, &c_n1, &c__0);
 /*< 	do 20110 regnum = 1, maxreg >*/
     i__1 = maxreg;
     for (regnum = 1; regnum <= i__1; ++regnum) {
-/*< 	    call getval(5, 0,393,  numat, regnum+0, ival ) >*/
+/*< 	    call getval(5, 0,414,  numat, regnum+0, ival ) >*/
 	i__2 = regnum;
-	getval_(&c__5, &c__0, &c__393, &numat, &i__2, &ival);
-/*< 	    if( ival .ge. 1 ) call addval(4, 0,394,  -1, 1 ) >*/
+	getval_(&c__5, &c__0, &c__414, &numat, &i__2, &ival);
+/*< 	    if( ival .ge. 1 ) call addval(4, 0,415,  -1, 1 ) >*/
 	if (ival >= 1) {
-	    addval_(&c__4, &c__0, &c__394, &c_n1, &c__1);
+	    addval_(&c__4, &c__0, &c__415, &c_n1, &c__1);
 	}
 /*< 20110	continue >*/
 /* L20110: */
@@ -1149,20 +1172,20 @@ L20101:
 	for (j = 1; j <= 26; ++j) {
 /*< 		r1 = j >*/
 	    r1 = j;
-/*< 		call getval(6, 0,402,  contan, numcon, r1, ival ) >*/
-	    getval_(&c__6, &c__0, &c__402, &contan, &numcon, &r1, &ival);
+/*< 		call getval(6, 0,423,  contan, numcon, r1, ival ) >*/
+	    getval_(&c__6, &c__0, &c__423, &contan, &numcon, &r1, &ival);
 /*< 		if( ival .eq. 0 ) goto 20120 >*/
 	    if (ival == 0) {
 		goto L20120;
 	    }
-/*< 		call getval(5, 0,404,  numat, r1, ival ) >*/
-	    getval_(&c__5, &c__0, &c__404, &numat, &r1, &ival);
+/*< 		call getval(5, 0,425,  numat, r1, ival ) >*/
+	    getval_(&c__5, &c__0, &c__425, &numat, &r1, &ival);
 /*< 		if( ival .eq. 0 ) goto 20140 >*/
 	    if (ival == 0) {
 		goto L20140;
 	    }
-/*< 		call getval(5, 0,406,  owner, r1, ival ) >*/
-	    getval_(&c__5, &c__0, &c__406, &owner, &r1, &ival);
+/*< 		call getval(5, 0,427,  owner, r1, ival ) >*/
+	    getval_(&c__5, &c__0, &c__427, &owner, &r1, &ival);
 /*< 		if( conown .eq. 0 ) conown = ival >*/
 	    if (conown == 0) {
 		conown = ival;
@@ -1175,22 +1198,22 @@ L20101:
 L20120:
 	    ;
 	}
-/*< 	    call getval(5, 0,410,  conarm, numcon, numarm ) >*/
-	getval_(&c__5, &c__0, &c__410, &conarm, &numcon, &numarm);
+/*< 	    call getval(5, 0,431,  conarm, numcon, numarm ) >*/
+	getval_(&c__5, &c__0, &c__431, &conarm, &numcon, &numarm);
 /*< 	    do 20130 j = 1, numarm >*/
 	i__2 = numarm;
 	for (j = 1; j <= i__2; ++j) {
 /*< 20125		r1 = iran( maxreg ) >*/
 L20125:
 	    r1 = iran_(&maxreg);
-/*< 		call getval(6, 0,413,  contan, numcon, r1, ival ) >*/
-	    getval_(&c__6, &c__0, &c__413, &contan, &numcon, &r1, &ival);
+/*< 		call getval(6, 0,434,  contan, numcon, r1, ival ) >*/
+	    getval_(&c__6, &c__0, &c__434, &contan, &numcon, &r1, &ival);
 /*< 		if( ival .eq. 0 ) goto 20125 >*/
 	    if (ival == 0) {
 		goto L20125;
 	    }
-/*< 		call addval(5, 0,415,  numat, r1, 1 ) >*/
-	    addval_(&c__5, &c__0, &c__415, &numat, &r1, &c__1);
+/*< 		call addval(5, 0,436,  numat, r1, 1 ) >*/
+	    addval_(&c__5, &c__0, &c__436, &numat, &r1, &c__1);
 /*< 20130	    continue >*/
 /* L20130: */
 	}
@@ -1205,8 +1228,8 @@ L20150:
     if (curtim % 10 != 0) {
 	goto L20181;
     }
-/*< 	call getval(5, 0,421,  useful, 8, ival ) >*/
-    getval_(&c__5, &c__0, &c__421, &useful, &c__8, &ival);
+/*< 	call getval(5, 0,442,  useful, 8, ival ) >*/
+    getval_(&c__5, &c__0, &c__442, &useful, &c__8, &ival);
 /*< 	if( ival .eq. 0 ) goto 20181 >*/
     if (ival == 0) {
 	goto L20181;
@@ -1216,14 +1239,14 @@ L20150:
     for (i__ = 1; i__ <= i__1; ++i__) {
 /*< 	    numreg = i >*/
 	numreg = i__;
-/*< 	    call getval(5, 0,425,  owner, numreg, ival ) >*/
-	getval_(&c__5, &c__0, &c__425, &owner, &numreg, &ival);
+/*< 	    call getval(5, 0,446,  owner, numreg, ival ) >*/
+	getval_(&c__5, &c__0, &c__446, &owner, &numreg, &ival);
 /*< 	    if( ival .ne. 1 ) goto 20180 >*/
 	if (ival != 1) {
 	    goto L20180;
 	}
-/*< 	    call getval(5, 0,427,  numat, numreg, nmfreg ) >*/
-	getval_(&c__5, &c__0, &c__427, &numat, &numreg, &nmfreg);
+/*< 	    call getval(5, 0,448,  numat, numreg, nmfreg ) >*/
+	getval_(&c__5, &c__0, &c__448, &numat, &numreg, &nmfreg);
 /*< 	    if( nmfreg .eq. 0 ) goto 20180 >*/
 	if (nmfreg == 0) {
 	    goto L20180;
@@ -1235,16 +1258,16 @@ L20150:
 	for (j = 1; j <= i__2; ++j) {
 /*< 		reginq = j >*/
 	    reginq = j;
-/*< 		call getval(6, 0,432,  disto, numreg, reginq, dist ) >*/
-	    getval_(&c__6, &c__0, &c__432, &disto, &numreg, &reginq, &dist);
+/*< 		call getval(6, 0,453,  disto, numreg, reginq, dist ) >*/
+	    getval_(&c__6, &c__0, &c__453, &disto, &numreg, &reginq, &dist);
 /*< 		if( dist .eq. 0 ) goto 20160 >*/
 	    if (dist == 0) {
 		goto L20160;
 	    }
-/*< 		call getval(5, 0,434,  owner, reginq, ownerq ) >*/
-	    getval_(&c__5, &c__0, &c__434, &owner, &reginq, &ownerq);
-/*< 		call getval(5, 0,435,  numat, reginq, numatq ) >*/
-	    getval_(&c__5, &c__0, &c__435, &numat, &reginq, &numatq);
+/*< 		call getval(5, 0,455,  owner, reginq, ownerq ) >*/
+	    getval_(&c__5, &c__0, &c__455, &owner, &reginq, &ownerq);
+/*< 		call getval(5, 0,456,  numat, reginq, numatq ) >*/
+	    getval_(&c__5, &c__0, &c__456, &numat, &reginq, &numatq);
 /*< 		if( ownerq .ne. 1 ) numatq = -numatq >*/
 	    if (ownerq != 1) {
 		numatq = -numatq;
@@ -1271,40 +1294,40 @@ L20160:
 /* Computing MIN */
 	i__2 = nmfreg - 1, i__3 = nmfreg - best, i__2 = min(i__2,i__3);
 	nummen = min(i__2,127);
-/*< 	    call addval(5, 0,444,  numat, numreg, -nummen ) >*/
+/*< 	    call addval(5, 0,465,  numat, numreg, -nummen ) >*/
 	i__2 = -nummen;
-	addval_(&c__5, &c__0, &c__444, &numat, &numreg, &i__2);
+	addval_(&c__5, &c__0, &c__465, &numat, &numreg, &i__2);
 /*< 20170	    numcom = numcom + 1 >*/
 L20170:
 	++numcom;
-/*< 	    call getval(5, 0,446,  timlft, numcom, ival ) >*/
-	getval_(&c__5, &c__0, &c__446, &timlft, &numcom, &ival);
+/*< 	    call getval(5, 0,467,  timlft, numcom, ival ) >*/
+	getval_(&c__5, &c__0, &c__467, &timlft, &numcom, &ival);
 /*< 	    if( ival .ne. 0 ) goto 20170 >*/
 	if (ival != 0) {
 	    goto L20170;
 	}
-/*< 	    call putval(4, 0,448,  -1, ifix( sqrt(float(nummen))*bestds) ) >*/
+/*< 	    call putval(4, 0,469,  -1, ifix( sqrt(float(nummen))*bestds) ) >*/
 	i__2 = (integer) (sqrt((real) nummen) * bestds);
-	putval_(&c__4, &c__0, &c__448, &c_n1, &i__2);
-/*< 	    call putval(5, 0,449,  whos, numcom, 1 ) >*/
-	putval_(&c__5, &c__0, &c__449, &whos, &numcom, &c__1);
-/*< 	    call putval(5, 0,450,  regfrm, numcom, numreg ) >*/
-	putval_(&c__5, &c__0, &c__450, &regfrm, &numcom, &numreg);
-/*< 	    call putval(5, 0,451,  regto, numcom, bestrg ) >*/
-	putval_(&c__5, &c__0, &c__451, &regto, &numcom, &bestrg);
-/*< 	    call putval(5, 0,452,  amtmov, numcom, nummen ) >*/
-	putval_(&c__5, &c__0, &c__452, &amtmov, &numcom, &nummen);
+	putval_(&c__4, &c__0, &c__469, &c_n1, &i__2);
+/*< 	    call putval(5, 0,470,  whos, numcom, 1 ) >*/
+	putval_(&c__5, &c__0, &c__470, &whos, &numcom, &c__1);
+/*< 	    call putval(5, 0,471,  regfrm, numcom, numreg ) >*/
+	putval_(&c__5, &c__0, &c__471, &regfrm, &numcom, &numreg);
+/*< 	    call putval(5, 0,472,  regto, numcom, bestrg ) >*/
+	putval_(&c__5, &c__0, &c__472, &regto, &numcom, &bestrg);
+/*< 	    call putval(5, 0,473,  amtmov, numcom, nummen ) >*/
+	putval_(&c__5, &c__0, &c__473, &amtmov, &numcom, &nummen);
 /*< 20180	continue >*/
 L20180:
 	;
     }
 /*< 20181	continue >*/
 L20181:
-/*< 	call getval(5, 0,455,  useful, 4, maxcom ) >*/
-    getval_(&c__5, &c__0, &c__455, &useful, &c__4, &maxcom);
-/*< 	if( numcom .gt. maxcom ) call putval(4, 0,456,  -1, numcom ) >*/
+/*< 	call getval(5, 0,476,  useful, 4, maxcom ) >*/
+    getval_(&c__5, &c__0, &c__476, &useful, &c__4, &maxcom);
+/*< 	if( numcom .gt. maxcom ) call putval(4, 0,477,  -1, numcom ) >*/
     if (numcom > maxcom) {
-	putval_(&c__4, &c__0, &c__456, &c_n1, &numcom);
+	putval_(&c__4, &c__0, &c__477, &c_n1, &numcom);
     }
 /*< 	call setdis( 1 ) >*/
     setdis_(&c__1);
@@ -1317,12 +1340,12 @@ L20181:
     for (i__ = 1; i__ <= i__1; ++i__) {
 /*< 	    regnum = i >*/
 	regnum = i__;
-/*< 	    call getval(6, 0,463,  coord, regnum, 1, ix ) >*/
-	getval_(&c__6, &c__0, &c__463, &coord, &regnum, &c__1, &ix);
-/*< 	    call getval(6, 0,464,  coord, regnum, 2, iy ) >*/
-	getval_(&c__6, &c__0, &c__464, &coord, &regnum, &c__2, &iy);
-/*< 	    call getval(5, 0,465,  numat, regnum, ival ) >*/
-	getval_(&c__5, &c__0, &c__465, &numat, &regnum, &ival);
+/*< 	    call getval(6, 0,484,  coord, regnum, 1, ix ) >*/
+	getval_(&c__6, &c__0, &c__484, &coord, &regnum, &c__1, &ix);
+/*< 	    call getval(6, 0,485,  coord, regnum, 2, iy ) >*/
+	getval_(&c__6, &c__0, &c__485, &coord, &regnum, &c__2, &iy);
+/*< 	    call getval(5, 0,486,  numat, regnum, ival ) >*/
+	getval_(&c__5, &c__0, &c__486, &numat, &regnum, &ival);
 /*< 	    call cursor( ix, iy ) >*/
 	cursor_(&ix, &iy);
 /*< 	    if( ival .eq. 0 ) goto 20190 >*/
@@ -1331,8 +1354,8 @@ L20181:
 	}
 /*< 	    call number(2, ival, -2 ) >*/
 	number_(&c__2, &ival, &c_n2);
-/*< 	    call getval(5, 0,469,  owner, regnum, ival ) >*/
-	getval_(&c__5, &c__0, &c__469, &owner, &regnum, &ival);
+/*< 	    call getval(5, 0,490,  owner, regnum, ival ) >*/
+	getval_(&c__5, &c__0, &c__490, &owner, &regnum, &ival);
 /*< 	    call chrout( ival+64 ) >*/
 	i__2 = ival + 64;
 	chrout_(&i__2);
@@ -1347,8 +1370,8 @@ L20200:
     }
 /*< 	call setdis( 0 ) >*/
     setdis_(&c__0);
-/*< 	call putval(5, 0,476,  useful, 5, 0 ) >*/
-    putval_(&c__5, &c__0, &c__476, &useful, &c__5, &c__0);
+/*< 	call putval(5, 0,497,  useful, 5, 0 ) >*/
+    putval_(&c__5, &c__0, &c__497, &useful, &c__5, &c__0);
 /*< 	goto 110 >*/
     goto L110;
 /*< 	end >*/
@@ -1605,8 +1628,8 @@ real *useful;
     extern /* Subroutine */ int close_(), addval_(), grafof_(), clrscr_(), 
 	    setdis_(), exprog_();
 
-/*< 	call addval(5, 0,587,  useful, 3, -1 ) >*/
-    addval_(&c__5, &c__0, &c__587, useful, &c__3, &c_n1);
+/*< 	call addval(5, 0,608,  useful, 3, -1 ) >*/
+    addval_(&c__5, &c__0, &c__608, useful, &c__3, &c_n1);
 /*< 	call grafof >*/
     grafof_();
 /*< 	call setdis( 0 ) >*/

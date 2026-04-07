@@ -1,13 +1,34 @@
-C	@HDR@	$Id$
-C	@HDR@		Copyright 1982-2025 by
-C	@HDR@		Christopher Caldwell/Brightsands
-C	@HDR@		P.O. Box 401, Bailey Island, ME 04003
-C	@HDR@		All Rights Reserved
-C	@HDR@
-C	@HDR@	This software comprises unpublished confidential information
-C	@HDR@	of Brightsands and may not be used, copied or made available
-C	@HDR@	to anyone, except in accordance with the license under which
-C	@HDR@	it is furnished.
+Cindx#	scan.for - Unfinished game in a 3-d multi-player universe
+C@HDR@	$Id$
+C@HDR@
+C@HDR@	Copyright (c) 1982-2026 Christopher Caldwell (Christopher.M.Caldwell0@gmail.com)
+C@HDR@
+C@HDR@	Permission is hereby granted, free of charge, to any person
+C@HDR@	obtaining a copy of this software and associated documentation
+C@HDR@	files (the "Software"), to deal in the Software without
+C@HDR@	restriction, including without limitation the rights to use,
+C@HDR@	copy, modify, merge, publish, distribute, sublicense, and/or
+C@HDR@	sell copies of the Software, and to permit persons to whom
+C@HDR@	the Software is furnished to do so, subject to the following
+C@HDR@	conditions:
+C@HDR@	
+C@HDR@	The above copyright notice and this permission notice shall be
+C@HDR@	included in all copies or substantial portions of the Software.
+C@HDR@	
+C@HDR@	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+C@HDR@	KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+C@HDR@	WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+C@HDR@	AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+C@HDR@	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+C@HDR@	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+C@HDR@	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+C@HDR@	OTHER DEALINGS IN THE SOFTWARE.
+C
+Chist#	2026-02-17 - Christopher.M.Caldwell0@gmail.com - Created
+C------------------------------------------------------------------------
+Cdoc#	scan.for - Unfinished game in a 3-d multi-player universe
+Cdoc#	Made with Roger Long's inspiration and Robert Kenney's HIPAK.MAC.
+C------------------------------------------------------------------------
 	real function cosdeg( deg )
 	cosdeg = cos( deg * 3.141592654/180.0 )
 	return
@@ -127,19 +148,19 @@ C
 	data numobj/1/
 	data nobj/100/
 
-	call init(5, 0,129,  useful, 36, 1 )
-	call init(5, 0,130,  inuse, 1, 200 )
-	call init(6, 0,131,  coord, 36, 200, 3 )
-	call init(5, 0,132,  size, 36, 200 )
+	call init(5, 0,150,  useful, 36, 1 )
+	call init(5, 0,151,  inuse, 1, 200 )
+	call init(6, 0,152,  coord, 36, 200, 3 )
+	call init(5, 0,153,  size, 36, 200 )
 
 	do 100 i = 1, nobj
 	    iobj = newobj(.false.)
-	    call putval(6, 0,136,  coord, iobj, 1, iran(10000)+0.0 )
-	    call putval(6, 0,137,  coord, iobj, 2, iran(10000)+0.0 )
-	    call putval(6, 0,138,  coord, iobj, 3, iran(10000)+0.0 )
-	    call putval(5, 0,139,  size, iobj, iran(100)+0.0 )
+	    call putval(6, 0,157,  coord, iobj, 1, iran(10000)+0.0 )
+	    call putval(6, 0,158,  coord, iobj, 2, iran(10000)+0.0 )
+	    call putval(6, 0,159,  coord, iobj, 3, iran(10000)+0.0 )
+	    call putval(5, 0,160,  size, iobj, iran(100)+0.0 )
 100	continue
-	call putval(5, 0,141,  useful, numobj, nobj )
+	call putval(5, 0,162,  useful, numobj, nobj )
 	call unlock
 	return
 	end
@@ -168,17 +189,17 @@ C
 	common /names/ useful, inuse, coord, size, numobj
 
 	if( lockit ) call lock
-	call getval(5, 0,168,  useful, numobj, maxobj )
+	call getval(5, 0,189,  useful, numobj, maxobj )
 	if( lockit ) goto 101
 	do 100 i = 1, maxobj
 	    iobj = i
-	    call getval(5, 0,172,  inuse, iobj, ival )
+	    call getval(5, 0,193,  inuse, iobj, ival )
 	    if( ival .eq. 0 ) goto 200
 100	continue
 101	continue
 	iobj = maxobj + 1
-	call putval(5, 0,177,  useful, numobj, iobj )
-200	call putval(5, 0,178,  inuse, iobj, 1 )
+	call putval(5, 0,198,  useful, numobj, iobj )
+200	call putval(5, 0,199,  inuse, iobj, 1 )
 	newobj = iobj
 	return
 	end
@@ -359,14 +380,14 @@ C
 	zvs = sqrt( zva*zva + zvb*zvb + zvc*zvc )
 
 	nobjds = 23
-	call getval(5, 0,355,  useful, numobj, maxobj )
+	call getval(5, 0,376,  useful, numobj, maxobj )
 	do 300 i = 1, maxobj
 	    iobj = i
-	    call getval(5, 0,358,  inuse, iobj, ival )
+	    call getval(5, 0,379,  inuse, iobj, ival )
 	    if( ival .eq. 0 ) goto 300
-	    call getval(6, 0,360,  coord, iobj, 1, x )
-	    call getval(6, 0,361,  coord, iobj, 2, y )
-	    call getval(6, 0,362,  coord, iobj, 3, z )
+	    call getval(6, 0,381,  coord, iobj, 1, x )
+	    call getval(6, 0,382,  coord, iobj, 2, y )
+	    call getval(6, 0,383,  coord, iobj, 3, z )
 	    call carpol( xview,yview,zview, x,y,z, az,ae,ar )
 	    if( ar .gt. arng ) goto 100
 	    if( nobjds .lt. 3 ) goto 100
@@ -386,7 +407,7 @@ C
      &		abs(zscan).gt.10 ) goto 300
 	    if( scanx .lt. 0 ) ichar = 47-scanx
 	    if( scanx .ge. 0 ) ichar = 64+scanx
-	    call getval(5, 0,382,  size, iobj, radius )
+	    call getval(5, 0,403,  size, iobj, radius )
 	    irad = min0( ifix(4*radius/arng)+1, 30 )
 	    do 200 index = 1, irad
 		ix = ifix(2*yscan) + dirs(index)/100 - 28

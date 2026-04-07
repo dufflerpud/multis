@@ -1,4 +1,4 @@
-/*  -- translated by f2c (version 20160102).
+/*  -- translated by f2c (version 20200916).
    You must link the resulting object file with libf2c:
 	on Microsoft Windows system, link with libf2c.lib;
 	on Linux or Unix systems, link with .../path/to/libf2c.a -lm
@@ -46,25 +46,25 @@ static integer c__46 = 46;
 static integer c__8 = 8;
 static integer c__10 = 10;
 static integer c__4 = 4;
-static integer c__129 = 129;
+static integer c__150 = 150;
 static integer c__36 = 36;
-static integer c__130 = 130;
+static integer c__151 = 151;
 static integer c__200 = 200;
-static integer c__131 = 131;
-static integer c__132 = 132;
+static integer c__152 = 152;
+static integer c__153 = 153;
 static logical c_false = FALSE_;
 static integer c__10000 = 10000;
-static integer c__136 = 136;
-static integer c__137 = 137;
+static integer c__157 = 157;
+static integer c__158 = 158;
 static integer c__2 = 2;
-static integer c__138 = 138;
-static integer c__139 = 139;
+static integer c__159 = 159;
+static integer c__160 = 160;
 static integer c__100 = 100;
-static integer c__141 = 141;
-static integer c__168 = 168;
-static integer c__172 = 172;
-static integer c__177 = 177;
-static integer c__178 = 178;
+static integer c__162 = 162;
+static integer c__189 = 189;
+static integer c__193 = 193;
+static integer c__198 = 198;
+static integer c__199 = 199;
 static integer c__45 = 45;
 static integer c__32 = 32;
 static integer c__35 = 35;
@@ -78,24 +78,45 @@ static integer c__124 = 124;
 static integer c__43 = 43;
 static integer c__62 = 62;
 static integer c_n1 = -1;
-static integer c__355 = 355;
-static integer c__358 = 358;
-static integer c__360 = 360;
-static integer c__361 = 361;
-static integer c__362 = 362;
+static integer c__376 = 376;
+static integer c__379 = 379;
+static integer c__381 = 381;
 static integer c__382 = 382;
+static integer c__383 = 383;
+static integer c__403 = 403;
 static integer c__13 = 13;
 
-/* 	@HDR@	$Id$ */
-/* 	@HDR@		Copyright 1982-2025 by */
-/* 	@HDR@		Christopher Caldwell/Brightsands */
-/* 	@HDR@		P.O. Box 401, Bailey Island, ME 04003 */
-/* 	@HDR@		All Rights Reserved */
-/* 	@HDR@ */
-/* 	@HDR@	This software comprises unpublished confidential information */
-/* 	@HDR@	of Brightsands and may not be used, copied or made available */
-/* 	@HDR@	to anyone, except in accordance with the license under which */
-/* 	@HDR@	it is furnished. */
+/* indx#	scan.for - Unfinished game in a 3-d multi-player universe */
+/* @HDR@	$Id$ */
+/* @HDR@ */
+/* @HDR@	Copyright (c) 1982-2026 Christopher Caldwell (Christopher.M.Caldwell0@gmail.com) */
+/* @HDR@ */
+/* @HDR@	Permission is hereby granted, free of charge, to any person */
+/* @HDR@	obtaining a copy of this software and associated documentation */
+/* @HDR@	files (the "Software"), to deal in the Software without */
+/* @HDR@	restriction, including without limitation the rights to use, */
+/* @HDR@	copy, modify, merge, publish, distribute, sublicense, and/or */
+/* @HDR@	sell copies of the Software, and to permit persons to whom */
+/* @HDR@	the Software is furnished to do so, subject to the following */
+/* @HDR@	conditions: */
+/* @HDR@ */
+/* @HDR@	The above copyright notice and this permission notice shall be */
+/* @HDR@	included in all copies or substantial portions of the Software. */
+/* @HDR@ */
+/* @HDR@	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY */
+/* @HDR@	KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE */
+/* @HDR@	WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE */
+/* @HDR@	AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT */
+/* @HDR@	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, */
+/* @HDR@	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING */
+/* @HDR@	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR */
+/* @HDR@	OTHER DEALINGS IN THE SOFTWARE. */
+
+/* hist#	2026-02-17 - Christopher.M.Caldwell0@gmail.com - Created */
+/* ------------------------------------------------------------------------ */
+/* doc#	scan.for - Unfinished game in a 3-d multi-player universe */
+/* doc#	Made with Roger Long's inspiration and Robert Kenney's HIPAK.MAC. */
+/* ------------------------------------------------------------------------ */
 /*< 	real function cosdeg( deg ) >*/
 doublereal cosdeg_(deg)
 real *deg;
@@ -402,36 +423,36 @@ L1500:
 /*< 	data useful, inuse, coord, size/1,2,3,4/ >*/
 /*< 	data numobj/1/ >*/
 /*< 	data nobj/100/ >*/
-/*< 	call init(5, 0,129,  useful, 36, 1 ) >*/
-    init_(&c__5, &c__0, &c__129, &names_1.useful, &c__36, &c__1);
-/*< 	call init(5, 0,130,  inuse, 1, 200 ) >*/
-    init_(&c__5, &c__0, &c__130, &names_1.inuse, &c__1, &c__200);
-/*< 	call init(6, 0,131,  coord, 36, 200, 3 ) >*/
-    init_(&c__6, &c__0, &c__131, &names_1.coord, &c__36, &c__200, &c__3);
-/*< 	call init(5, 0,132,  size, 36, 200 ) >*/
-    init_(&c__5, &c__0, &c__132, &names_1.size, &c__36, &c__200);
+/*< 	call init(5, 0,150,  useful, 36, 1 ) >*/
+    init_(&c__5, &c__0, &c__150, &names_1.useful, &c__36, &c__1);
+/*< 	call init(5, 0,151,  inuse, 1, 200 ) >*/
+    init_(&c__5, &c__0, &c__151, &names_1.inuse, &c__1, &c__200);
+/*< 	call init(6, 0,152,  coord, 36, 200, 3 ) >*/
+    init_(&c__6, &c__0, &c__152, &names_1.coord, &c__36, &c__200, &c__3);
+/*< 	call init(5, 0,153,  size, 36, 200 ) >*/
+    init_(&c__5, &c__0, &c__153, &names_1.size, &c__36, &c__200);
 /*< 	do 100 i = 1, nobj >*/
     i__1 = nobj;
     for (i__ = 1; i__ <= i__1; ++i__) {
 /*< 	    iobj = newobj(.false.) >*/
 	iobj = newobj_(&c_false);
-/*< 	    call putval(6, 0,136,  coord, iobj, 1, iran(10000)+0.0 ) >*/
+/*< 	    call putval(6, 0,157,  coord, iobj, 1, iran(10000)+0.0 ) >*/
 	r__1 = iran_(&c__10000) + (float)0.;
-	putval_(&c__6, &c__0, &c__136, &names_1.coord, &iobj, &c__1, &r__1);
-/*< 	    call putval(6, 0,137,  coord, iobj, 2, iran(10000)+0.0 ) >*/
+	putval_(&c__6, &c__0, &c__157, &names_1.coord, &iobj, &c__1, &r__1);
+/*< 	    call putval(6, 0,158,  coord, iobj, 2, iran(10000)+0.0 ) >*/
 	r__1 = iran_(&c__10000) + (float)0.;
-	putval_(&c__6, &c__0, &c__137, &names_1.coord, &iobj, &c__2, &r__1);
-/*< 	    call putval(6, 0,138,  coord, iobj, 3, iran(10000)+0.0 ) >*/
+	putval_(&c__6, &c__0, &c__158, &names_1.coord, &iobj, &c__2, &r__1);
+/*< 	    call putval(6, 0,159,  coord, iobj, 3, iran(10000)+0.0 ) >*/
 	r__1 = iran_(&c__10000) + (float)0.;
-	putval_(&c__6, &c__0, &c__138, &names_1.coord, &iobj, &c__3, &r__1);
-/*< 	    call putval(5, 0,139,  size, iobj, iran(100)+0.0 ) >*/
+	putval_(&c__6, &c__0, &c__159, &names_1.coord, &iobj, &c__3, &r__1);
+/*< 	    call putval(5, 0,160,  size, iobj, iran(100)+0.0 ) >*/
 	r__1 = iran_(&c__100) + (float)0.;
-	putval_(&c__5, &c__0, &c__139, &names_1.size, &iobj, &r__1);
+	putval_(&c__5, &c__0, &c__160, &names_1.size, &iobj, &r__1);
 /*< 100	continue >*/
 /* L100: */
     }
-/*< 	call putval(5, 0,141,  useful, numobj, nobj ) >*/
-    putval_(&c__5, &c__0, &c__141, &names_1.useful, &names_1.numobj, &nobj);
+/*< 	call putval(5, 0,162,  useful, numobj, nobj ) >*/
+    putval_(&c__5, &c__0, &c__162, &names_1.useful, &names_1.numobj, &nobj);
 /*< 	call unlock >*/
     unlock_();
 /*< 	return >*/
@@ -491,8 +512,8 @@ logical *lockit;
     if (*lockit) {
 	lock_();
     }
-/*< 	call getval(5, 0,168,  useful, numobj, maxobj ) >*/
-    getval_(&c__5, &c__0, &c__168, &names_1.useful, &names_1.numobj, &maxobj);
+/*< 	call getval(5, 0,189,  useful, numobj, maxobj ) >*/
+    getval_(&c__5, &c__0, &c__189, &names_1.useful, &names_1.numobj, &maxobj);
 /*< 	if( lockit ) goto 101 >*/
     if (*lockit) {
 	goto L101;
@@ -502,8 +523,8 @@ logical *lockit;
     for (i__ = 1; i__ <= i__1; ++i__) {
 /*< 	    iobj = i >*/
 	iobj = i__;
-/*< 	    call getval(5, 0,172,  inuse, iobj, ival ) >*/
-	getval_(&c__5, &c__0, &c__172, &names_1.inuse, &iobj, &ival);
+/*< 	    call getval(5, 0,193,  inuse, iobj, ival ) >*/
+	getval_(&c__5, &c__0, &c__193, &names_1.inuse, &iobj, &ival);
 /*< 	    if( ival .eq. 0 ) goto 200 >*/
 	if (ival == 0) {
 	    goto L200;
@@ -515,11 +536,11 @@ logical *lockit;
 L101:
 /*< 	iobj = maxobj + 1 >*/
     iobj = maxobj + 1;
-/*< 	call putval(5, 0,177,  useful, numobj, iobj ) >*/
-    putval_(&c__5, &c__0, &c__177, &names_1.useful, &names_1.numobj, &iobj);
-/*< 200	call putval(5, 0,178,  inuse, iobj, 1 ) >*/
+/*< 	call putval(5, 0,198,  useful, numobj, iobj ) >*/
+    putval_(&c__5, &c__0, &c__198, &names_1.useful, &names_1.numobj, &iobj);
+/*< 200	call putval(5, 0,199,  inuse, iobj, 1 ) >*/
 L200:
-    putval_(&c__5, &c__0, &c__178, &names_1.inuse, &iobj, &c__1);
+    putval_(&c__5, &c__0, &c__199, &names_1.inuse, &iobj, &c__1);
 /*< 	newobj = iobj >*/
     ret_val = iobj;
 /*< 	return >*/
@@ -957,25 +978,25 @@ L20:
     zvs = sqrt(r__1 + zvc * zvc);
 /*< 	nobjds = 23 >*/
     nobjds = 23;
-/*< 	call getval(5, 0,355,  useful, numobj, maxobj ) >*/
-    getval_(&c__5, &c__0, &c__355, &names_1.useful, &names_1.numobj, &maxobj);
+/*< 	call getval(5, 0,376,  useful, numobj, maxobj ) >*/
+    getval_(&c__5, &c__0, &c__376, &names_1.useful, &names_1.numobj, &maxobj);
 /*< 	do 300 i = 1, maxobj >*/
     i__1 = maxobj;
     for (i__ = 1; i__ <= i__1; ++i__) {
 /*< 	    iobj = i >*/
 	iobj = i__;
-/*< 	    call getval(5, 0,358,  inuse, iobj, ival ) >*/
-	getval_(&c__5, &c__0, &c__358, &names_1.inuse, &iobj, &ival);
+/*< 	    call getval(5, 0,379,  inuse, iobj, ival ) >*/
+	getval_(&c__5, &c__0, &c__379, &names_1.inuse, &iobj, &ival);
 /*< 	    if( ival .eq. 0 ) goto 300 >*/
 	if (ival == 0) {
 	    goto L300;
 	}
-/*< 	    call getval(6, 0,360,  coord, iobj, 1, x ) >*/
-	getval_(&c__6, &c__0, &c__360, &names_1.coord, &iobj, &c__1, &x);
-/*< 	    call getval(6, 0,361,  coord, iobj, 2, y ) >*/
-	getval_(&c__6, &c__0, &c__361, &names_1.coord, &iobj, &c__2, &y);
-/*< 	    call getval(6, 0,362,  coord, iobj, 3, z ) >*/
-	getval_(&c__6, &c__0, &c__362, &names_1.coord, &iobj, &c__3, &z__);
+/*< 	    call getval(6, 0,381,  coord, iobj, 1, x ) >*/
+	getval_(&c__6, &c__0, &c__381, &names_1.coord, &iobj, &c__1, &x);
+/*< 	    call getval(6, 0,382,  coord, iobj, 2, y ) >*/
+	getval_(&c__6, &c__0, &c__382, &names_1.coord, &iobj, &c__2, &y);
+/*< 	    call getval(6, 0,383,  coord, iobj, 3, z ) >*/
+	getval_(&c__6, &c__0, &c__383, &names_1.coord, &iobj, &c__3, &z__);
 /*< 	    call carpol( xview,yview,zview, x,y,z, az,ae,ar ) >*/
 	carpol_(xview, yview, zview, &x, &y, &z__, &az, &ae, &ar);
 /*< 	    if( ar .gt. arng ) goto 100 >*/
@@ -1027,8 +1048,8 @@ L100:
 	if (scanx >= 0) {
 	    ichar = scanx + 64;
 	}
-/*< 	    call getval(5, 0,382,  size, iobj, radius ) >*/
-	getval_(&c__5, &c__0, &c__382, &names_1.size, &iobj, &radius);
+/*< 	    call getval(5, 0,403,  size, iobj, radius ) >*/
+	getval_(&c__5, &c__0, &c__403, &names_1.size, &iobj, &radius);
 /*< 	    irad = min0( ifix(4*radius/arng)+1, 30 ) >*/
 /* Computing MIN */
 	i__2 = (integer) (radius * 4 / *arng) + 1;

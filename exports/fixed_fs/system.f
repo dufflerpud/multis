@@ -1,13 +1,35 @@
-C	@HDR@	$Id$
-C	@HDR@		Copyright 1982-2025 by
-C	@HDR@		Christopher Caldwell/Brightsands
-C	@HDR@		P.O. Box 401, Bailey Island, ME 04003
-C	@HDR@		All Rights Reserved
-C	@HDR@
-C	@HDR@	This software comprises unpublished confidential information
-C	@HDR@	of Brightsands and may not be used, copied or made available
-C	@HDR@	to anyone, except in accordance with the license under which
-C	@HDR@	it is furnished.
+Cindx#	system.for - Multi-user game to program ships, ports, equipment to take over a galaxy
+C@HDR@	$Id$
+C@HDR@
+C@HDR@	Copyright (c) 1982-2026 Christopher Caldwell (Christopher.M.Caldwell0@gmail.com)
+C@HDR@
+C@HDR@	Permission is hereby granted, free of charge, to any person
+C@HDR@	obtaining a copy of this software and associated documentation
+C@HDR@	files (the "Software"), to deal in the Software without
+C@HDR@	restriction, including without limitation the rights to use,
+C@HDR@	copy, modify, merge, publish, distribute, sublicense, and/or
+C@HDR@	sell copies of the Software, and to permit persons to whom
+C@HDR@	the Software is furnished to do so, subject to the following
+C@HDR@	conditions:
+C@HDR@	
+C@HDR@	The above copyright notice and this permission notice shall be
+C@HDR@	included in all copies or substantial portions of the Software.
+C@HDR@	
+C@HDR@	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+C@HDR@	KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+C@HDR@	WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+C@HDR@	AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+C@HDR@	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+C@HDR@	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+C@HDR@	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+C@HDR@	OTHER DEALINGS IN THE SOFTWARE.
+C
+Chist#	2026-02-17 - Christopher.M.Caldwell0@gmail.com - Created
+C------------------------------------------------------------------------
+Cdoc#	system.for - Multi-user game to program ships, ports, equipment to take over a galaxy
+Cdoc#	Made with Roger Long's inspiration and Robert Kenney's HIPAK.MAC.
+Cdoc#	More of a programmer's game than a war game.
+C------------------------------------------------------------------------
 	subroutine bugmsg( msgara, com, msglen )
 
 	implicit integer ( a - z )
@@ -106,10 +128,10 @@ C***	UPDATE FILE EXISTS - READ IT INTO HISEGMENT
 	goto 41
 
 42	j = 1
-	call putval(5, 0,108,  useful, 7, 0 )
-43	call getval(5, 0,109,  progs, j, ival )
+	call putval(5, 0,130,  useful, 7, 0 )
+43	call getval(5, 0,131,  progs, j, ival )
 	if( ival .eq. 0 ) goto 800
-	call putval(5, 0,111,  ncstru, j, 63 )
+	call putval(5, 0,133,  ncstru, j, 63 )
 	j = j + 1
 	goto 43
 
@@ -135,35 +157,35 @@ C***	NOT READING UPD FILE - GET DATA FILE.
 
 C**********************************************************************
 
-	call init(6, 0,137,  name, 36, numstr, 2 )	! init star name array
-	call init(6, 0,138,  dest, 12, numstr, 5 )	! possible destinations
+	call init(6, 0,159,  name, 36, numstr, 2 )	! init star name array
+	call init(6, 0,160,  dest, 12, numstr, 5 )	! possible destinations
 						! for hyper jump
-	call init(6, 0,140,  time, 7, numstr, 7 )		! time required to jump
+	call init(6, 0,162,  time, 7, numstr, 7 )		! time required to jump
 						! to each place
-	call init(5, 0,142,  wplace, 12, numstr )		! star pointers
-	call init(6, 0,143,  restrn, 5, npl, 2 )		! init resource array
+	call init(5, 0,164,  wplace, 12, numstr )		! star pointers
+	call init(6, 0,165,  restrn, 5, npl, 2 )		! init resource array
 						! 1: ore/turn
 						! 2: food/turn
-	call init(5, 0,146,  wstar, 7, npl )		! what star am i
-	call init(5, 0,147,  wplan, 4, npl )		! what planet am i
-	call init(5, 0,148,  wmoon, 4, npl )		! what moon am i
-	call init(5, 0,149,  ptype, 2, npl )		! planet type:
+	call init(5, 0,168,  wstar, 7, npl )		! what star am i
+	call init(5, 0,169,  wplan, 4, npl )		! what planet am i
+	call init(5, 0,170,  wmoon, 4, npl )		! what moon am i
+	call init(5, 0,171,  ptype, 2, npl )		! planet type:
 						! 1: habitable
 						! 2: ordinary
 						! 3: gasseous
-	call init(5, 0,153,  pop, 18, npl )		! population
-	call init(5, 0,154,  poporg, 6, npl )		! population allegiance
-	call init(5, 0,155,  hunger, 18, npl )		! population hunger
-	call init(5, 0,156,  oprind, 9, npl )		! population opression
-	call init(6, 0,157,  plcorg, 6, npl, 2 )		! place controlled by
-	call init(6, 0,158,  nuaplc, 12, npl, 2 )		! num units at place
-	call init(5, 0,159,  org, 6, maxuni )		! origin of ship
-	call init(6, 0,160,  res, 6, maxuni, 4 )		! init unit resource:
+	call init(5, 0,175,  pop, 18, npl )		! population
+	call init(5, 0,176,  poporg, 6, npl )		! population allegiance
+	call init(5, 0,177,  hunger, 18, npl )		! population hunger
+	call init(5, 0,178,  oprind, 9, npl )		! population opression
+	call init(6, 0,179,  plcorg, 6, npl, 2 )		! place controlled by
+	call init(6, 0,180,  nuaplc, 12, npl, 2 )		! num units at place
+	call init(5, 0,181,  org, 6, maxuni )		! origin of ship
+	call init(6, 0,182,  res, 6, maxuni, 4 )		! init unit resource:
 						! 1: ore
 						! 2: food
 						! 3: luxury
 						! 4: men
-	call init(5, 0,165,  type, 3, maxuni )		! unit type:
+	call init(5, 0,187,  type, 3, maxuni )		! unit type:
 						! 1: spaceship
 						! 2: hypership
 						! 3: ground unit
@@ -171,56 +193,56 @@ C**********************************************************************
 						! 5: food processor
 						! 6: luxury processor
 						! 7: port
-	call init(5, 0,173,  shiptr, 12, maxuni )		! where is unit?
-	call init(5, 0,174,  orbit, 2, maxuni )		! in what orbit?
+	call init(5, 0,195,  shiptr, 12, maxuni )		! where is unit?
+	call init(5, 0,196,  orbit, 2, maxuni )		! in what orbit?
 						! 1: ground
 						! 2: low orbit
 						! 3: high orbit
-	call init(5, 0,178,  hmflag, 2, maxuni )		! 0: normal space
+	call init(5, 0,200,  hmflag, 2, maxuni )		! 0: normal space
 						! 1: hyper space
 						! 2: moving
-	call init(5, 0,181,  wprogr, 9, maxuni )		! which prog running
-	call init(5, 0,182,  pc, 6, maxuni )		! where is it in prog?
-	call init(5, 0,183,  onerpc, 6, maxuni )		! go where on lerror
-	call init(5, 0,184,  tmtonx, 18, maxuni )		! time to next instr.
-	call init(5, 0,185,  prdtim, 18, maxuni )		! time to next prod.
-	call init(5, 0,186,  power, 7, maxuni )		! unitns1714132329s tot. power
-	call init(7, 0,187,  powdst, 7, maxuni, 3, 2 )	! 1: engine/max
+	call init(5, 0,203,  wprogr, 9, maxuni )		! which prog running
+	call init(5, 0,204,  pc, 6, maxuni )		! where is it in prog?
+	call init(5, 0,205,  onerpc, 6, maxuni )		! go where on lerror
+	call init(5, 0,206,  tmtonx, 18, maxuni )		! time to next instr.
+	call init(5, 0,207,  prdtim, 18, maxuni )		! time to next prod.
+	call init(5, 0,208,  power, 7, maxuni )		! unitns1774916652s tot. power
+	call init(7, 0,209,  powdst, 7, maxuni, 3, 2 )	! 1: engine/max
 						! 2: shield/max
 						! 3: beam/max
-	call init(5, 0,190,  progs, 18, nprogs )		! list of players
-	call init(5, 0,191,  prgjob, 7, nprogs )		! playerns1714132329s jobs (or 0)
-	call init(5, 0,192,  nofuni, 12, nprogs )		! num units for players
-	call init(5, 0,193,  empcod, 3, nprogs )		! what kind of message:
+	call init(5, 0,212,  progs, 18, nprogs )		! list of players
+	call init(5, 0,213,  prgjob, 7, nprogs )		! playerns1774916652s jobs (or 0)
+	call init(5, 0,214,  nofuni, 12, nprogs )		! num units for players
+	call init(5, 0,215,  empcod, 3, nprogs )		! what kind of message:
 						! 1: lerror
 						! 2: inform
 						! 3: battle
 						! 4: revolt
-	call init(5, 0,198,  empdst, 12, nprogs )		! which unitns1714132329s lerror
-						! which unitns1714132329s inform
+	call init(5, 0,220,  empdst, 12, nprogs )		! which unitns1774916652s lerror
+						! which unitns1774916652s inform
 						! where is battle
 						! where is revolt
-C	CALL INIT(5, 0,202,  EMPINF, 18, NPROGS )		! INFORM MESSAGE CODE
-	call init(5, 0,203,  empinf, 36, nprogs )		! inform message code
-	call init(5, 0,204,  empc, 6, nprogs )		! pc of inform
+C	CALL INIT(5, 0,224,  EMPINF, 18, NPROGS )		! INFORM MESSAGE CODE
+	call init(5, 0,225,  empinf, 36, nprogs )		! inform message code
+	call init(5, 0,226,  empc, 6, nprogs )		! pc of inform
 						! pc of lerror
 						! orbit of battle
 						! 0
-	call init(5, 0,208,  ncstru, 6, nprogs )		! number of total
+	call init(5, 0,230,  ncstru, 6, nprogs )		! number of total
 						! clicks since this
 						! prog looped.
-	call init(5, 0,211,  nverb, 4, maxmem )		! unitns1714132329s action
-	call init(5, 0,212,  ncode, 4, maxmem )		! unitns1714132329s code
-C	CALL INIT(5, 0,213,  NDEST, 18, MAXMEM )		! UNIT'S NOUN (DEST)
-	call init(5, 0,214,  ndest, 36, maxmem )		! unitns1714132329s noun (dest)
-	call init(5, 0,215,  stradr, 12, maxprg )		! where prog begins
-	call init(5, 0,216,  lenprg, 6, maxprg )		! length of prog
-	call init(5, 0,217,  numusr, 12, maxprg )		! #users using prog
-	call init(5, 0,218,  mestrn, 7, 72 )		! message array
-	call init(5, 0,219,  ptime, 36, 3 )		! 1: starting date
+	call init(5, 0,233,  nverb, 4, maxmem )		! unitns1774916652s action
+	call init(5, 0,234,  ncode, 4, maxmem )		! unitns1774916652s code
+C	CALL INIT(5, 0,235,  NDEST, 18, MAXMEM )		! UNIT'S NOUN (DEST)
+	call init(5, 0,236,  ndest, 36, maxmem )		! unitns1774916652s noun (dest)
+	call init(5, 0,237,  stradr, 12, maxprg )		! where prog begins
+	call init(5, 0,238,  lenprg, 6, maxprg )		! length of prog
+	call init(5, 0,239,  numusr, 12, maxprg )		! #users using prog
+	call init(5, 0,240,  mestrn, 7, 72 )		! message array
+	call init(5, 0,241,  ptime, 36, 3 )		! 1: starting date
 						! 2: starting time
 						! 3: clicks elapsed
-	call init(5, 0,222,  useful, 18, 17 )		! miscelanious info:
+	call init(5, 0,244,  useful, 18, 17 )		! miscelanious info:
 						! 1: numstr
 						! 2: numpla
 						! 3: numoon
@@ -252,15 +274,15 @@ C**********************************************************************
 110	    if(len.le.i)call bugmsg('INIT: ISOLATED STAR.^E',com,len)
 	    f( 2 ) = 0
 	    call convrt( com, i-1, 1, f, 6 )
-	    call putval(6, 0,254,  name, star, 1, f(1) )
-	    call putval(6, 0,255,  name, star, 2, f(2) )
-	    call putval(5, 0,256,  wstar, star, star )
+	    call putval(6, 0,276,  name, star, 1, f(1) )
+	    call putval(6, 0,277,  name, star, 2, f(2) )
+	    call putval(5, 0,278,  wstar, star, star )
 	    call getnum(22, com(i), len-i+1, f(1),10,t(1),10,
      &		f(2),10,t(2),10, f(3),10,t(3),10, f(4),10,t(4),10,
      &		f(5),10,t(5),10 )
 	    do 200 i = 1, 5
-		call putval(6, 0,261,  dest, star, i+0, f(i) )
-		call putval(6, 0,262,  time, star, i+0, t(i) )
+		call putval(6, 0,283,  dest, star, i+0, f(i) )
+		call putval(6, 0,284,  time, star, i+0, t(i) )
 200	    continue
 300	    planum = 0
 400	    call skpcom( com, len )
@@ -274,16 +296,16 @@ C**********************************************************************
 	    numpla = numpla + 1
 	    lasplc = lasplc + 1
 	    if(lasplc.gt.npl)call bugmsg('INIT: LASPLC>NPL.^E',com,len)
-	    if( planum .eq. 1 ) call putval(5, 0,276,  wplace, star, lasplc )
+	    if( planum .eq. 1 ) call putval(5, 0,298,  wplace, star, lasplc )
 	    call getnum(32, com, len, p(1),10,f(1),10,t(1),10,
      &		p(2),10,f(2),10,t(2),10, p(3),10,f(3),10,t(3),10,
      &		p(4),10,f(4),10,t(4),10, p(5),10,f(5),10,t(5),10 )
-	    call putval(5, 0,280,  wstar, lasplc, star )
-	    call putval(5, 0,281,  wplan, lasplc, planum )
-	    call putval(5, 0,282,  ptype, lasplc, itype )
-	    call putval(5, 0,283,  pop, lasplc, p(1) )
-	    call putval(6, 0,284,  restrn, lasplc, 1, t(1) )
-	    call putval(6, 0,285,  restrn, lasplc, 2, f(1) )
+	    call putval(5, 0,302,  wstar, lasplc, star )
+	    call putval(5, 0,303,  wplan, lasplc, planum )
+	    call putval(5, 0,304,  ptype, lasplc, itype )
+	    call putval(5, 0,305,  pop, lasplc, p(1) )
+	    call putval(6, 0,306,  restrn, lasplc, 1, t(1) )
+	    call putval(6, 0,307,  restrn, lasplc, 2, f(1) )
 
 500	    moonum = 0
 600	    temp = moonum*12 + 13
@@ -298,31 +320,31 @@ C**********************************************************************
 	    lasplc = lasplc + 1
 	    numoon = numoon + 1
 	    if(lasplc.gt.npl)call bugmsg('INIT: LASPLC>NPL.^E',com,len)
-	    call putval(5, 0,300,  wstar, lasplc, star )
-	    call putval(5, 0,301,  wplan, lasplc, planum )
-	    call putval(5, 0,302,  wmoon, lasplc, moonum )
-	    call putval(5, 0,303,  ptype, lasplc, itype )
-	    call putval(5, 0,304,  pop, lasplc, p(moonum+1) )
-	    call putval(6, 0,305,  restrn, lasplc, 1, t(moonum+1) )
-	    call putval(6, 0,306,  restrn, lasplc, 2, f(moonum+1) )
+	    call putval(5, 0,322,  wstar, lasplc, star )
+	    call putval(5, 0,323,  wplan, lasplc, planum )
+	    call putval(5, 0,324,  wmoon, lasplc, moonum )
+	    call putval(5, 0,325,  ptype, lasplc, itype )
+	    call putval(5, 0,326,  pop, lasplc, p(moonum+1) )
+	    call putval(6, 0,327,  restrn, lasplc, 1, t(moonum+1) )
+	    call putval(6, 0,328,  restrn, lasplc, 2, f(moonum+1) )
 	    goto 600
 700	continue
 	call mcall1( 12, ival, i )		! get starting date
-	call putval(5, 0,310,  ptime, 1, ival )
+	call putval(5, 0,332,  ptime, 1, ival )
 	call mcall1( 19, ival, i )		! and time
-	call putval(5, 0,312,  ptime, 2, ival )
-	call putval(5, 0,313,  useful, 1, numstr )
-	call putval(5, 0,314,  useful, 2, numpla )
-	call putval(5, 0,315,  useful, 3, numoon )
-	call putval(5, 0,316,  useful, 4, lasplc )
-	call putval(5, 0,317,  useful, 6, nprogs )
-	call putval(5, 0,318,  useful, 12, maxuni )
-	call putval(5, 0,319,  useful, 13, maxprg )
-	call putval(5, 0,320,  useful, 14, maxmem )
-	call putval(5, 0,321,  useful, 15, maxpla )
+	call putval(5, 0,334,  ptime, 2, ival )
+	call putval(5, 0,335,  useful, 1, numstr )
+	call putval(5, 0,336,  useful, 2, numpla )
+	call putval(5, 0,337,  useful, 3, numoon )
+	call putval(5, 0,338,  useful, 4, lasplc )
+	call putval(5, 0,339,  useful, 6, nprogs )
+	call putval(5, 0,340,  useful, 12, maxuni )
+	call putval(5, 0,341,  useful, 13, maxprg )
+	call putval(5, 0,342,  useful, 14, maxmem )
+	call putval(5, 0,343,  useful, 15, maxpla )
 	if( .not. stalon ) goto 800
-	call putval(5, 0,323,  useful, 16, 1 )
-	call putval(5, 0,324,  useful, 17, 1 )
+	call putval(5, 0,345,  useful, 16, 1 )
+	call putval(5, 0,346,  useful, 17, 1 )
 800	call close( 2 )
 	call unlock
 	return
@@ -363,79 +385,79 @@ C
 
 C***	GO INCREMENT ALL PLAYERS TO FIND WHO IS NOT PLAYING
 
-	call getval(5, 0,363,  useful, 5, lunit )
+	call getval(5, 0,385,  useful, 5, lunit )
 	do 10 i = 1, nprogs
-	    call getval(5, 0,365,  ncstru, i+0, ival )
-	    if( ival .lt. 63 ) call addval(4, 0,366,  -1, 1 )
-	    if( ival .ge. 63 ) call putval(5, 0,367,  prgjob, player, 0 )
+	    call getval(5, 0,387,  ncstru, i+0, ival )
+	    if( ival .lt. 63 ) call addval(4, 0,388,  -1, 1 )
+	    if( ival .ge. 63 ) call putval(5, 0,389,  prgjob, player, 0 )
 10	continue
-	call putval(5, 0,369,  ncstru, player, 0 )
-	call putval(5, 0,370,  prgjob, player, job(0) )
+	call putval(5, 0,391,  ncstru, player, 0 )
+	call putval(5, 0,392,  prgjob, player, job(0) )
 
-	call getval(5, 0,372,  useful, 7, whoinl )
+	call getval(5, 0,394,  useful, 7, whoinl )
 	if( whoinl .eq. 0 ) goto 20
-	call getval(5, 0,374,  ncstru, whoinl, ival )
+	call getval(5, 0,396,  ncstru, whoinl, ival )
 	if( ival .lt. 63 ) return
-	call putval(5, 0,376,  useful, 7, player )
+	call putval(5, 0,398,  useful, 7, player )
 	call messag('Player #^E')
 	call number(2, whoinl, -2 )
 	call string(1,' stuck in EXUNIT loop.  Clearing.^G^E')
 	goto 30
 
 20	call enable
-	call putval(4, 0,383,  -1, player )
+	call putval(4, 0,405,  -1, player )
 
 30	acplar = player
-	call addval(5, 0,386,  ptime, 3, 1 )		! increment time
-	call getval(4, 0,387,  -1, ival )			! save world every
+	call addval(5, 0,408,  ptime, 3, 1 )		! increment time
+	call getval(4, 0,409,  -1, ival )			! save world every
 	if(mod(ival,1000).eq.0) call savesg	! 1000 cycles
 
 C***	LOOP THROUGH THE SYSTEM FOR BATTLES
 
 	do 60 i = 1, lasplc
 	    loc = i
-	    call getval(5, 0,394,  pop, loc, j )
+	    call getval(5, 0,416,  pop, loc, j )
 	    if( j .eq. 0 ) goto 34
-	    call getval(5, 0,396,  hunger, loc, hungfc )
+	    call getval(5, 0,418,  hunger, loc, hungfc )
 	    hungfc = hungfc + j
-	    call getval(6, 0,398,  restrn, loc, 2, ival )
+	    call getval(6, 0,420,  restrn, loc, 2, ival )
 	    hungfc = min0( max0( 0, hungfc - 1000*ival ), 2**18-1 )
-	    call putval(5, 0,400,  hunger, loc, hungfc )
-	    if( hungfc .gt. 100000 ) call putval(5, 0,401,  pop, loc, 99*j/100 )
-	    call getval(5, 0,402,  oprind, loc, ival )
-	    call putval(4, 0,403,  -1, 0 )
+	    call putval(5, 0,422,  hunger, loc, hungfc )
+	    if( hungfc .gt. 100000 ) call putval(5, 0,423,  pop, loc, 99*j/100 )
+	    call getval(5, 0,424,  oprind, loc, ival )
+	    call putval(4, 0,425,  -1, 0 )
 	    if(iran(50)+50.ge.sqrt(float(j))*hungfc/(1000*(ival+1)))
      &		goto 34
-	    call getval(6, 0,406,  plcorg, loc, 1, k )
+	    call getval(6, 0,428,  plcorg, loc, 1, k )
 	    if( k .eq. 0 ) goto 34
-	    call putval(5, 0,408,  empcod, k, 4 )
-	    call putval(5, 0,409,  empdst, k, loc )
+	    call putval(5, 0,430,  empcod, k, 4 )
+	    call putval(5, 0,431,  empdst, k, loc )
 	    do 33 i1 = 1, lunit
 		j = i1
-		call getval(5, 0,412,  org, j, ival )
+		call getval(5, 0,434,  org, j, ival )
 		if( ival .ne. k ) goto 33
-		call getval(5, 0,414,  shiptr, j, ival )
+		call getval(5, 0,436,  shiptr, j, ival )
 		if( ival .ne. loc ) goto 33
-		call getval(5, 0,416,  orbit, j, ival )
+		call getval(5, 0,438,  orbit, j, ival )
 		if( ival .ne. 1 ) goto 33
 		call delunt( j )
 33	    continue
 34	    continue
 	    do 60 i1 = 1, 2
 		level = i1
-		call getval(6, 0,423,  plcorg, loc, level, dorg )
+		call getval(6, 0,445,  plcorg, loc, level, dorg )
 		if( dorg .eq. 0 ) goto 61
 		numop(1) = 0
 		numop(2) = 0
 		do 40 j = 1, lunit
 		    enum = j
-		    call getval(5, 0,429,  org, enum, torg )
+		    call getval(5, 0,451,  org, enum, torg )
 		    if( torg .eq. 0 ) goto 40
-		    call getval(5, 0,431,  hmflag, enum, ival )
+		    call getval(5, 0,453,  hmflag, enum, ival )
 		    if( ival .ne. 0 ) goto 40
-		    call getval(5, 0,433,  shiptr, enum, ival )
+		    call getval(5, 0,455,  shiptr, enum, ival )
 		    if( ival .ne. loc ) goto 40
-		    call getval(5, 0,435,  orbit, enum, ival )
+		    call getval(5, 0,457,  orbit, enum, ival )
 		    if( ival/3 + 1 .ne. level ) goto 40
 		    if( torg .ne. dorg ) goto 35
 
@@ -444,36 +466,36 @@ C***	LOOP THROUGH THE SYSTEM FOR BATTLES
 		    team(1,numop(1)) = enum
 		    goto 40
 
-35		    call putval(5, 0,444,  empcod, torg, 3 )
-		    call putval(5, 0,445,  empdst, torg, loc )
-		    call putval(5, 0,446,  empinf, torg, level )
+35		    call putval(5, 0,466,  empcod, torg, 3 )
+		    call putval(5, 0,467,  empdst, torg, loc )
+		    call putval(5, 0,468,  empinf, torg, level )
 		    if( numop(2) .ge. 50 ) goto 40
 		    numop(2) = numop(2) + 1
 		    team(2,numop(2)) = enum
 40		continue
 
 45		if( numop(2) .eq. 0 ) goto 61
-		call putval(5, 0,453,  empcod, dorg, 3 )
-		call putval(5, 0,454,  empdst, dorg, loc )
-		call putval(5, 0,455,  empinf, dorg, level )
+		call putval(5, 0,475,  empcod, dorg, 3 )
+		call putval(5, 0,476,  empdst, dorg, loc )
+		call putval(5, 0,477,  empinf, dorg, level )
 		do 60 j = 1, 2
 		    do 60 k = 1, numop(j)
 			act = team(j,k)
-			call getval(5, 0,459,  tmtonx, act, ival )
+			call getval(5, 0,481,  tmtonx, act, ival )
 			if( ival .ne. 0 ) goto 60
-			call getval(7, 0,461,  powdst, act, 3, 1, curbem )
+			call getval(7, 0,483,  powdst, act, 3, 1, curbem )
 			if( curbem .eq. 0 ) goto 60
 			if( k .le. numop(3-j) ) goto 54
-			call getval(5, 0,464,  pc, act, ival )
+			call getval(5, 0,486,  pc, act, ival )
 			if( ival .ne. 0 ) goto 60
 			pas = team(3-j,iran(numop(3-j)))
 			goto 56
 
 54			pas = team( 3-j, k )
 
-56			call getval(5, 0,471,  org, pas, ival )
+56			call getval(5, 0,493,  org, pas, ival )
 			if( ival .eq. 0 ) goto 60
-			call getval(6, 0,473,  powdst, pas, 2, curshd )
+			call getval(6, 0,495,  powdst, pas, 2, curshd )
 			chance=40*alog10(10.0*curbem/(curshd+0.001))+10
 			if( iran(100) .lt. chance ) call delunt( pas )
 60	continue
@@ -483,72 +505,72 @@ C***	LOOP THROUGH ALL UNITS AND EXECUTE THEIR PROGRAMS
 
 	do 100 i = 1, lunit
 	    unum = i
-	    call getval(5, 0,483,  org, unum, player )
+	    call getval(5, 0,505,  org, unum, player )
 	    if( player .eq. 0 ) goto 100
-	    call getval(5, 0,485,  type, unum, stype )
-	    call getval(5, 0,486,  shiptr, unum, loc )
+	    call getval(5, 0,507,  type, unum, stype )
+	    call getval(5, 0,508,  shiptr, unum, loc )
 	    if( stype .lt. 4 .or. stype .eq. 7 ) goto 65
-	    call getval(5, 0,488,  prdtim, unum, ival )
-	    if( ival .gt. 1 ) call addval(4, 0,489,  -1, -1 )
+	    call getval(5, 0,510,  prdtim, unum, ival )
+	    if( ival .gt. 1 ) call addval(4, 0,511,  -1, -1 )
 	    if( ival .ne. 1 ) goto 65
 	    if( stype .eq. 6 ) goto 62
-	    call getval(6, 0,492,  res, unum, stype-3, ival )
+	    call getval(6, 0,514,  res, unum, stype-3, ival )
 	    if( ival .ge. 63 ) goto 65
-	    call addval(4, 0,494,  -1, 1 )
-	    call getval(6, 0,495,  restrn, loc, stype-3, nprod )
-	    if(iran(500).eq.1.and.nprod.gt.0) call addval(4, 0,496,  -1, -1 )
-	    if(nprod.gt.0) call putval(5, 0,497,  prdtim, unum, 793/nprod )
-	    if(nprod.eq.0) call putval(5, 0,498,  prdtim, unum, 0 )
+	    call addval(4, 0,516,  -1, 1 )
+	    call getval(6, 0,517,  restrn, loc, stype-3, nprod )
+	    if(iran(500).eq.1.and.nprod.gt.0) call addval(4, 0,518,  -1, -1 )
+	    if(nprod.gt.0) call putval(5, 0,519,  prdtim, unum, 793/nprod )
+	    if(nprod.eq.0) call putval(5, 0,520,  prdtim, unum, 0 )
 	    goto 65
 
-62	    call getval(6, 0,501,  res, unum, 1, ival )
+62	    call getval(6, 0,523,  res, unum, 1, ival )
 	    if( ival .eq. 0 ) goto 65
-	    call getval(6, 0,503,  res, unum, 2, ival )
+	    call getval(6, 0,525,  res, unum, 2, ival )
 	    if( ival .eq. 0 ) goto 65
-	    call getval(6, 0,505,  res, unum, 3, ival )
+	    call getval(6, 0,527,  res, unum, 3, ival )
 	    if( ival .ge. 63 ) goto 65
-	    call addval(4, 0,507,  -1, 1 )
-	    call addval(6, 0,508,  res, unum, 1, -1 )
-	    call addval(6, 0,509,  res, unum, 2, -1 )
-	    call putval(5, 0,510,  prdtim, unum, 53 )
+	    call addval(4, 0,529,  -1, 1 )
+	    call addval(6, 0,530,  res, unum, 1, -1 )
+	    call addval(6, 0,531,  res, unum, 2, -1 )
+	    call putval(5, 0,532,  prdtim, unum, 53 )
 
-65	    if( stype .eq. 3 ) call addval(5, 0,512,  oprind, loc, 1 )
-	    call getval(5, 0,513,  tmtonx, unum, ival )
-	    if( ival .le. 2 ) call putval(5, 0,514,  hmflag, unum, 0 )
+65	    if( stype .eq. 3 ) call addval(5, 0,534,  oprind, loc, 1 )
+	    call getval(5, 0,535,  tmtonx, unum, ival )
+	    if( ival .le. 2 ) call putval(5, 0,536,  hmflag, unum, 0 )
 	    if( ival .eq. 0 ) goto 70
-	    call addval(5, 0,516,  tmtonx, unum, -1 )
+	    call addval(5, 0,538,  tmtonx, unum, -1 )
 	    goto 100
 
-70	    call getval(5, 0,519,  wprogr, unum, wp )
+70	    call getval(5, 0,541,  wprogr, unum, wp )
 	    if( wp .eq. 0 ) goto 100
-	    call getval(5, 0,521,  lenprg, wp, len )
-	    call getval(5, 0,522,  pc, unum, ipc )
+	    call getval(5, 0,543,  lenprg, wp, len )
+	    call getval(5, 0,544,  pc, unum, ipc )
 	    if( ipc .le. 0 .or. ipc .gt. len ) goto 75
-	    call getval(5, 0,524,  stradr, wp, addr )
+	    call getval(5, 0,546,  stradr, wp, addr )
 	    addr = addr + ipc - 1
-	    call getval(5, 0,526,  nverb, addr, nv )
+	    call getval(5, 0,548,  nverb, addr, nv )
 	    if( nv .ne. 0 ) goto 80
-75	    call putval(5, 0,528,  pc, unum, 0 )
+75	    call putval(5, 0,550,  pc, unum, 0 )
 	    goto 100
 
-80	    call getval(5, 0,531,  ncode, addr, nc )
-	    call getval(5, 0,532,  ndest, addr, nd )
+80	    call getval(5, 0,553,  ncode, addr, nc )
+	    call getval(5, 0,554,  ndest, addr, nd )
 	    call exins( unum, nv, nc, nd, lmove )
 	    if( .not. lmove ) goto 90
 
-85	    if( nv .ne. 9 ) call addval(5, 0,536,  pc, unum, 1 )
+85	    if( nv .ne. 9 ) call addval(5, 0,558,  pc, unum, 1 )
 	    goto 100
 
-90	    call getval(5, 0,539,  onerpc, unum, ival )
+90	    call getval(5, 0,561,  onerpc, unum, ival )
 	    if( ival .eq. 63 ) goto 85
-	    call putval(5, 0,541,  pc, unum, ival )
+	    call putval(5, 0,563,  pc, unum, ival )
 	    if( ival .ne. 0 .or. player .eq. 0 ) goto 100
-	    call putval(5, 0,543,  empcod, player, 1 )
-	    call putval(5, 0,544,  empdst, player, unum )
-	    call putval(5, 0,545,  empc, player, ipc )
+	    call putval(5, 0,565,  empcod, player, 1 )
+	    call putval(5, 0,566,  empdst, player, unum )
+	    call putval(5, 0,567,  empc, player, ipc )
 100	continue
 
-	call putval(5, 0,548,  useful, 7, 0 )
+	call putval(5, 0,570,  useful, 7, 0 )
 	continue ! call ctrap
 c	    call cease
 	player = acplar
@@ -582,58 +604,58 @@ C
      &0,0,0,0, 63,0,1,1, 0,63,1,1, 63,63,63,1, 63,63,63,63/
 
 	lmove = .true.
-	call getval(5, 0,581,  shiptr, ship, loc )
-	call getval(5, 0,582,  orbit, ship, orb )
-	call getval(5, 0,583,  type, ship, stype )
+	call getval(5, 0,603,  shiptr, ship, loc )
+	call getval(5, 0,604,  orbit, ship, orb )
+	call getval(5, 0,605,  type, ship, stype )
 	goto( 10, 10, 100, 300, 600, 700, 800, 850, 900, 910, 2100,
      &	     2100, 2100, 2100, 950 ) iverb
 
 C***	MOVE & JUMP
 
-10	call getval(7, 0,589,  powdst, ship, 1, 1, ival )
+10	call getval(7, 0,611,  powdst, ship, 1, 1, ival )
 	if( ival .eq. 0 ) goto 2200
 	call legtim( loc, orb, idest, icode, lmove, mtime )
 	if( .not. lmove ) return
-	call getval(5, 0,593,  ptype, loc, ival )
+	call getval(5, 0,615,  ptype, loc, ival )
 	if( stype.gt.2 .or. (iverb.eq.2 .and.
      & ((orb.ne.icode .and. loc.gt.numstr) .or. stype .ne. 2)) .or.
      &	(icode.eq.1 .and. (loc.le.numstr .or. ival.eq.3) ) ) goto 2200
 	level = orb/3 + 1
-	call putval(5, 0,598,  shiptr, ship, idest )
-	call putval(5, 0,599,  orbit, ship, icode )
+	call putval(5, 0,620,  shiptr, ship, idest )
+	call putval(5, 0,621,  orbit, ship, icode )
 	if( loc .eq. idest .and. level .eq. icode/3 + 1 ) goto 30
-	call getval(6, 0,601,  plcorg, loc, level, ival )
+	call getval(6, 0,623,  plcorg, loc, level, ival )
 	if( ival .ne. player ) goto 20
-	call addval(6, 0,603,  nuaplc, loc, level, -1 )
-	call getval(4, 0,604,  -1, ival )
+	call addval(6, 0,625,  nuaplc, loc, level, -1 )
+	call getval(4, 0,626,  -1, ival )
 	if( ival .gt. 0 ) goto 20
 	neworg = 0
 	numshp = 0
 	do 15 i = 1, lunit
 	    j = i
-	    call getval(5, 0,610,  shiptr, j, ival )
+	    call getval(5, 0,632,  shiptr, j, ival )
 	    if( ival .ne. loc ) goto 15
-	    call getval(5, 0,612,  orbit, j, ival )
+	    call getval(5, 0,634,  orbit, j, ival )
 	    if( ival/3+1 .ne. level ) goto 15
-	    call getval(5, 0,614,  org, j, k )
+	    call getval(5, 0,636,  org, j, k )
 	    if( k.eq.0 .or. (neworg.ne.0 .and. neworg.ne.k) ) goto 15
 	    neworg = k
 	    numshp = numshp + 1
 15	continue
-	call putval(6, 0,619,  plcorg, loc, level, neworg )
-	call putval(6, 0,620,  nuaplc, loc, level, numshp )
+	call putval(6, 0,641,  plcorg, loc, level, neworg )
+	call putval(6, 0,642,  nuaplc, loc, level, numshp )
 
-20	call getval(6, 0,622,  plcorg, idest, icode/3+1, ival )
+20	call getval(6, 0,644,  plcorg, idest, icode/3+1, ival )
 	if( ival .ne. 0 .and. ival .ne. player ) goto 30
-	call putval(4, 0,624,  -1, player )
-	call addval(6, 0,625,  nuaplc, idest, icode/3+1, 1 )
+	call putval(4, 0,646,  -1, player )
+	call addval(6, 0,647,  nuaplc, idest, icode/3+1, 1 )
 30	if( iverb .ne. 2 ) goto 35
 	mtime = mtime / 764529
-	call putval(5, 0,628,  hmflag, ship, 1 )
+	call putval(5, 0,650,  hmflag, ship, 1 )
 	goto 2000
 
-35	call putval(5, 0,631,  hmflag, ship, 2 )
-	call getval(7, 0,632,  powdst, ship, 1, 1, ival )
+35	call putval(5, 0,653,  hmflag, ship, 2 )
+	call getval(7, 0,654,  powdst, ship, 1, 1, ival )
 	mtime = mtime / ival
 	goto 2000
 
@@ -645,28 +667,28 @@ C***	CREATE
 	if(stype.gt.2.and.stype.lt.7) goto 2200
 	if(stype.eq.7.and.icode.gt.3) goto 2200
 	if( icode .ne. 4 .and. icode .ne. 5 ) goto 105
-	call getval(6, 0,644,  restrn, loc, icode-3, ival )
+	call getval(6, 0,666,  restrn, loc, icode-3, ival )
 	if( ival .eq. 0 ) goto 2200
-105	call getval(6, 0,646,  res, ship, 1, ival )
+105	call getval(6, 0,668,  res, ship, 1, ival )
 	if( oreqir(icode) .gt. ival ) goto 2200
-	call getval(6, 0,648,  res, ship, 4, ival )
+	call getval(6, 0,670,  res, ship, 4, ival )
 	if( menreq(icode) .gt. ival ) goto 2200
 	if( idest .eq. 0 ) goto 107
 	if( idest .gt. lunit ) goto 2200
-	call getval(5, 0,652,  org, idest, ival )
+	call getval(5, 0,674,  org, idest, ival )
 	if( ival .ne. player ) goto 2200
-	call getval(5, 0,654,  wprogr, idest, ival )
+	call getval(5, 0,676,  wprogr, idest, ival )
 	if( ival .eq. 0 ) goto 2200
 107	call addunt( loc, icode, i, lmove )
 	if( .not. lmove ) goto 2200
-	call addval(6, 0,658,  res, ship, 1, -oreqir(icode) )
-	call addval(6, 0,659,  res, ship, 4, -menreq(icode) )
+	call addval(6, 0,680,  res, ship, 1, -oreqir(icode) )
+	call addval(6, 0,681,  res, ship, 4, -menreq(icode) )
 	mtime = timcre(icode)
-	call putval(5, 0,661,  tmtonx, i, mtime )
+	call putval(5, 0,683,  tmtonx, i, mtime )
 	if( idest .eq. 0 ) goto 2000
-	call addval(5, 0,663,  numusr, ival, 1 )
-	call putval(5, 0,664,  wprogr, i, ival )
-	call putval(5, 0,665,  pc, i, 1 )
+	call addval(5, 0,685,  numusr, ival, 1 )
+	call putval(5, 0,686,  wprogr, i, ival )
+	call putval(5, 0,687,  pc, i, 1 )
 	goto 2000
 
 C***	LOAD ON/FROM
@@ -677,36 +699,36 @@ C***	LOAD ON/FROM
 	ito = mod( idest, 2**15 )
 	if( ito .eq. 0 ) goto 350
 	if( ito .le. 0 .or. ito .gt. lunit ) goto 2200
-	call getval(5, 0,676,  org, ito, ival )
+	call getval(5, 0,698,  org, ito, ival )
 	if( ival .ne. player ) goto 2200
-	call getval(5, 0,678,  shiptr, ito, ival )
+	call getval(5, 0,700,  shiptr, ito, ival )
 	if( ival .ne. loc ) goto 2200
-	call getval(5, 0,680,  orbit, ito, ival )
+	call getval(5, 0,702,  orbit, ito, ival )
 	if( ival .ne. orb ) goto 2200
 
 	if( ift .eq. 0 ) goto 305
 	ifrom = ito
 	ito = ship
 
-305	call getval(6, 0,687,  res, ifrom, itype, ival )
+305	call getval(6, 0,709,  res, ifrom, itype, ival )
 	if( ival .lt. icode ) goto 2200
-	call getval(5, 0,689,  type, ito, stype )
-	call getval(6, 0,690,  res, ito, itype, ival )
+	call getval(5, 0,711,  type, ito, stype )
+	call getval(6, 0,712,  res, ito, itype, ival )
 	if( maxres( stype, itype ) - ival .lt. icode ) goto 2200
-	call addval(4, 0,692,  -1, icode )
-	call addval(6, 0,693,  res, ifrom, itype, -icode )
+	call addval(4, 0,714,  -1, icode )
+	call addval(6, 0,715,  res, ifrom, itype, -icode )
 	mtime = orb*iverb*icode
 	goto 2000
 
 C***	LOAD MEN
 
 350	if( itype .ne. 4 ) goto 2200
-	call getval(6, 0,700,  res, ship, 4, ival )
+	call getval(6, 0,722,  res, ship, 4, ival )
 	if( maxres( stype, itype ) - ival .lt. icode ) goto 2200
 	if( orb .ne. 1 ) goto 2200
-	call getval(5, 0,703,  pop, loc, ival )
+	call getval(5, 0,725,  pop, loc, ival )
 	if( ival .eq. 0 ) goto 2200
-	call addval(6, 0,705,  res, ship, 4, icode )
+	call addval(6, 0,727,  res, ship, 4, icode )
 	mtime = icode*7
 	goto 2000
 
@@ -718,27 +740,27 @@ C***	TACTIC
 	    j = j + mod( ival, 32 )
 	    ival = ival / 32
 605	continue
-	call getval(5, 0,717,  power, ship, ival )
+	call getval(5, 0,739,  power, ship, ival )
 	if( ival .lt. j ) goto 2200
 	ival = idest
 	do 610 i = 3, 1, -1
-	    call getval(7, 0,721,  powdst, ship, i+0, 2, j )
-	    call putval(7, 0,722,  powdst, ship, i+0, 1, min0(mod(ival,32),j) )
+	    call getval(7, 0,743,  powdst, ship, i+0, 2, j )
+	    call putval(7, 0,744,  powdst, ship, i+0, 1, min0(mod(ival,32),j) )
 	    ival = ival / 32
 610	continue
 	goto 2100
 
 C***	INFORM
 
-700	call putval(5, 0,729,  empcod, player, 2 )
-	call putval(5, 0,730,  empc, player, icode )
-	call putval(5, 0,731,  empdst, player, ship )
-	call putval(5, 0,732,  empinf, player, idest )
+700	call putval(5, 0,751,  empcod, player, 2 )
+	call putval(5, 0,752,  empc, player, icode )
+	call putval(5, 0,753,  empdst, player, ship )
+	call putval(5, 0,754,  empinf, player, idest )
 	goto 2100
 
 C***	SKIP
 
-800	call getval(6, 0,737,  res, ship, icode, nres )
+800	call getval(6, 0,759,  res, ship, icode, nres )
 	cmp = idest/(2**15)
 	ncomp = mod( idest, 2**15 )
 	goto( 810, 812, 814, 816, 818, 820 ) cmp
@@ -756,28 +778,28 @@ C***	SKIP
 820	if( nres .ge. ncomp ) goto 830
 	goto 2100
 
-830	call addval(5, 0,755,  pc, ship, 1 )
+830	call addval(5, 0,777,  pc, ship, 1 )
 	goto 2100
 
 C***	ERROR
 
-850	call putval(5, 0,760,  onerpc, ship, idest )
+850	call putval(5, 0,782,  onerpc, ship, idest )
 	goto 2100
 
 C***	GOTO
 
-900	call putval(5, 0,765,  pc, ship, idest )
+900	call putval(5, 0,787,  pc, ship, idest )
 	goto 2100
 
 C***	BUILD COMMAND
 
-910	call getval(6, 0,770,  res, ship, 3, ival )
+910	call getval(6, 0,792,  res, ship, 3, ival )
 	if( ival .lt. idest ) goto 2200
-	if( icode .lt. 4 ) call getval(7, 0,772,  powdst, ship, icode, 2, ival )
-	if( icode .eq. 4 ) call getval(5, 0,773,  power, ship, ival )
+	if( icode .lt. 4 ) call getval(7, 0,794,  powdst, ship, icode, 2, ival )
+	if( icode .eq. 4 ) call getval(5, 0,795,  power, ship, ival )
 	if( ival+idest .gt. 31 ) goto 2200
-	call addval(4, 0,775,  -1, idest )
-	call addval(6, 0,776,  res, ship, 3, -idest )
+	call addval(4, 0,797,  -1, idest )
+	call addval(6, 0,798,  res, ship, 3, -idest )
 	mtime = 37*idest*icode
 	goto 2000
 
@@ -798,36 +820,36 @@ C***	RANDOM JUMP
 	icode = 3
 	if( loc .gt. numstr ) goto 966
 964	i = iran( 5 )
-	call getval(6, 0,797,  dest, loc, i, idest )
+	call getval(6, 0,819,  dest, loc, i, idest )
 	if( idest .eq. 0 ) goto 964
 	goto 10
 
-966	call getval(5, 0,801,  wstar, loc, s )
-	call getval(5, 0,802,  wplan, loc, p )
-	call getval(5, 0,803,  wmoon, loc, m )
+966	call getval(5, 0,823,  wstar, loc, s )
+	call getval(5, 0,824,  wplan, loc, p )
+	call getval(5, 0,825,  wmoon, loc, m )
 	idest = loc
 968	idest = idest - 1
-	call getval(5, 0,806,  wstar, idest, ival )
+	call getval(5, 0,828,  wstar, idest, ival )
 	if( ival .ne. s ) goto 968
-	call getval(5, 0,808,  wplan, idest, ival )
+	call getval(5, 0,830,  wplan, idest, ival )
 	if( ival .ne. 0 .and. ival .ne. p ) goto 968
-	call getval(5, 0,810,  wmoon, idest, ival )
+	call getval(5, 0,832,  wmoon, idest, ival )
 	if( ival .ne. 0 ) goto 968
 	goto 10
 
 C***	PRODUCE
 
 970	if( stype .lt. 4 .or. stype .eq. 7 ) goto 2200
-	call getval(5, 0,817,  prdtim, ship, ival )
+	call getval(5, 0,839,  prdtim, ship, ival )
 	if( ival .ne. 0 ) goto 2200
-	call putval(4, 0,819,  -1, 793 )
+	call putval(4, 0,841,  -1, 793 )
 	goto 2100
 
 C***	CEASE PRODUCTION
 
-975	call getval(5, 0,824,  prdtim, ship, ival )
+975	call getval(5, 0,846,  prdtim, ship, ival )
 	if( ival .eq. 0 ) goto 2200
-	call putval(4, 0,826,  -1, 0 )
+	call putval(4, 0,848,  -1, 0 )
 	goto 2100
 
 C***	SELF DESTRUCT
@@ -836,7 +858,7 @@ C***	SELF DESTRUCT
 	goto 2100
 
 2000	continue
-	call putval(5, 0,835,  tmtonx, ship, mtime )
+	call putval(5, 0,857,  tmtonx, ship, mtime )
 2100	return
 
 2200	lmove = .false.
@@ -865,21 +887,21 @@ C
 
 	lmove = .false.
 	mtime = 0
-	call getval(5, 0,863,  wstar, cl, curs )
-	call getval(5, 0,864,  wplan, cl, curp )
-	call getval(5, 0,865,  wmoon, cl, curm )
-	call getval(5, 0,866,  wstar, nl, news )
-	call getval(5, 0,867,  wplan, nl, newp )
-	call getval(5, 0,868,  wmoon, nl, newm )
+	call getval(5, 0,885,  wstar, cl, curs )
+	call getval(5, 0,886,  wplan, cl, curp )
+	call getval(5, 0,887,  wmoon, cl, curm )
+	call getval(5, 0,888,  wstar, nl, news )
+	call getval(5, 0,889,  wplan, nl, newp )
+	call getval(5, 0,890,  wmoon, nl, newm )
 	if( co .ne. no ) goto 100
 	if( no .ne. 3 ) return
 	if(news.ne.curs.and.(newp.ne.curp.or.newm.ne.curm)) return
 	if(newp.ne.curp.and.newm.ne.curm) return
 	if( news .eq. curs ) goto 200
 	do 50 i = 1, 5
-	    call getval(6, 0,875,  dest, curs, i+0, ival )
+	    call getval(6, 0,897,  dest, curs, i+0, ival )
 	    if( ival .ne. news ) goto 50
-	    call getval(6, 0,877,  time, curs, i+0, mtime )
+	    call getval(6, 0,899,  time, curs, i+0, mtime )
 	    mtime = mtime*764529
 	    goto 200
 50	continue
@@ -924,41 +946,41 @@ C
      & 7,4,2,1,1,1,7,	12,10,7,3,3,2,15,	5,4,2,1,1,0,7/
 
 	lmove = .false.
-	call getval(5, 0,921,  useful, 5, lunit )
+	call getval(5, 0,943,  useful, 5, lunit )
 	if( lunit .ge. maxuni ) return
-	call getval(5, 0,923,  nofuni, player, ival )
+	call getval(5, 0,945,  nofuni, player, ival )
 	if( ival .ge. maxpla ) return
-	call addval(4, 0,925,  -1, 1 )
+	call addval(4, 0,947,  -1, 1 )
 	if( lunit .le. 1 ) goto 101
 	do 100 shpnum = 1, lunit-1
-	    call getval(5, 0,928,  org, shpnum+0, ival )
+	    call getval(5, 0,950,  org, shpnum+0, ival )
 	    if( ival .eq. 0 ) goto 200
 100	continue
 101	continue
 	lunit = lunit + 1
-	call putval(5, 0,933,  useful, 5, lunit )
+	call putval(5, 0,955,  useful, 5, lunit )
 	shpnum = lunit
-200	call putval(5, 0,935,  org, shpnum, player )
+200	call putval(5, 0,957,  org, shpnum, player )
 	do 300 i = 1, 4
-	    call putval(6, 0,937,  res, shpnum, i+0, 0 )
+	    call putval(6, 0,959,  res, shpnum, i+0, 0 )
 300	continue
-	call putval(5, 0,939,  type, shpnum, stype )
-	call putval(5, 0,940,  shiptr, shpnum, loc )
-	call putval(5, 0,941,  orbit, shpnum, 1 )
-	call putval(5, 0,942,  hmflag, shpnum, 0 )
-	call putval(5, 0,943,  wprogr, shpnum, 0 )
-	call putval(5, 0,944,  pc, shpnum, 0 )
-	call putval(5, 0,945,  onerpc, shpnum, 0 )
-	call putval(5, 0,946,  tmtonx, shpnum, 0 )
-	call putval(5, 0,947,  prdtim, shpnum, 0 )
-	call putval(5, 0,948,  power, shpnum, typowr(stype) )
+	call putval(5, 0,961,  type, shpnum, stype )
+	call putval(5, 0,962,  shiptr, shpnum, loc )
+	call putval(5, 0,963,  orbit, shpnum, 1 )
+	call putval(5, 0,964,  hmflag, shpnum, 0 )
+	call putval(5, 0,965,  wprogr, shpnum, 0 )
+	call putval(5, 0,966,  pc, shpnum, 0 )
+	call putval(5, 0,967,  onerpc, shpnum, 0 )
+	call putval(5, 0,968,  tmtonx, shpnum, 0 )
+	call putval(5, 0,969,  prdtim, shpnum, 0 )
+	call putval(5, 0,970,  power, shpnum, typowr(stype) )
 	do 400 i = 1, 3
-	    call putval(7, 0,950,  powdst, shpnum, i+0, 2, maxpow(stype,i) )
-	    call putval(7, 0,951,  powdst, shpnum, i+0, 1, 0 )
+	    call putval(7, 0,972,  powdst, shpnum, i+0, 2, maxpow(stype,i) )
+	    call putval(7, 0,973,  powdst, shpnum, i+0, 1, 0 )
 400	continue
-	call getval(6, 0,953,  plcorg, loc, 1, ival )
-	if( ival .eq. 0 ) call putval(4, 0,954,  -1, player )
-	if(ival.eq.player.or.ival.eq.0) call addval(6, 0,955, nuaplc,loc,1,1)
+	call getval(6, 0,975,  plcorg, loc, 1, ival )
+	if( ival .eq. 0 ) call putval(4, 0,976,  -1, player )
+	if(ival.eq.player.or.ival.eq.0) call addval(6, 0,977, nuaplc,loc,1,1)
 	lmove = .true.
 	return
 	end
@@ -980,42 +1002,42 @@ C
 	common/usrcom/lasplc,numstr,nprogs,lunit,player,
      & maxuni,maxprg,maxmem,maxpla
 
-	call getval(5, 0,976,  useful, 5, lunit )
-	call getval(5, 0,977,  org, shpnum, dplayr )
-	call putval(4, 0,978,  -1, 0 )
-	call addval(5, 0,979,  nofuni, dplayr, -1 )
-	call getval(5, 0,980,  wprogr, shpnum, ival )
-	if( ival .ne. 0 ) call addval(5, 0,981,  numusr, ival, -1 )
-	call getval(5, 0,982,  shiptr, shpnum, loc )
-	call getval(5, 0,983,  orbit, shpnum, orb )
+	call getval(5, 0,998,  useful, 5, lunit )
+	call getval(5, 0,999,  org, shpnum, dplayr )
+	call putval(4, 0,1000,  -1, 0 )
+	call addval(5, 0,1001,  nofuni, dplayr, -1 )
+	call getval(5, 0,1002,  wprogr, shpnum, ival )
+	if( ival .ne. 0 ) call addval(5, 0,1003,  numusr, ival, -1 )
+	call getval(5, 0,1004,  shiptr, shpnum, loc )
+	call getval(5, 0,1005,  orbit, shpnum, orb )
 	level = orb/3 + 1
-	call getval(6, 0,985,  plcorg, loc, level, ival )
+	call getval(6, 0,1007,  plcorg, loc, level, ival )
 	if( ival .ne. dplayr ) goto 100
-	call getval(6, 0,987,  nuaplc, loc, level, ival )
-	call addval(4, 0,988,  -1, -1 )
+	call getval(6, 0,1009,  nuaplc, loc, level, ival )
+	call addval(4, 0,1010,  -1, -1 )
 	if( ival .gt. 1 ) goto 100
 	neworg = 0
 	numshp = 0
 	do 50 i = 1, lunit
 	    j = i
-	    call getval(5, 0,994,  shiptr, j, ival )
+	    call getval(5, 0,1016,  shiptr, j, ival )
 	    if( ival .ne. loc ) goto 50
-	    call getval(5, 0,996,  orbit, j, ival )
+	    call getval(5, 0,1018,  orbit, j, ival )
 	    if( ival/3 + 1 .ne. level ) goto 50
-	    call getval(5, 0,998,  org, j, k )
+	    call getval(5, 0,1020,  org, j, k )
 	    if( k.eq.0 .or. (neworg.ne.0 .and. k.ne.neworg) ) goto 50
 	    neworg = k
 	    numshp = numshp + 1
 50	continue
-	call putval(6, 0,1003,  plcorg, loc, level, neworg )
-	call putval(6, 0,1004,  nuaplc, loc, level, numshp )
+	call putval(6, 0,1025,  plcorg, loc, level, neworg )
+	call putval(6, 0,1026,  nuaplc, loc, level, numshp )
 
 100	if( lunit .gt. shpnum ) return
 	lunit = lunit - 1
 	if( lunit .le. 0 ) goto 150
-	call getval(5, 0,1009,  org, lunit, ival )
+	call getval(5, 0,1031,  org, lunit, ival )
 	if( ival .eq. 0 ) goto 100
-150	call putval(5, 0,1011,  useful, 5, lunit )
+150	call putval(5, 0,1033,  useful, 5, lunit )
 	return
 	end
 C
@@ -1064,7 +1086,7 @@ C     & 'WHITE     ','YELLOW    ','LIGHT-RED ','DEEP-RED  '/
 	thrstr = 6
 5	continue
 
-	call getval(5, 0,1059,  hmflag, ship, hypmov )
+	call getval(5, 0,1081,  hmflag, ship, hypmov )
 	if( .not. xtr ) goto 10
 	if( .not. new ) return
 	call cursor( 20, 12 )
@@ -1076,9 +1098,9 @@ C     & 'WHITE     ','YELLOW    ','LIGHT-RED ','DEEP-RED  '/
 	call pcolor( iclwhi )
 	return
 
-10	call getval(5, 0,1071,  shiptr, ship, loc )
-	call getval(5, 0,1072,  orbit, ship, orb )
-	call getval(5, 0,1073,  ptype, loc, itype )
+10	call getval(5, 0,1093,  shiptr, ship, loc )
+	call getval(5, 0,1094,  orbit, ship, orb )
+	call getval(5, 0,1095,  ptype, loc, itype )
 	iatmos = iclbla
 	if( itype .eq. 1 .and. orb .eq. 1 ) iatmos = icllbl
 	if( .not. new .and. loc .eq. oloc .and. orb .eq. oorb ) goto 50
@@ -1090,13 +1112,13 @@ C     & 'WHITE     ','YELLOW    ','LIGHT-RED ','DEEP-RED  '/
 	call string(1,' at ^E')
 	call ploc( loc, orb )
 50	if( .not. new ) goto 1000
-	call getval(5, 0,1085,  wplan, loc, planum )
-	call getval(5, 0,1086,  wmoon, loc, moonum )
+	call getval(5, 0,1107,  wplan, loc, planum )
+	call getval(5, 0,1108,  wmoon, loc, moonum )
 	call string(1,'^M^J^JCat. code: ^E')
 	call number(1, loc )
 	call chrout(47)
 	if( loc .gt. numstr ) goto 200
-	call getval(5, 0,1091,  wplace, loc, ival )
+	call getval(5, 0,1113,  wplace, loc, ival )
 	call number(1, ival )
 	call string(1,'^M^JSpectral class: ^E')
 	class = iqran(loc,60) - 1
@@ -1219,22 +1241,22 @@ C	CALL STRING(3, COLOR(CLASS/10+1,2), 5, 5 )
      &Ore density:^M^JFood density:^M^JHunger:^E')
 
 1000	if( planum .eq. 0 ) goto 1100
-	call getval(5, 0,1214,  pop, loc, ival )
+	call getval(5, 0,1236,  pop, loc, ival )
 	if( ival .eq. oldpop .and. .not. new ) goto 1005
 	call cursor( 13, 13 )
 	call number(2, ival, 6 )
 	oldpop = ival
-1005	call getval(6, 0,1219,  restrn, loc, 1, ival )
+1005	call getval(6, 0,1241,  restrn, loc, 1, ival )
 	if( ival .eq. oldore .and. .not. new ) goto 1010
 	call cursor( 14, 12 )
 	call number(2, ival, 2 )
 	oldore = ival
-1010	call getval(6, 0,1224,  restrn, loc, 2, ival )
+1010	call getval(6, 0,1246,  restrn, loc, 2, ival )
 	if( ival .eq. oldfod .and. .not. new ) goto 1020
 	call cursor( 15, 11 )
 	call number(2, ival, 2 )
 	oldfod = ival
-1020	call getval(5, 0,1229,  hunger, loc, ival )
+1020	call getval(5, 0,1251,  hunger, loc, ival )
 	if( ival .eq. oldhun .and. .not. new ) goto 1030
 	call cursor( 9, 10 )
 	call number(2, ival, 8 )
@@ -1267,13 +1289,13 @@ C	CALL STRING(3, COLOR(CLASS/10+1,2), 5, 5 )
 	if( loc .le. numstr ) goto 1246
 	do 1245 i = 1, lunit
 	    j = i
-	    call getval(5, 0,1262,  org, j, ival )
+	    call getval(5, 0,1284,  org, j, ival )
 	    if( ival .eq. 0 ) goto 1245
-	    call getval(5, 0,1264,  shiptr, j, ival )
+	    call getval(5, 0,1286,  shiptr, j, ival )
 	    if( ival .ne. loc .or. j .eq. ship ) goto 1245
-	    call getval(5, 0,1266,  hmflag, j, ival )
+	    call getval(5, 0,1288,  hmflag, j, ival )
 	    if( ival .ne. 0 ) goto 1245
-	    call getval(5, 0,1268,  orbit, j, sorb )
+	    call getval(5, 0,1290,  orbit, j, sorb )
 	    i3 = 0
 	    if( sorb .ne. 1 ) goto 1230
 1220	    i3 = i3 + 1
@@ -1291,8 +1313,8 @@ C	CALL STRING(3, COLOR(CLASS/10+1,2), 5, 5 )
 	    if( iqran( loc+j-i3, 25 ) .lt. 2 ) goto 1245
 	    if( newara(i1,i2) .ne. 0 ) goto 1230
 
-1240	    call getval(5, 0,1286,  type, j, stype )
-	    call getval(5, 0,1287,  org, j, sorg )
+1240	    call getval(5, 0,1308,  type, j, stype )
+	    call getval(5, 0,1309,  org, j, sorg )
 	    newara(i1,i2) = -(stype * 10000 + sorg)
 
 1245	continue
@@ -1427,7 +1449,7 @@ C
 
 	call chrout(35)
 	call number(1, shpnum )
-	call getval(5, 0,1420,  type, shpnum, stype )
+	call getval(5, 0,1442,  type, shpnum, stype )
 	call putype( stype )
 
 	return
@@ -1475,16 +1497,16 @@ C
 	common/usrcom/lasplc,numstr,nprogs,lunit,player,
      & maxuni,maxprg,maxmem,maxpla
 
-	call getval(5, 0,1466,  wstar, loc, s )
-	call getval(6, 0,1467,  name, s, 1, stname(1) )
-	call getval(6, 0,1468,  name, s, 2, stname(2) )
+	call getval(5, 0,1488,  wstar, loc, s )
+	call getval(6, 0,1489,  name, s, 1, stname(1) )
+	call getval(6, 0,1490,  name, s, 2, stname(2) )
 	call string(3, stname, 6, 12 )
-	call getval(5, 0,1470,  wplan, loc, p )
+	call getval(5, 0,1492,  wplan, loc, p )
 	if( p .eq. 0 ) call string(1,'         ^E')
 	if( p .eq. 0 ) goto 100
 	call string(1,'  P^E')
 	call number(2, p, -2 )
-	call getval(5, 0,1475,  wmoon, loc, m )
+	call getval(5, 0,1497,  wmoon, loc, m )
 	if( m .eq. 0 ) call string(1,'    ^E')
 	if( m .eq. 0 ) goto 100
 	call string(1,'  M^E')
@@ -1517,7 +1539,7 @@ C
 
 	data letter/66,65,70,71,75,77/
 
-	call getval(5, 0,1507,  hmflag, ship, hypmov )
+	call getval(5, 0,1529,  hmflag, ship, hypmov )
 	if( .not. xtr ) goto 10
 	if( .not. new ) return
 	call cursor( 20, 12 )
@@ -1527,8 +1549,8 @@ C
 	if( hypmov .eq. 2 ) call string(1,'in transit ***^E')
 	return
 
-10	call getval(5, 0,1517,  shiptr, ship, loc )
-	call getval(5, 0,1518,  orbit, ship, orb )
+10	call getval(5, 0,1539,  shiptr, ship, loc )
+	call getval(5, 0,1540,  orbit, ship, orb )
 	if( .not. new .and. loc .eq. oloc .and. orb .eq. oorb ) goto 50
 	oloc = loc
 	oorb = orb
@@ -1540,41 +1562,41 @@ C
 50	if( .not. new ) goto 300
 	call cursor( 1, 20 )
 	call string(1,'Hyper time/jump:^M^J^E')
-	call getval(5, 0,1530,  wstar, loc, s )
+	call getval(5, 0,1552,  wstar, loc, s )
 	do 100 i = 1, 5
-	    call getval(6, 0,1532,  time, s, i+0, t )
+	    call getval(6, 0,1554,  time, s, i+0, t )
 	    if( t .eq. 0 ) goto 110
 	    call number(2, t, 3 )
 	    call chrout(47)
-	    call getval(6, 0,1536,  dest, s, i+0, s1 )
-	    call getval(6, 0,1537,  name, s1, 1, stname(1) )
-	    call getval(6, 0,1538,  name, s1, 2, stname(2) )
+	    call getval(6, 0,1558,  dest, s, i+0, s1 )
+	    call getval(6, 0,1559,  name, s1, 1, stname(1) )
+	    call getval(6, 0,1560,  name, s1, 2, stname(2) )
 	    call string(3, stname, 6, 12 )
 100	continue
 
 110	call cursor( 1, 16 )
 	call string(1,'Satellite:         Type
      &     Allegiance   Low/Num   High/Num^M^J^E')
-	call getval(6, 0,1545,  name, s, 1, ival )
+	call getval(6, 0,1567,  name, s, 1, ival )
 	call string(3, ival, 6, 6 )
-	call getval(6, 0,1547,  name, s, 2, ival )
+	call getval(6, 0,1569,  name, s, 2, ival )
 	call string(3, ival, 6, 6 )
 	call string(1,'     ^E')
 	class = iqran( s, 60 ) - 1
 	call chrout( letter(class/10 + 1) )
 	call number(1, mod(class,10) )
 	call crlf
-	call getval(5, 0,1554,  wplace, s, tloc )
+	call getval(5, 0,1576,  wplace, s, tloc )
 	if( tloc .eq. 0 ) goto 300
-200	call getval(5, 0,1556,  wstar, tloc, ival )
+200	call getval(5, 0,1578,  wstar, tloc, ival )
 	if( ival .ne. s ) goto 300
-	call getval(5, 0,1558,  wplan, tloc, p )
-	call getval(5, 0,1559,  wmoon, tloc, m )
+	call getval(5, 0,1580,  wplan, tloc, p )
+	call getval(5, 0,1581,  wmoon, tloc, m )
 	if( m .eq. 0 ) call string(1,'  Planet #^E')
 	if( m .ne. 0 ) call string(1,'    Moon #^E')
 	if( m .eq. 0 ) call number(2, p, -2 )
 	if( m .ne. 0 ) call number(2, m, -2 )
-	call getval(5, 0,1564,  ptype, tloc, ival )
+	call getval(5, 0,1586,  ptype, tloc, ival )
 	if( ival .eq. 1 ) call string(1,'     Habitable^M^J^E')
 	if( ival .eq. 2 ) call string(1,'     Ordinary^M^J^E')
 	if( ival .eq. 3 ) call string(1,'     Gasseous^M^J^E')
@@ -1582,19 +1604,19 @@ C
 	goto 200
 
 300	if( loc .eq. -1 ) return
-	call getval(5, 0,1572,  poporg, s, borg )
+	call getval(5, 0,1594,  poporg, s, borg )
 	if( borg .eq. 0 ) borg = 100
 	magicn = borg
-	call getval(6, 0,1575,  plcorg, s, 1, blorg )
+	call getval(6, 0,1597,  plcorg, s, 1, blorg )
 	if( blorg .eq. 0 ) blorg = 100
 	magicn = blorg + magicn*101
-	call getval(6, 0,1578,  nuaplc, s, 1, blnum )
+	call getval(6, 0,1600,  nuaplc, s, 1, blnum )
 	if( blnum .eq. 0 ) blnum = 1000
 	magicn = blnum + magicn*1001
-	call getval(6, 0,1581,  plcorg, s, 2, bhorg )
+	call getval(6, 0,1603,  plcorg, s, 2, bhorg )
 	if( bhorg .eq. 0 ) bhorg = 100
 	magicn = bhorg + magicn*101
-	call getval(6, 0,1584,  nuaplc, s, 2, bhnum )
+	call getval(6, 0,1606,  nuaplc, s, 2, bhnum )
 	if( bhnum .eq. 0 ) bhnum = 1000
 	magicn = bhnum + magicn*1001
 	if( magicn .eq. osornm .and. .not. new ) goto 310
@@ -1610,26 +1632,26 @@ C
 	call number(2, bhnum, 3 )
 	osornm = magicn
 
-310	call getval(5, 0,1600,  wplace, s, tloc )
+310	call getval(5, 0,1622,  wplace, s, tloc )
 	if( tloc .eq. 0 ) return
 	ibod = 0
-400	call getval(5, 0,1603,  wstar, tloc, ival )
+400	call getval(5, 0,1625,  wstar, tloc, ival )
 	if( ival .ne. s ) return
 	ibod = ibod + 1
 	if( new ) oldaan(ibod) = 0
-	call getval(5, 0,1607,  poporg, tloc, borg )
+	call getval(5, 0,1629,  poporg, tloc, borg )
 	if( borg .eq. 0 ) borg = 100
 	magicn = borg
-	call getval(6, 0,1610,  plcorg, tloc, 1, blorg )
+	call getval(6, 0,1632,  plcorg, tloc, 1, blorg )
 	if( blorg .eq. 0 ) blorg = 100
 	magicn = blorg + magicn*101
-	call getval(6, 0,1613,  nuaplc, tloc, 1, blnum )
+	call getval(6, 0,1635,  nuaplc, tloc, 1, blnum )
 	if( blnum .eq. 0 ) blnum = 1000
 	magicn = blnum + magicn*1001
-	call getval(6, 0,1616,  plcorg, tloc, 2, bhorg )
+	call getval(6, 0,1638,  plcorg, tloc, 2, bhorg )
 	if( bhorg .eq. 0 ) bhorg = 100
 	magicn = bhorg + magicn*101
-	call getval(6, 0,1619,  nuaplc, tloc, 2, bhnum )
+	call getval(6, 0,1641,  nuaplc, tloc, 2, bhnum )
 	if( bhnum .eq. 0 ) bhnum = 1000
 	magicn = bhnum + magicn*1001
 	if( magicn .eq. oldaan(ibod) .and. .not. new ) goto 500
@@ -1676,7 +1698,7 @@ C
 	call cursor( 1, 24 )
 	call string
      &(1,'Position:^M^JType:^M^JResources:^M^J   Ore:     (^E')
-	call getval(5, 0,1665,  type, ship, ival )
+	call getval(5, 0,1687,  type, ship, ival )
 	call number(2, maxres( ival, 1 ), 2 )
 	call string(1,')^M^J   Food:    (^E')
 	call number(2, maxres( ival, 2 ), 2 )
@@ -1686,9 +1708,9 @@ C
 	call number(2, maxres( ival, 4 ), 2 )
 	call string(1,')^M^JTotal power:^M^JPower distribution
      &^M^J   Engines:^M^J   Shields:^M^J   Beam:^M^JPC:^M^J^E')
-100	call getval(5, 0,1675,  shiptr, ship, loc )
-	call getval(5, 0,1676,  orbit, ship, orb )
-	call getval(5, 0,1677,  hmflag, ship, ival )
+100	call getval(5, 0,1697,  shiptr, ship, loc )
+	call getval(5, 0,1698,  orbit, ship, orb )
+	call getval(5, 0,1699,  hmflag, ship, ival )
 	magicn = loc + orb*2**12 + ival*2**16
 	if( magicn .eq. pos .and. .not. new ) goto 200
 	call cursor( 11, 24 )
@@ -1703,27 +1725,27 @@ C
 	oship = ship
 300	do 400 i = 1, 4
 	    j = i
-	    call getval(6, 0,1692,  res, ship, j, ival )
+	    call getval(6, 0,1714,  res, ship, j, ival )
 	    if( ival .eq. reso(i) .and. .not. new ) goto 400
 	    call cursor( 10, 22-i )
 	    call number(2, ival, 2 )
 	    reso(i) = ival
 400	continue
-	call getval(5, 0,1698,  power, ship, ival )
+	call getval(5, 0,1720,  power, ship, ival )
 	if( ival .eq. pow .and. .not. new ) goto 500
 	call cursor( 14, 17 )
 	call number(2, ival, 2 )
 	pow = ival
 500	do 600 i = 1, 3
 	    do 600 j = 1, 2
-		call getval(7, 0,1705,  powdst, ship, i+0, j+0, ival )
+		call getval(7, 0,1727,  powdst, ship, i+0, j+0, ival )
 		if( ival .eq. oldpds(i,j) .and. .not. new ) goto 600
 		call cursor( 11+4*j, 16-i )
 		call number(2, ival, 2 )
 		oldpds(i,j) = ival
 600	continue
 
-700	call getval(5, 0,1712,  pc, ship, ival )
+700	call getval(5, 0,1734,  pc, ship, ival )
 	if( ival .eq. opc .and. .not. new ) goto 800
 	call cursor( 5, 12 )
 	call number(2, ival, -2 )
@@ -1768,10 +1790,10 @@ C
 50	scptr = 0
 	do 100 i = 1, lunit
 	    unit = i
-	    call getval(5, 0,1756,  org, unit, ival )
+	    call getval(5, 0,1778,  org, unit, ival )
 	    if( ival .ne. player ) goto 100
-	    call getval(5, 0,1758,  shiptr, unit, sloc )
-	    call getval(5, 0,1759,  type, unit, stype )
+	    call getval(5, 0,1780,  shiptr, unit, sloc )
+	    call getval(5, 0,1781,  type, unit, stype )
 	    if( ( untloc .ne. 0 .and. sloc .ne. untloc ) .or.
      &		( untype .ne. 0 .and. stype .ne. untype ) ) goto 100
 	    scptr = scptr + 1
@@ -1779,11 +1801,11 @@ C
 	    if( new ) oldstf( scptr ) = 0
 	    magicn = unit
 	    magicn = magicn*8 + stype
-	    call getval(5, 0,1767,  orbit, unit, sorb )
+	    call getval(5, 0,1789,  orbit, unit, sorb )
 	    magicn = magicn*4 + sorb
-	    call getval(5, 0,1769,  tmtonx, unit, ival )
+	    call getval(5, 0,1791,  tmtonx, unit, ival )
 	    if( ival .eq. 0 ) goto 55
-	    call getval(5, 0,1771,  hmflag, unit, ival )
+	    call getval(5, 0,1793,  hmflag, unit, ival )
 	    ival = ival + 1
 55	    magicn = magicn*4 + ival
 	    if( magicn .eq. oldstf( scptr ) ) goto 100
@@ -1968,9 +1990,9 @@ C
 	if( .not. new ) return
 	do 100 i = 1, lunit
 	    unum = i
-	    call getval(5, 0,1953,  org, unum, ival )
+	    call getval(5, 0,1975,  org, unum, ival )
 	    if( ival .ne. player ) goto 100
-	    call getval(5, 0,1955,  shiptr, unum, ival )
+	    call getval(5, 0,1977,  shiptr, unum, ival )
 	    nminlo( ival ) = nminlo( ival ) + 1
 100	continue
 	curptr = 0
@@ -2020,7 +2042,7 @@ C
 	call string(1,'Pl   Prog Units   NCSTRU^E')
 	call cursor( 35, 24 )
 	call string(1,'Elapsed:           Started: ^E')
-	call getval(5, 0,2004,  ptime, 1, ival )
+	call getval(5, 0,2026,  ptime, 1, ival )
 	call number(1, mod( ival, 31 ) + 1 )
 	ival = ival/31
 	call chrout(45)
@@ -2029,19 +2051,19 @@ C
 	ival = ival/12
 	call number(1, ival+64 )
 	call chrout(32)
-	call getval(5, 0,2013,  ptime, 2, ival )
+	call getval(5, 0,2035,  ptime, 2, ival )
 	call number(2, ival/3600000, -2 )
 	call chrout(58)
 	call number(2, mod( ival/60000, 60 ), -2 )
-100	call getval(5, 0,2017,  ptime, 3, ival )
+100	call getval(5, 0,2039,  ptime, 3, ival )
 	call cursor( 45, 24 )
 	call number(1, ival )
 	do 400 i = 1, 20
 	    plynum = i
 	    if( new ) untime(plynum) = 0
-	    call getval(5, 0,2023,  progs, plynum, ival )
+	    call getval(5, 0,2045,  progs, plynum, ival )
 	    if( ival .eq. 0 ) goto 410
-	    call getval(5, 0,2025,  nofuni, plynum, ival1 )
+	    call getval(5, 0,2047,  nofuni, plynum, ival1 )
 	    ival1 = ival1 + 1
 	    if( ival1 .eq. ileft( untime(plynum) ) ) goto 350
 	    call cursor( 40*((i-1)/20)+2, 23-mod(i-1,20) )
@@ -2049,7 +2071,7 @@ C
 	    if( ival .ne. 262143 ) call number(3, ival, 7, 8 )
 	    if( ival .eq. 262143 ) call string(1,' empire^E')
 	    call number(2, ival1-1, 6 )
-350	    call getval(5, 0,2033,  ncstru, plynum, ival2 )
+350	    call getval(5, 0,2055,  ncstru, plynum, ival2 )
 	    ival2 = ival2 + 1
 	    if( ival2 .eq. iright( untime(plynum) ) ) goto 370
 	    call cursor( 40*((i-1)/20)+22, 23-mod(i-1,20) )
@@ -2058,7 +2080,7 @@ C
 370	    untime(plynum) = 262144*ival1 + ival2
 400	continue
 
-410	call getval(5, 0,2042,  useful, 7, whoinl )
+410	call getval(5, 0,2064,  useful, 7, whoinl )
 	if( .not. new .and. whoinl .eq. oldinl ) return
 	if( whoinl .eq. 0 ) goto 500
 	call cursor( 40*((whoinl-1)/20)+1, 23-mod(whoinl-1,20) )
@@ -2102,21 +2124,21 @@ C
 	call cursor( 8, 4 )
 	call number(2, lunit, -4 )
 	olunit = lunit
-105	call getval(5, 0,2085,  useful, 8, lprogr )
+105	call getval(5, 0,2107,  useful, 8, lprogr )
 	if( lprogr .eq. olprgr .and. .not. new ) goto 110
 	call cursor( 29, 4 )
 	call number(2, lprogr, -4 )
 	olprgr = lprogr
-110	call getval(5, 0,2090,  useful, 9, lmem )
+110	call getval(5, 0,2112,  useful, 9, lmem )
 	if( lmem .eq. olmem .and. .not. new ) goto 120
 	call cursor( 48, 4 )
 	call number(2, lmem, -4 )
 	olmem = lmem
 120	do 200 i = 1, 20
 	    prgnum = i
-	    call getval(5, 0,2097,  stradr, prgnum, addr )
-	    call getval(5, 0,2098,  lenprg, prgnum, len )
-	    call getval(5, 0,2099,  numusr, prgnum, num )
+	    call getval(5, 0,2119,  stradr, prgnum, addr )
+	    call getval(5, 0,2120,  lenprg, prgnum, len )
+	    call getval(5, 0,2121,  numusr, prgnum, num )
 	    magicn = addr + len*2**12 + num*2**18
 	    if( new ) oldprg(i) = 0
 	    if( magicn .eq. oldprg(i) ) goto 200
@@ -2134,9 +2156,9 @@ C
 200	continue
 	do 300 i = 1, 40
 	    addr = i
-	    call getval(5, 0,2117,  nverb, addr, iv )
-	    call getval(5, 0,2118,  ncode, addr, ic )
-	    call getval(5, 0,2119,  ndest, addr, id )
+	    call getval(5, 0,2139,  nverb, addr, iv )
+	    call getval(5, 0,2140,  ncode, addr, ic )
+	    call getval(5, 0,2141,  ndest, addr, id )
 	    magicn = id + ic*2**12 + iv*2**16
 	    if( new ) oldmem(i) = 0
 	    if( magicn .eq. oldmem(i) ) goto 300
@@ -2443,9 +2465,9 @@ C
 	jmperr = .true.
 	loc = cloc
 	orb = corb
-	call getval(5, 0,2421,  wstar, loc, s )
-	call getval(5, 0,2422,  wplan, loc, p )
-	call getval(5, 0,2423,  wmoon, loc, m )
+	call getval(5, 0,2443,  wstar, loc, s )
+	call getval(5, 0,2444,  wplan, loc, p )
+	call getval(5, 0,2445,  wmoon, loc, m )
 	do 100 i = 1, 10
 	    if( par(i) .eq. 0 ) goto 110
 	    if( (par(1).eq.isxbit('TO~') .or. par(1).eq.isxbit('AT~'))
@@ -2456,7 +2478,7 @@ C
 	    goto 100
 
 30	    do 50 j = 1, numstr
-		call getval(6, 0,2434,  name, j+0, 1, ival )
+		call getval(6, 0,2456,  name, j+0, 1, ival )
 		if( ival .ne. par(i) ) goto 50
 		s = j
 		p = 0
@@ -2484,11 +2506,11 @@ C
 
 110	do 200 i = 1, lasplc
 	    loc = i
-	    call getval(5, 0,2462,  wstar, loc, ival )
+	    call getval(5, 0,2484,  wstar, loc, ival )
 	    if( ival .ne. s ) goto 200
-	    call getval(5, 0,2464,  wplan, loc, ival )
+	    call getval(5, 0,2486,  wplan, loc, ival )
 	    if( ival .ne. p ) goto 200
-	    call getval(5, 0,2466,  wmoon, loc, ival )
+	    call getval(5, 0,2488,  wmoon, loc, ival )
 	    if( ival .eq. m ) goto 250
 200	continue
 	return
@@ -2520,7 +2542,7 @@ C
      & maxuni,maxprg,maxmem,maxpla
 
 	if( job(-1) .eq. 0 ) return	! savesg not useful unless tops10
-	call getval(5, 0,2497,  useful, 17, ival )
+	call getval(5, 0,2519,  useful, 17, ival )
 	if( ival .eq. 0 ) return
 	call enable
 	call ofile( 2, filesp, isxbit('@    ,~') )
@@ -2674,7 +2696,7 @@ C***	****************************
 	call settty( com, par, len, lprivd, filesp )
 	call check( iniflg )
 	if( iniflg ) call initdb( com, par, lprivd )
-	call getval(5, 0,2650,  useful, 16, ival )
+	call getval(5, 0,2672,  useful, 16, ival )
 	if( ival .eq. 0 .or. lprivd ) goto 10
 	call string(1,'Stand alone.  Try again later.^M^J^B')
 	call exprog
@@ -2682,17 +2704,17 @@ C***	****************************
 10	continue ! call ctrap
 c	    call cease
 
-	call getval(5, 0,2658,  useful, 1, numstr )
-	call getval(5, 0,2659,  useful, 4, lasplc )
-	call getval(5, 0,2660,  useful, 5, lunit )
-	call getval(5, 0,2661,  useful, 6, nprogs )
-	call getval(5, 0,2662,  useful, 12, maxuni )
-	call getval(5, 0,2663,  useful, 13, maxprg )
-	call getval(5, 0,2664,  useful, 14, maxmem )
-	call getval(5, 0,2665,  useful, 15, maxpla )
+	call getval(5, 0,2680,  useful, 1, numstr )
+	call getval(5, 0,2681,  useful, 4, lasplc )
+	call getval(5, 0,2682,  useful, 5, lunit )
+	call getval(5, 0,2683,  useful, 6, nprogs )
+	call getval(5, 0,2684,  useful, 12, maxuni )
+	call getval(5, 0,2685,  useful, 13, maxprg )
+	call getval(5, 0,2686,  useful, 14, maxmem )
+	call getval(5, 0,2687,  useful, 15, maxpla )
 	call ppn( i, ival )
 	do 50 player = 1, nprogs
-	    call getval(5, 0,2668,  progs, player+0, j )
+	    call getval(5, 0,2690,  progs, player+0, j )
 	    if( j .eq. ival ) goto 60
 	    if( j .eq. 0 ) goto 70
 50	continue
@@ -2700,9 +2722,9 @@ c	    call cease
 	call string(1,'There are too many people in the system.^M^J^B')
 	call exprog
 
-60	call putval(5, 0,2676,  empcod, player, 0 )
+60	call putval(5, 0,2698,  empcod, player, 0 )
 	do 64 ship = 1, lunit
-	    call getval(5, 0,2678,  org, ship+0, ival )
+	    call getval(5, 0,2700,  org, ship+0, ival )
 	    if( ival .eq. player ) goto 67
 64	continue
 65	continue
@@ -2718,13 +2740,13 @@ c	    call cease
 	if( ichar .ne. 89 ) goto 65
 	goto 72
 
-67	call getval(5, 0,2694,  shiptr, ship, eloc )
-	call getval(5, 0,2695,  orbit, ship, eorb )
+67	call getval(5, 0,2716,  shiptr, ship, eloc )
+	call getval(5, 0,2717,  orbit, ship, eorb )
 	goto 90
 
-70	call putval(5, 0,2698,  progs, player, ival )
+70	call putval(5, 0,2720,  progs, player, ival )
 72	eloc = iran( lasplc-numstr ) + numstr
-	call getval(5, 0,2700,  ptype, eloc, ival )
+	call getval(5, 0,2722,  ptype, eloc, ival )
 	if( ival .eq. 3 ) goto 72
 	eorb = 1
 	call addunt( eloc, 2, ship, lmove )
@@ -2745,7 +2767,7 @@ C***	*****************************
 	call string(1,'It is over styxline.  Try again later.^E')
 	call cease
 
-101	call getval(5, 0,2721,  useful, 16, ival )
+101	call getval(5, 0,2743,  useful, 16, ival )
 	if( lprivd .or. ival .eq. 0 ) goto 102
 	call clrscr
 	call cursor( 25, 12 )
@@ -2753,10 +2775,10 @@ C***	*****************************
 	call cease
 
 102	call exunit
-	call getval(5, 0,2729,  org, ship, ival )
+	call getval(5, 0,2751,  org, ship, ival )
 	if( ival .eq. player ) goto 105
 	do 103 ship = 1, lunit
-	    call getval(5, 0,2732,  org, ship+0, ival )
+	    call getval(5, 0,2754,  org, ship+0, ival )
 	    if( ival .eq. player ) goto 104
 103	continue
 	call clrscr
@@ -2766,10 +2788,10 @@ C***	*****************************
 
 104	new = .true.
 
-105	call getval(5, 0,2742,  shiptr, ship, cloc )
-	call getval(5, 0,2743,  shiptr, ship, corb )
-	call getval(5, 0,2744,  wstar, cloc, cstar )
-	call getval(5, 0,2745,  hmflag, ship, hypmov )
+105	call getval(5, 0,2764,  shiptr, ship, cloc )
+	call getval(5, 0,2765,  shiptr, ship, corb )
+	call getval(5, 0,2766,  wstar, cloc, cstar )
+	call getval(5, 0,2767,  hmflag, ship, hypmov )
 	xtr1 = .false.
 	xtr2 = .false.
 	if( cloc .ne. oloc .and. hypmov .ne. 0 ) xtr1 = .true.
@@ -2787,12 +2809,12 @@ C***	*****************************
 	call clrscr
 	call cursor( 1, 2 )
 	call string(1,'ET for ^E')
-	call getval(5, 0,2763,  type, ship, ival )
+	call getval(5, 0,2785,  type, ship, ival )
 	call chrout( tc(ival) )
 	call number(1, ship )
 	call string(1,':^M^J>^E')
 
-110	call getval(5, 0,2768,  tmtonx, ship, timeto )
+110	call getval(5, 0,2790,  tmtonx, ship, timeto )
 	if( .not. new .and. timeto .eq. otimet ) goto 120
 	otimet = timeto
 	call cursor( 14, 2 )
@@ -2808,16 +2830,16 @@ C***	*****************************
 	if( dtype .eq. 7 ) call displa( new )
 	if( dtype .eq. 8 ) call disdbg( new )
 
-	call getval(5, 0,2784,  useful, 10, whoto )
+	call getval(5, 0,2806,  useful, 10, whoto )
 	if( whoto .ne. player ) goto 126
-	call putval(4, 0,2786,  -1, 0 )
-	call getval(5, 0,2787,  useful, 11, whofrm )
+	call putval(4, 0,2808,  -1, 0 )
+	call getval(5, 0,2809,  useful, 11, whofrm )
 	call messag('^G^E')
 	call number(2, whofrm, -2 )
 	call string(1,': ^E')
 	do 125 i = 1, 72
-	    call getval(5, 0,2792,  mestrn, i+0, ival )
-	    call putval(4, 0,2793,  -1, 0 )
+	    call getval(5, 0,2814,  mestrn, i+0, ival )
+	    call putval(4, 0,2815,  -1, 0 )
 	    if( ival .eq. 0 ) goto 126
 	    call chrout( ival )
 125	continue
@@ -2830,11 +2852,11 @@ C***	*****************************
 	call cursor( 1, 3 )
 	call irepeat( 32, 80 )
 
-130	call getval(5, 0,2806,  empcod, player, ival )
+130	call getval(5, 0,2828,  empcod, player, ival )
 	if( ival .eq. 0 ) goto 139
-	call putval(4, 0,2808,  -1, 0 )
-	call getval(5, 0,2809,  empdst, player, blorun )
-	call getval(5, 0,2810,  empc, player, ipc )
+	call putval(4, 0,2830,  -1, 0 )
+	call getval(5, 0,2831,  empdst, player, blorun )
+	call getval(5, 0,2832,  empc, player, ipc )
 	goto( 137, 138, 131, 136 ) ival
 
 131	if( blorun .eq. oblorn ) goto 139
@@ -2846,11 +2868,11 @@ C***	*****************************
 	call string(1,' Engaged:^E')
 	do 134 i = 1, lunit
 	    unum = i
-	    call getval(5, 0,2822,  shiptr, unum, ival )
+	    call getval(5, 0,2844,  shiptr, unum, ival )
 	    if( ival .ne. blorun ) goto 134
-	    call getval(5, 0,2824,  org, unum, ival )
+	    call getval(5, 0,2846,  org, unum, ival )
 	    if( ival .ne. player ) goto 134
-	    call getval(5, 0,2826,  type, unum, ival )
+	    call getval(5, 0,2848,  type, unum, ival )
 	    fpar(ival) = fpar(ival) + 1
 134	continue
 	do 135 i = 1, 7
@@ -2871,26 +2893,26 @@ C***	*****************************
 137	call messag('Error ^E')
 	call punit( blorun )
 	call string(1,' @ Ins. #^E')
-	call getval(5, 0,2847,  wprogr, blorun, wp )
-	call getval(5, 0,2848,  stradr, wp, addr )
+	call getval(5, 0,2869,  wprogr, blorun, wp )
+	call getval(5, 0,2870,  stradr, wp, addr )
 	addr = addr + ipc - 1
-	call getval(5, 0,2850,  nverb, addr, iv )
-	call getval(5, 0,2851,  ncode, addr, ic )
-	call getval(5, 0,2852,  ndest, addr, id )
+	call getval(5, 0,2872,  nverb, addr, iv )
+	call getval(5, 0,2873,  ncode, addr, ic )
+	call getval(5, 0,2874,  ndest, addr, id )
 	call prinst( ipc, iv, ic, id )
 	goto 139
 
 138	call messag('Inform ^E')
-	call getval(5, 0,2857,  empinf, player, ival )
+	call getval(5, 0,2879,  empinf, player, ival )
 	call string(3, ival, 6, 6 )
 	if( ipc .ne. 0 ) call number(2, ipc, 3 )
 	call string(1,' from ^E')
 	call number(1, blorun )
-	call getval(5, 0,2862,  type, blorun, ival )
+	call getval(5, 0,2884,  type, blorun, ival )
 	call chrout(tc(ival))
 	call string(1,' at ^E')
-	call getval(5, 0,2865,  shiptr, blorun, ival )
-	call getval(5, 0,2866,  orbit, blorun, i )
+	call getval(5, 0,2887,  shiptr, blorun, ival )
+	call getval(5, 0,2888,  orbit, blorun, i )
 	call ploc( ival, i )
 
 139	new = .false.
@@ -2941,7 +2963,7 @@ C***	DISPLA COMMAND
 	if( i .lt. 0 .or. i .gt. lunit ) goto 149
 	if( i.eq.0 .and. idtype.eq.4 .and. par(3).ne.0 ) goto 147
 	if( i .eq. 0 ) i = ship
-	call getval(5, 0,2917,  org, i, ival )
+	call getval(5, 0,2939,  org, i, ival )
 	if( ival .ne. player ) goto 149
 	ship = i
 148	dtype = idtype
@@ -2960,23 +2982,23 @@ C***	MISSION COMMAND
 	    edest(i) = 0
 155	continue
 	if( dtype .eq. 5 ) new = .true.
-	call getval(5, 0,2936,  shiptr, ship, eloc )
-	call getval(5, 0,2937,  orbit, ship, eorb )
+	call getval(5, 0,2958,  shiptr, ship, eloc )
+	call getval(5, 0,2959,  orbit, ship, eorb )
 	call getnum(4, com, len, miss, 10 )
 	if( miss .le. 0 .or. miss .gt. lunit ) goto 100
-	call getval(5, 0,2940,  org, miss, ival )
+	call getval(5, 0,2962,  org, miss, ival )
 	if( ival .ne. player ) goto 100
-	call getval(5, 0,2942,  shiptr, miss, eloc )
-	call getval(5, 0,2943,  shiptr, miss, eorb )
-	call getval(5, 0,2944,  wprogr, miss, ival )
+	call getval(5, 0,2964,  shiptr, miss, eloc )
+	call getval(5, 0,2965,  shiptr, miss, eorb )
+	call getval(5, 0,2966,  wprogr, miss, ival )
 	if( ival .eq. 0 ) goto 100
-	call getval(5, 0,2946,  stradr, ival, addr )
-	call getval(5, 0,2947,  lenprg, ival, len )
+	call getval(5, 0,2968,  stradr, ival, addr )
+	call getval(5, 0,2969,  lenprg, ival, len )
 	if( len .eq. 0 .or. addr .eq. 0 ) goto 100
 	do 156 i = 1, len
-	    call getval(5, 0,2950,  nverb, addr, everb(i) )
-	    call getval(5, 0,2951,  ncode, addr, ecode(i) )
-	    call getval(5, 0,2952,  ndest, addr, edest(i) )
+	    call getval(5, 0,2972,  nverb, addr, everb(i) )
+	    call getval(5, 0,2973,  ncode, addr, ecode(i) )
+	    call getval(5, 0,2974,  ndest, addr, edest(i) )
 	    addr = addr + 1
 156	continue
 	goto 100
@@ -2984,16 +3006,16 @@ C***	MISSION COMMAND
 C***	STAND ALONE COMMAND	(KICK EVERYBODY ELSE OUT OF GAME)
 
 157	if( .not. lprivd ) goto 200
-	call getval(5, 0,2960,  useful, 16, ival )
-	call putval(5, 0,2961,  useful, 16, 1-ival )
+	call getval(5, 0,2982,  useful, 16, ival )
+	call putval(5, 0,2983,  useful, 16, 1-ival )
 	goto 100
 
 C***	WAIT COMMAND	(TO HELP CREATE THE EMPIRE)
 
 158	if( .not. lprivd ) goto 200
-	call getval(5, 0,2967,  useful, 16, ival )
+	call getval(5, 0,2989,  useful, 16, ival )
 	if( ival .eq. 0 ) goto 200
-	call getval(5, 0,2969,  useful, 17, ival )
+	call getval(5, 0,2991,  useful, 17, ival )
 	if( ival .eq. 0 ) goto 200
 	call getnum(4, com, len, tmtowa, 10 )
 	if( tmtowa .le. 0 ) tmtowa = 1
@@ -3002,22 +3024,22 @@ C***	WAIT COMMAND	(TO HELP CREATE THE EMPIRE)
 C***	SAVE COMMAND	(ALLOW A NON-EMPIRE GAME TO BE SAVED)
 
 160	if( .not. lprivd ) goto 200
-	call getval(5, 0,2978,  useful, 17, ival )
-	if( ival .eq. 0 ) call putval(5, 0,2979,  useful, 17, 1 )
+	call getval(5, 0,3000,  useful, 17, ival )
+	if( ival .eq. 0 ) call putval(5, 0,3001,  useful, 17, 1 )
 	goto 100
 
 C***	DONE COMMAND	(SAVE EMPIRE GAME, LET USERS IN)
 
-161	call getval(5, 0,2984,  useful, 16, ival )
+161	call getval(5, 0,3006,  useful, 16, ival )
 	if( ival .eq. 0 ) goto 162
-	call getval(5, 0,2986,  useful, 17, ival )
+	call getval(5, 0,3008,  useful, 17, ival )
 	if( ival .eq. 0 ) goto 162
-	call putval(4, 0,2988,  -1, 2 )
-	call putval(5, 0,2989,  progs, player, 262143 )
+	call putval(4, 0,3010,  -1, 2 )
+	call putval(5, 0,3011,  progs, player, 262143 )
 
 C***	EXIT COMMAND
 
-162	call putval(5, 0,2993,  ncstru, player, 63 )
+162	call putval(5, 0,3015,  ncstru, player, 63 )
 	call cease
 	goto 100
 
@@ -3130,10 +3152,10 @@ C***	TRY SNN (SEND) COMMAND
 	if( i .eq. 0 .or. i .ge. len ) goto 100
 	if( len-i .gt. 71 ) len = i+71
 	do 205 j = i, len
-	    call putval(5, 0,3106,  mestrn, j-i+1, icon(lcara(j)) )
+	    call putval(5, 0,3128,  mestrn, j-i+1, icon(lcara(j)) )
 205	continue
-	call putval(5, 0,3108,  useful, 10, unum )
-	call putval(5, 0,3109,  useful, 11, player )
+	call putval(5, 0,3130,  useful, 10, unum )
+	call putval(5, 0,3131,  useful, 11, player )
 	com(1) = 42
 	goto 100
 
@@ -3141,7 +3163,7 @@ C***	TRY CNNNN (COMMAND COMMAND)
 
 210	if( fpar(1) .ne. 67 .or. unum .eq. 0 ) goto 220
 	if( unum .lt. 0 .or. unum .gt. lunit ) goto 149
-	call getval(5, 0,3117,  org, unum, ival )
+	call getval(5, 0,3139,  org, unum, ival )
 	if( ival .ne. player ) goto 149
 	i = 2
 	goto 230
@@ -3151,8 +3173,8 @@ C***	TRY DIRECT COMMAND
 220	unum = ship
 	i = 1
 
-230	call getval(5, 0,3127,  shiptr, unum, sloc )
-	call getval(5, 0,3128,  shiptr, unum, sorb )
+230	call getval(5, 0,3149,  shiptr, unum, sloc )
+	call getval(5, 0,3150,  shiptr, unum, sorb )
 	call genins( par(i), sloc, sorb, i, j, ev, ec, ed )
 	if( ev .lt. 0 ) goto 100
 	mltisp = .false.
@@ -3167,38 +3189,38 @@ C***	ORDER COMMAND
 275	continue
 	mltisp = .true.
 
-1000	icom = 10000			! icom = ns1714132329sordns1714132329
+1000	icom = 10000			! icom = ns1774916652sordns1774916652
 	call messag('Orders sent to: ^E')
 
-1010	call getval(5, 0,3146,  useful, 7, whoinl )
+1010	call getval(5, 0,3168,  useful, 7, whoinl )
 	if( whoinl .eq. 0 )  goto 1030
-	call getval(5, 0,3148,  ncstru, whoinl, ival )
+	call getval(5, 0,3170,  ncstru, whoinl, ival )
 	if( ival .eq. 63 )  goto 1030
-	call addval(4, 0,3150,  -1, 1 )
-	call putval(5, 0,3151,  ncstru, player, 0 )
+	call addval(4, 0,3172,  -1, 1 )
+	call putval(5, 0,3173,  ncstru, player, 0 )
 	call nap( 500, 4 )
 	goto 1010
 
-1030	call putval(5, 0,3155,  useful, 7, player )
-	call getval(5, 0,3156,  useful, 8, lprogr )
+1030	call putval(5, 0,3177,  useful, 7, player )
+	call getval(5, 0,3178,  useful, 8, lprogr )
 	prgnum = 0
 	addr = 0
 	if( lprogr .eq. 0 )  goto 1061
 	do 1060 i = 1, lprogr
 	    fpnum = i
-	    call getval(5, 0,3162,  stradr, fpnum, addr )
-	    call getval(5, 0,3163,  lenprg, fpnum, nlen )
+	    call getval(5, 0,3184,  stradr, fpnum, addr )
+	    call getval(5, 0,3185,  lenprg, fpnum, nlen )
 	    if( nlen .lt. ilen ) goto 1060
 	    if( nlen .gt. ilen ) goto 1050
 	    if( ilen .eq. 0 )  goto 1041
 	    do 1040 j = 1, ilen
-		call getval(5, 0,3168,  nverb, addr, ival )
+		call getval(5, 0,3190,  nverb, addr, ival )
 		if( mltisp .and. ival .ne. everb(j) )  goto 1050
 		if( .not. mltisp .and. ival .ne. ev )  goto 1050
-		call getval(5, 0,3171,  ncode, addr, ival )
+		call getval(5, 0,3193,  ncode, addr, ival )
 		if( mltisp .and. ival .ne. ecode(j) )  goto 1050
 		if( .not. mltisp .and. ival .ne. ec )  goto 1050
-		call getval(5, 0,3174,  ndest, addr, ival )
+		call getval(5, 0,3196,  ndest, addr, ival )
 		if( mltisp .and. ival .ne. edest(j) )  goto 1050
 		if( .not. mltisp .and. ival .ne. ed )  goto 1050
 		addr = addr + 1
@@ -3207,7 +3229,7 @@ C***	ORDER COMMAND
 	    prgnum = fpnum
 	    goto 1101
 
-1050	    call getval(5, 0,3183,  numusr, fpnum, ival )
+1050	    call getval(5, 0,3205,  numusr, fpnum, ival )
 	    if( ival .gt. 0 ) goto 1060
 	    if( prgnum .gt. 0 ) goto 1060
 	    prgnum = fpnum
@@ -3217,48 +3239,48 @@ C***	ORDER COMMAND
 1061	continue
 
 	if( prgnum .ne. 0 )  goto 1070
-	call addval(5, 0,3193,  useful, 8, 1 )
+	call addval(5, 0,3215,  useful, 8, 1 )
 	prgnum = lprogr + 1
 	if( prgnum .gt. maxprg ) call bugmsg('LPROGR>MAXPRG^E',0,0)
-	call putval(5, 0,3196,  lenprg, prgnum, ilen )
-	call getval(5, 0,3197,  useful, 9, lmem )
+	call putval(5, 0,3218,  lenprg, prgnum, ilen )
+	call getval(5, 0,3219,  useful, 9, lmem )
 	if(lmem+ilen.gt.maxmem) call bugmsg('LMEM>MAXMEM^E',0,0)
-	call addval(4, 0,3199,  -1, ilen )
-	call putval(5, 0,3200,  stradr, prgnum, lmem+1 )
-1070	call getval(5, 0,3201,  stradr, iabs(prgnum), addr )
+	call addval(4, 0,3221,  -1, ilen )
+	call putval(5, 0,3222,  stradr, prgnum, lmem+1 )
+1070	call getval(5, 0,3223,  stradr, iabs(prgnum), addr )
 	if( ilen .eq. 0 ) goto 1101
 	do 1100 i = 1, ilen
 	    if( .not. mltisp )  goto 1080
-	    call putval(5, 0,3205,  nverb, addr, everb(i) )
-	    call putval(5, 0,3206,  ncode, addr, ecode(i) )
-	    call putval(5, 0,3207,  ndest, addr, edest(i) )
+	    call putval(5, 0,3227,  nverb, addr, everb(i) )
+	    call putval(5, 0,3228,  ncode, addr, ecode(i) )
+	    call putval(5, 0,3229,  ndest, addr, edest(i) )
 	    goto 1090
-1080	    call putval(5, 0,3209,  nverb, addr, ev )
-	    call putval(5, 0,3210,  ncode, addr, ec )
-	    call putval(5, 0,3211,  ndest, addr, ed )
+1080	    call putval(5, 0,3231,  nverb, addr, ev )
+	    call putval(5, 0,3232,  ncode, addr, ec )
+	    call putval(5, 0,3233,  ndest, addr, ed )
 1090	    addr = addr + 1
 1100	continue
 1101	continue
 	if( prgnum .gt. 0 ) goto 1105
 
 	prgnum = -prgnum
-	call putval(5, 0,3218,  lenprg, prgnum, ilen )
+	call putval(5, 0,3240,  lenprg, prgnum, ilen )
 	lprogr = lprogr + 1
-	call addval(5, 0,3220,  useful, 8, 1 )
-	call putval(5, 0,3221,  stradr, lprogr, addr )
-	call putval(5, 0,3222,  lenprg, lprogr, flen-ilen )
+	call addval(5, 0,3242,  useful, 8, 1 )
+	call putval(5, 0,3243,  stradr, lprogr, addr )
+	call putval(5, 0,3244,  lenprg, lprogr, flen-ilen )
 	goto 1105
 
 C***	SENTAC COMMAND
 
-1102	icom = 10001			! icom = ns1714132329stacns1714132329
+1102	icom = 10001			! icom = ns1774916652stacns1774916652
 	mltisp = .true.
 	call messag('Tactics sent to: ^E')
 	goto 1105
 
 C***	SENPC COMMAND
 
-1104	icom = 10002			! icom = ns1714132329spcns1714132329
+1104	icom = 10002			! icom = ns1774916652spcns1774916652
 	mltisp = .true.
 	call messag('PC sent to: ^E')
 
@@ -3285,33 +3307,33 @@ C	instead of the ship in view. (Linux port)
 	do 1120 i = 1, loopen
 	    unum = par(i)
 1110	    if( unum .lt. 1 .or. unum .gt. lunit )  goto 1120
-	    call getval(5, 0,3261,  org, unum, ival )
+	    call getval(5, 0,3283,  org, unum, ival )
 	    if( ival .ne. player )  goto 1120
-	    call getval(5, 0,3263,  hmflag, unum, ival )
+	    call getval(5, 0,3285,  hmflag, unum, ival )
 	    if( ival .eq. 1 ) goto 1120
-	    call getval(5, 0,3265,  type, unum, ival )
+	    call getval(5, 0,3287,  type, unum, ival )
 	    fpar(ival) = fpar(ival) + 1
 	    if( icom .ne. 10000 ) goto 1113
-	    call getval(5, 0,3268,  wprogr, unum, curprg )
-	    call putval(4, 0,3269,  -1, prgnum )
-	    if( curprg .ne. 0 )  call addval(5, 0,3270,  numusr, curprg, -1 )
-	    call addval(5, 0,3271,  numusr, prgnum, 1 )
-	    call putval(5, 0,3272,  pc, unum, 1 )
-	    call putval(5, 0,3273,  onerpc, unum, 0 )
+	    call getval(5, 0,3290,  wprogr, unum, curprg )
+	    call putval(4, 0,3291,  -1, prgnum )
+	    if( curprg .ne. 0 )  call addval(5, 0,3292,  numusr, curprg, -1 )
+	    call addval(5, 0,3293,  numusr, prgnum, 1 )
+	    call putval(5, 0,3294,  pc, unum, 1 )
+	    call putval(5, 0,3295,  onerpc, unum, 0 )
 	    goto 1120
 
 1113	    continue
 	    if( icom .ne. 10001 ) goto 1117
-	    call getval(5, 0,3278,  power, unum, ival )
+	    call getval(5, 0,3300,  power, unum, ival )
 	    if( tac(1)+tac(2)+tac(3) .gt. ival ) goto 1120
 	    do 1115 j = 1, 3
-		call getval(7, 0,3281,  powdst, unum, j+0, 2, ival )
-		call putval(7, 0,3282,  powdst, unum, j+0, 1, min0(tac(j),ival) )
+		call getval(7, 0,3303,  powdst, unum, j+0, 2, ival )
+		call putval(7, 0,3304,  powdst, unum, j+0, 1, min0(tac(j),ival) )
 1115	    continue
 	    goto 1120
 
-1117	    call putval(5, 0,3286,  pc, unum, newpcv )
-	    call putval(5, 0,3287,  onerpc, unum, 0 )
+1117	    call putval(5, 0,3308,  pc, unum, newpcv )
+	    call putval(5, 0,3309,  onerpc, unum, 0 )
 
 1120	continue
 	goto 1141
@@ -3322,41 +3344,41 @@ C	instead of the ship in view. (Linux port)
 	if( j .lt. 1 .or. j .gt. lunit )  j = lunit
 	do 1140 k = i, j
 	    unum = k
-	    call getval(5, 0,3298,  org, unum, ival )
+	    call getval(5, 0,3320,  org, unum, ival )
 	    if( ival .ne. player )  goto 1140
-	    call getval(5, 0,3300,  shiptr, unum, ival )
+	    call getval(5, 0,3322,  shiptr, unum, ival )
 	    if( untloc .ne. 0 .and. ival .ne. untloc ) goto 1140
-	    call getval(5, 0,3302,  hmflag, unum, ival )
+	    call getval(5, 0,3324,  hmflag, unum, ival )
 	    if( ival .eq. 1 ) goto 1140
-	    call getval(5, 0,3304,  type, unum, ival )
+	    call getval(5, 0,3326,  type, unum, ival )
 	    if( untype .ne. 0 .and. ival .ne. untype ) goto 1140
 	    fpar(ival) = fpar(ival) + 1
 	    if( icom .ne. 10000 ) goto 1133
-	    call getval(5, 0,3308,  wprogr, unum, curprg )
-	    call putval(4, 0,3309,  -1, prgnum )
-	    if( curprg .ne. 0 )  call addval(5, 0,3310,  numusr, curprg, -1 )
-	    call addval(5, 0,3311,  numusr, prgnum, 1 )
-	    call putval(5, 0,3312,  pc, unum, 1 )
-	    call putval(5, 0,3313,  onerpc, unum, 0 )
+	    call getval(5, 0,3330,  wprogr, unum, curprg )
+	    call putval(4, 0,3331,  -1, prgnum )
+	    if( curprg .ne. 0 )  call addval(5, 0,3332,  numusr, curprg, -1 )
+	    call addval(5, 0,3333,  numusr, prgnum, 1 )
+	    call putval(5, 0,3334,  pc, unum, 1 )
+	    call putval(5, 0,3335,  onerpc, unum, 0 )
 	    goto 1140
 
 1133	    continue
 	    if( icom .ne. 10001 ) goto 1137
-	    call getval(5, 0,3318,  power, unum, ival )
+	    call getval(5, 0,3340,  power, unum, ival )
 	    if( tac(1)+tac(2)+tac(3) .gt. ival ) goto 1140
 	    do 1135 j = 1, 3
-		call getval(7, 0,3321,  powdst, unum, j+0, 2, ival )
-		call putval(7, 0,3322,  powdst, unum, j+0, 1, min0(tac(j),ival) )
+		call getval(7, 0,3343,  powdst, unum, j+0, 2, ival )
+		call putval(7, 0,3344,  powdst, unum, j+0, 1, min0(tac(j),ival) )
 1135	    continue
 	    goto 1140
 
-1137	    call putval(5, 0,3326,  pc, unum, newpcv )
-	    call putval(5, 0,3327,  onerpc, unum, 0 )
+1137	    call putval(5, 0,3348,  pc, unum, newpcv )
+	    call putval(5, 0,3349,  onerpc, unum, 0 )
 
 1140	continue
 1141	continue
 
-	if( icom .eq. 10000 ) call putval(5, 0,3332,  useful, 7, 0 )
+	if( icom .eq. 10000 ) call putval(5, 0,3354,  useful, 7, 0 )
 	jflag = .false.
 	do 1200 i = 1, 7
 	    if( fpar(i) .eq. 0 ) goto 1200
@@ -3377,9 +3399,9 @@ C***	WHO COMMAND
 
 1305	call messag('Player #^E')
 	call number(2, empnum, -2 )
-	call getval(5, 0,3353,  ncstru, empnum, ival )
+	call getval(5, 0,3375,  ncstru, empnum, ival )
 	if( ival .lt. 63 ) goto 1310
-	call getval(5, 0,3355,  progs, empnum, ival )
+	call getval(5, 0,3377,  progs, empnum, ival )
 	call string(1,' is running automatically for ^E')
 	if( ival .eq. 262143 ) call string(1,'the empire.^E')
 	if( ival .eq. 262143 ) goto 100
@@ -3389,7 +3411,7 @@ C***	WHO COMMAND
 	goto 100
 
 1310	call string(1,' is ^E')
-	call getval(5, 0,3365,  prgjob, empnum, j )
+	call getval(5, 0,3387,  prgjob, empnum, j )
 	call syswho(j)
 	goto 100
 

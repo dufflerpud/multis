@@ -62,7 +62,11 @@
 #ifdef __sun
 #include <ncurses/ncurses.h>
 #else
+#ifdef __HAIKU__
+#include <ncurses.h>
+#else
 #include <curses.h>
+#endif
 #endif
 
 #include <string.h>
@@ -115,7 +119,13 @@ FILE *debug_file = 0;
 #ifdef __CYGWIN__
 #include <asm/socket.h>
 #else					/* else __CYGWIN__ */
+#ifdef __QHAIKU__
+#include <socket.h>
+#else					/* else __HAIKU__ */
+#ifndef __HAIKU__
 #include <sys/filio.h>
+#endif					/* else endif __HAIKU__ */
+#endif					/* else endif __QHAIKU__ */
 #endif					/* else endif __CYGWIN__ */
 #endif					/* endif else linux */
 
@@ -124,6 +134,10 @@ FILE *debug_file = 0;
 #endif
 
 #ifdef __sun
+#define HAS_STRERROR
+#endif
+
+#ifdef __HAIKU__
 #define HAS_STRERROR
 #endif
 

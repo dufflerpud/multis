@@ -76,7 +76,7 @@ HOMEHOST=www.brightsands.com
 PROJECT=$(notdir $(shell pwd))
 HOMEHOST=www.brightsands.com
 SHELL=/bin/sh
-CHECKLIBS=/lib /lib64 /usr/lib /usr/lib64 /usr/ccs/lib /usr/ccs/lib64
+CHECKLIBS=/lib /lib64 /usr/lib /usr/lib64 /usr/ccs/lib /usr/ccs/lib64 %A/lib /boot/home/config/non-packaged/lib /boot/home/config/lib /boot/system/non-packaged/lib /boot/system/lib
 OS=$(shell uname -o 2>/dev/null || uname -s)
 #COMPILER_TARGET=$(shell $(CC) -v 2>&1 | awk '/Target:/ { print $$2 }')
 #COMPILER_VERSION=$(shell $(CC) -v 2>&1 | awk '/ version / { print $$3 }')
@@ -137,8 +137,15 @@ else
 endif
 
 ifneq ($(call libsearch,socket),)
-    SOCKETLIBS=-lsocket -lnsl
+    USE_SOCKET=-lsocket
 endif
+ifneq ($(call libsearch,nsl),)
+    USE_NSL=-lnsl
+endif
+ifneq ($(call libsearch,network),)
+    USE_NETWORK=-lnetwork
+endif
+SOCKETLIBS=$(USE_SOCKET) $(USE_NSL) $(USE_NETWORK)
 
 #CC=gcc
 CFLAGS=-Isrc/shared -g

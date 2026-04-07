@@ -2820,7 +2820,7 @@ void addval_( integer *numargs, ... )
     va_end( ap );
     }
 
-extern struct servent *getservbyname();
+extern struct servent *getservbyname(const char *name, const char *proto);
 /************************************************************************/
 struct hostent *string_to_host( const char *hname )
 /************************************************************************/

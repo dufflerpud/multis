@@ -1,13 +1,38 @@
-C	@HDR@	$Id$
-C	@HDR@		Copyright 1979-2024 by
-C	@HDR@		Christopher Caldwell/Brightsands
-C	@HDR@		P.O. Box 401, Bailey Island, ME 04003
-C	@HDR@		All Rights Reserved
-C	@HDR@
-C	@HDR@	This software comprises unpublished confidential information
-C	@HDR@	of Brightsands and may not be used, copied or made available
-C	@HDR@	to anyone, except in accordance with the license under which
-C	@HDR@	it is furnished.
+Cindx#	star.for - My first multi-user game, Star Trek
+C@HDR@	$Id$
+C@HDR@
+C@HDR@	Copyright (c) 1979-2026 Christopher Caldwell (Christopher.M.Caldwell0@gmail.com)
+C@HDR@
+C@HDR@	Permission is hereby granted, free of charge, to any person
+C@HDR@	obtaining a copy of this software and associated documentation
+C@HDR@	files (the "Software"), to deal in the Software without
+C@HDR@	restriction, including without limitation the rights to use,
+C@HDR@	copy, modify, merge, publish, distribute, sublicense, and/or
+C@HDR@	sell copies of the Software, and to permit persons to whom
+C@HDR@	the Software is furnished to do so, subject to the following
+C@HDR@	conditions:
+C@HDR@	
+C@HDR@	The above copyright notice and this permission notice shall be
+C@HDR@	included in all copies or substantial portions of the Software.
+C@HDR@	
+C@HDR@	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+C@HDR@	KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+C@HDR@	WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+C@HDR@	AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+C@HDR@	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+C@HDR@	WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+C@HDR@	FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+C@HDR@	OTHER DEALINGS IN THE SOFTWARE.
+C
+Chist#	2026-02-17 - Christopher.M.Caldwell0@gmail.com - Created
+C------------------------------------------------------------------------
+Cdoc#	star.for - My first multi-user game, Star Trek
+Cdoc#	Made with Roger Long's inspiration and Robert Kenney's HIPAK.MAC.
+Cdoc#	Based on Michael O'Shaughnessy's "star.bas"
+Cdoc#	Novel at the time because it had a continuously updating screen,
+Cdoc#	was multi-user and real time.  Drained enough resources from
+Cdoc#	the University's DEC10 that it was frequently banned.
+C------------------------------------------------------------------------
 C
 C
 C
@@ -150,7 +175,7 @@ C
 	    do 50 iqyinc = -1, 1
 		ixq = mod( iqx + iqxinc + 9, 10 ) + 1
 		iyq = mod( iqy + iqyinc + 9, 10 ) + 1
-		call getval(6, 0,153,  2, ixq, iyq, ival )
+		call getval(6, 0,178,  2, ixq, iyq, ival )
 		if( iqxinc.eq.0 .and. iqyinc.eq.0 ) ival=ival-1000
 		if( damage(3,1) .ne. 0 ) ival = 100000
 		if( quad( iqxinc+2, iqyinc+2 ) .eq. ival .and.
@@ -184,7 +209,7 @@ C
 		if( ix .eq. 0 .and. iy .eq. 0 ) goto 60
 		iqyinc = iqy
 		rtemp = sqwrap( iqyinc, isy1, float(iy+isy) )
-		call getval(8, 0,187,  1, iqxinc, iqyinc, isx1, isy1, ival )
+		call getval(8, 0,212,  1, iqxinc, iqyinc, isx1, isy1, ival )
 		if( damage( 2,1 ) .ne. 0 .or. hyper ) ival = 0
 
 		iback = iclwhi
@@ -427,9 +452,9 @@ C
 C  --	CREATE NEEDED CORE
 C
 C	ARRAY #1 CONTAINS EVERYTHING IN THE GALAXY
-	call init(8, 0,425, 1,36,10,10,10,10)
+	call init(8, 0,450, 1,36,10,10,10,10)
 C	ARRAY #2 CONTAINS L.R. INFORMATION FOR THE ENIRE GALAXY
-	call init(6, 0,427, 2,36,10,10)
+	call init(6, 0,452, 2,36,10,10)
 C	ARRAY #3 CONTAINS GENERAL INFORMATION
 C	ITEM	CONTAINS
 C	1	# OF PLAYERS
@@ -437,7 +462,7 @@ C	2	CURRENT DATE
 C	3	DESTINATION OF LAST SEND
 C	4	VICTIM OF AXIS
 C	5	CURRENT ENERGY OF AXIS
-	call init(5, 0,435, 3,36,10)
+	call init(5, 0,460, 3,36,10)
 C	ARRAY #4 CONTAINS INFORMATION ABOUT EACH PLAYER
 C	ITEM	CONTAINS
 C	1	JOB (OR IF AXIS, CONTAINS NEGATIVE OF CONTROLLER)
@@ -454,13 +479,13 @@ C	14	DOCKING TORPEDOS
 C	15	DOCKING CREW
 C	16	#KILLS FOR PLAYER
 C	17	WHO SHOT AT ME
-	call init(6, 0,452, 4,36,26,17)
+	call init(6, 0,477, 4,36,26,17)
 C	ARRAY #5 CONTAINS INFORMATION FOR COMMUNICATION
 C	ITEM	CONTAINS
 C	1	LENGTH OF MESSAGE
 C	2	SOURCE OF MESSAGE
 C	3-71	MESSAGE
-	call init(5, 0,458, 5,7,71)
+	call init(5, 0,483, 5,7,71)
 C
 C  --	CREATE A FEW STORMS
 C
@@ -475,7 +500,7 @@ C
 C
 C  --	CREATE A RANDOM STARDATE
 C
-	call putval(5, 0,473,  3, 2, iran(4999999)+1000000 )
+	call putval(5, 0,498,  3, 2, iran(4999999)+1000000 )
 C
 C  --	CREATE STARS, STARBASES AND BLACK HOLES
 C
@@ -484,14 +509,14 @@ C
 	    do 40 j=1, inmlst(i)
 20		iqx = iran( 10 )
 		iqy = iran( 10 )
-		call getval(6, 0,482,  2, iqx, iqy, ival )
+		call getval(6, 0,507,  2, iqx, iqy, ival )
 		if( ival .ge. 9 ) goto 20
-		call addval(4, 0,484,  -2, 10**(i-1) )
+		call addval(4, 0,509,  -2, 10**(i-1) )
 30		isx = iran( 10 )
 		isy = iran( 10 )
-		call getval(8, 0,487,  1, iqx, iqy, isx, isy, ival )
+		call getval(8, 0,512,  1, iqx, iqy, isx, isy, ival )
 		if( ival .ne. 0 ) goto 30
-		call putval(4, 0,489,  -1, i )
+		call putval(4, 0,514,  -1, i )
 		if( i1 .eq. 3 ) call nova( iqx, iqy, isx, isy )
 40	continue
 	call unlock
@@ -515,17 +540,17 @@ C
 	    iqy1 = iqy
 	    sx = sqwrap( iqx1, isx1, float( isx+inox(i) ) )
 	    sy = sqwrap( iqy1, isy1, float( isy+inoy(i) ) )
-	    call getval(8, 0,512,  1, iqx1, iqy1, isx1, isy1, ival )
+	    call getval(8, 0,537,  1, iqx1, iqy1, isx1, isy1, ival )
 	    if( ival .ne. 0 ) goto 5
 	    if( iran(10) .lt. 4 ) goto 10
-	    call putval(4, 0,515,  -1, 4 )
+	    call putval(4, 0,540,  -1, 4 )
 	    goto 10
 5	    if( ival .lt. 7 ) goto 8
-	    call putval(6, 0,518,  4, ival-64, 7, -0.6 )
+	    call putval(6, 0,543,  4, ival-64, 7, -0.6 )
 	    goto 10
 8	    if( ival .ne. 1 ) goto 10
-	    call putval(4, 0,521,  -1, 0 )
-	    call addval(6, 0,522,  2, iqx1, iqy1, -1 )
+	    call putval(4, 0,546,  -1, 0 )
+	    call addval(6, 0,547,  2, iqx1, iqy1, -1 )
 	    call secnov( iqx1, iqy1, isx1, isy1, inox, inoy )
 10	continue
 	return
@@ -545,13 +570,13 @@ C
 	    iqy1 = iqy
 	    sx = sqwrap( iqx1, isx1, float( isx+inox(i) ) )
 	    sy = sqwrap( iqy1, isy1, float( isy+inoy(i) ) )
-	    call getval(8, 0,541,  1, iqx1, iqy1, isx1, isy1, ival )
+	    call getval(8, 0,566,  1, iqx1, iqy1, isx1, isy1, ival )
 	    if( ival .ne. 0 ) goto 5
 	    if( iran(10) .lt. 4 ) goto 10
-	    call putval(4, 0,544,  -1, 4 )
+	    call putval(4, 0,569,  -1, 4 )
 	    goto 10
 5	    if( ival .le. 6 ) goto 10
-	    call putval(6, 0,547,  4, ival-64, 7, -0.6 )
+	    call putval(6, 0,572,  4, ival-64, 7, -0.6 )
 10	continue
 	return
 	end
@@ -590,12 +615,12 @@ C
 	if( been ) return
 	been = .true.
 	call unlock
-	if( fault .ne. 0 ) call addval(6, 0,584,  4, fault, 16, 1 )
-	call addval(5, 0,585,  3, 1, -1 )
-	call getval(8, 0,586,  1, iqx, iqy, isx, isy, ival )
-	if( ival .eq. iplayr+64 ) call putval(4, 0,587,  -1, 0 )
-	call addval(6, 0,588,  2, iqx, iqy, -1000 )
-	call putval(6, 0,589,  4, iplayr, 1, 0 )
+	if( fault .ne. 0 ) call addval(6, 0,609,  4, fault, 16, 1 )
+	call addval(5, 0,610,  3, 1, -1 )
+	call getval(8, 0,611,  1, iqx, iqy, isx, isy, ival )
+	if( ival .eq. iplayr+64 ) call putval(4, 0,612,  -1, 0 )
+	call addval(6, 0,613,  2, iqx, iqy, -1000 )
+	call putval(6, 0,614,  4, iplayr, 1, 0 )
 	call nova( iqx, iqy, isx, isy )
 	call usrset(1031,0)
 	call usrset(1026,0)
@@ -618,27 +643,27 @@ C
 	do 20 i1=1,26
 	    i=i1
 C	    IMVAL = MOD( I, 7 ) + 1
-	    call getval(6, 0,611,  4, i, 1, ival )
+	    call getval(6, 0,636,  4, i, 1, ival )
 	    if( ival .eq. 0 ) goto 20
 	    if( ival .lt. 0 ) goto 10
 	    if( .not. logdin(ival) ) goto 8
 	    if( job(-1) .eq. 0 ) goto 10
 	    if((jstat(ival).ne.isxbit('^C~' )).and.(itty(ival).ne.-1))
      &	    goto 10
-8	    call putval(4, 0,618,  -4, 0 )
-	    call addval(5, 0,619,  3, 1, -1 )
-	    call putval(5, 0,620,  3, 3, 0 )
-	    call getval(6, 0,621,  4, i, 9, iqx )
-	    call getval(6, 0,622,  4, i, 10, iqy )
-	    call addval(6, 0,623,  2, iqx, iqy, -1000 )
-	    call getval(6, 0,624,  4, i, 11, isx )
-	    call getval(6, 0,625,  4, i, 12, isy )
-	    call putval(8, 0,626,  1, iqx, iqy, isx, isy, 0 )
+8	    call putval(4, 0,643,  -4, 0 )
+	    call addval(5, 0,644,  3, 1, -1 )
+	    call putval(5, 0,645,  3, 3, 0 )
+	    call getval(6, 0,646,  4, i, 9, iqx )
+	    call getval(6, 0,647,  4, i, 10, iqy )
+	    call addval(6, 0,648,  2, iqx, iqy, -1000 )
+	    call getval(6, 0,649,  4, i, 11, isx )
+	    call getval(6, 0,650,  4, i, 12, isy )
+	    call putval(8, 0,651,  1, iqx, iqy, isx, isy, 0 )
 	    goto 20
 
 10	    icnt = icnt + 1
 	    iship = i
-	    call getval(6, 0,631,  4, i, 16, score )
+	    call getval(6, 0,656,  4, i, 16, score )
 	    if(ship(icnt).eq.i.and.ichar.ne.78.and.score.eq.s(icnt))
      &		goto 19
 	    if( icnt .le. 9 ) call colcur( 43, 12-icnt )
@@ -648,9 +673,9 @@ C	    IMVAL = MOD( I, 7 ) + 1
 	    call number(1, score )
 	    call string(1,': ^E')
 	    s(icnt) = score
-	    call getval(6, 0,641,  4, i, 2, ival )
+	    call getval(6, 0,666,  4, i, 2, ival )
 	    call string(3, ival, 6, 6 )
-	    call getval(6, 0,643,  4, i, 3, ival )
+	    call getval(6, 0,668,  4, i, 3, ival )
 	    call string(3, ival, 6, 6 )
 19	    ship(icnt) = i
 20	continue
@@ -666,24 +691,24 @@ C
 	iocnt = icnt
 C
 	if( iplayr .ne. iship ) return
-	call getval(5, 0,659,  3, 2, itim )
+	call getval(5, 0,684,  3, 2, itim )
 	itim = itim + 1
-	call addval(4, 0,661,  -3, 1 )
+	call addval(4, 0,686,  -3, 1 )
 C
 C
 C**********************************************************
 C***                 AXIS CONTROLLER                    ***
 C**********************************************************
 C
-	call getval(5, 0,667,  3, 3, ival )
+	call getval(5, 0,692,  3, 3, ival )
 	if( ival .ne. 1 ) goto 45
-	call getval(5, 0,669,  3, 4, ivictm )
-	call getval(5, 0,670,  5, 2, ival )
-	call getval(6, 0,671,  4, ival, 1, ivjob )
+	call getval(5, 0,694,  3, 4, ivictm )
+	call getval(5, 0,695,  5, 2, ival )
+	call getval(6, 0,696,  4, ival, 1, ivjob )
 	ipn = iright( igtab( ivjob, 2 ) )
-	call getval(5, 0,673,  5, 3, ijunk )
+	call getval(5, 0,698,  5, 3, ijunk )
 	if( ijunk .ne. 64 .or. ipn .ne. 7963 ) goto 41
-	call getval(5, 0,675,  5, 4, ijunk )
+	call getval(5, 0,700,  5, 4, ijunk )
 	if( ijunk .lt. 66 .or. ijunk .gt. 91 ) goto 41
 	ival = ijunk - 64
 	call axisnd( ival, 13, 'You will die.' )
@@ -692,7 +717,7 @@ C
 41	if( ivictm .ne. 0 ) goto 43
 	call axisnd( ival, 60,
      &'For your impertinence, you will be exterminated by the Axis.')
-42	call putval(5, 0,684,  3, 4, ival )
+42	call putval(5, 0,709,  3, 4, ival )
 	goto 45
 
 43	if( ival .ne. ivictm )
@@ -700,45 +725,45 @@ C
 	if( ival .eq. ivictm )
      &call axisnd( ival, 28, 'Be silent before your death.')
 
-45	call getval(6, 0,692,  4, 1, 1, ival )
+45	call getval(6, 0,717,  4, 1, 1, ival )
 	if( ival .ne. 0 ) goto 100
 C
 C  --	CREATE THE AXIS
 C
-	call putval(6, 0,697,  4, 1, 2, isxbit('Axis~') )
-	call putval(6, 0,698,  4, 1, 3, 0 )
-	call putval(5, 0,699,  3, 5, 100 )
+	call putval(6, 0,722,  4, 1, 2, isxbit('Axis~') )
+	call putval(6, 0,723,  4, 1, 3, 0 )
+	call putval(5, 0,724,  3, 5, 100 )
 C
 50	iqx = iran( 10 )
 	iqy = iran( 10 )
 	isx = iran( 10 )
 	isy = iran( 10 )
-	call getval(8, 0,705,  1, iqx, iqy, isx, isy, ival1 )
+	call getval(8, 0,730,  1, iqx, iqy, isx, isy, ival1 )
 	if( ival1 .ne. 0 ) goto 50
-	call putval(4, 0,707,  -1, 65 )
-	call addval(6, 0,708,  2, iqx, iqy, 1000 )
+	call putval(4, 0,732,  -1, 65 )
+	call addval(6, 0,733,  2, iqx, iqy, 1000 )
 	goto 110
 
 100	if( ival .eq. -iplayr ) goto 120
-	call getval(6, 0,712,  4, 1, 9, iqx )
-	call getval(6, 0,713,  4, 1, 10, iqy )
-	call getval(6, 0,714,  4, 1, 11, isx )
-	call getval(6, 0,715,  4, 1, 12, isy )
-	call getval(8, 0,716,  1, iqx, iqy, isx, isy, ival1 )
+	call getval(6, 0,737,  4, 1, 9, iqx )
+	call getval(6, 0,738,  4, 1, 10, iqy )
+	call getval(6, 0,739,  4, 1, 11, isx )
+	call getval(6, 0,740,  4, 1, 12, isy )
+	call getval(8, 0,741,  1, iqx, iqy, isx, isy, ival1 )
 110	sx = isx + .5
 	sy = isy + .5
-	call putval(6, 0,719,  4, 1, 1, -iplayr )
+	call putval(6, 0,744,  4, 1, 1, -iplayr )
 
-120	call getval(5, 0,721,  3, 5, inergy )
-	call getval(5, 0,722,  3, 4, ivictm )
+120	call getval(5, 0,746,  3, 5, inergy )
+	call getval(5, 0,747,  3, 4, ivictm )
 	if( ivictm .eq. 0 ) goto 147
-	call getval(6, 0,724,  4, ivictm, 1, ival )
+	call getval(6, 0,749,  4, ivictm, 1, ival )
 	if( ival .eq. 0 ) goto 147
 
-	call getval(6, 0,727,  4, ivictm, 9, ivqx )
-	call getval(6, 0,728,  4, ivictm, 10, ivqy )
-	call getval(6, 0,729,  4, ivictm, 11, ivsx )
-	call getval(6, 0,730,  4, ivictm, 12, ivsy )
+	call getval(6, 0,752,  4, ivictm, 9, ivqx )
+	call getval(6, 0,753,  4, ivictm, 10, ivqy )
+	call getval(6, 0,754,  4, ivictm, 11, ivsx )
+	call getval(6, 0,755,  4, ivictm, 12, ivsy )
 	ix = iqx*10 + isx - 11
 	iy = iqy*10 + isy - 11
 	ivx = ivqx*10 + ivsx - 11
@@ -749,17 +774,17 @@ C
 	if( iabs( ivy-iy ) .gt. iabs( ivy-100-iy ) ) ivy = ivy - 100
 	adist = sqrt((ivx-ix+0.0)**2+(ivy-iy+0.0)**2)
 	if( adist .gt. 5 ) goto 135
-	call getval(8, 0,741,  1, ivqx, ivqy, ivsx, ivsy, ival )
+	call getval(8, 0,766,  1, ivqx, ivqy, ivsx, ivsy, ival )
 	if( ival .ne. ivictm+64 ) goto 135
 	if( adist.gt.1.6 .or. inergy.lt.25 .or. iran(3).ne.1 ) goto 132
 	inergy = inergy - 10
-	call putval(6, 0,745,  4, ivictm, 4, -20 )
-	call putval(6, 0,746,  4, ivictm, 17, 1 )
+	call putval(6, 0,770,  4, ivictm, 4, -20 )
+	call putval(6, 0,771,  4, ivictm, 17, 1 )
 	goto 135
 132	if( inergy .lt. 20 .or. iran(5) .ne. 1 ) goto 135
 	inergy = inergy / 2
-	call putval(6, 0,750,  4, ivictm, 4, ifix(inergy/sqrt(adist)) )
-	call putval(6, 0,751,  4, ivictm, 17, 1 )
+	call putval(6, 0,775,  4, ivictm, 4, ifix(inergy/sqrt(adist)) )
+	call putval(6, 0,776,  4, ivictm, 17, 1 )
 135	if( ix .ne. ivx ) goto 140
 	ibear = 90
 	if( iy .gt. ivy ) ibear = 270
@@ -777,51 +802,51 @@ C
 	goto 150
 C
 147	if( mod( itim, 20 ) .eq. 0 ) ibear = iran( 360 )
-	call putval(5, 0,769,  3, 4, 0 )
+	call putval(5, 0,794,  3, 4, 0 )
 C
-150	call getval(6, 0,771,  4, 1, 8, degree )
+150	call getval(6, 0,796,  4, 1, 8, degree )
 	degi = 12.34
 	if( mod( ifix(ibear-degree)+720, 360 ) .gt. 180 ) degi = -degi
 	degree = degree + degi
 	if(mod(ifix(abs(ibear-degree))+720,360).lt.abs(degi))
      &degree=ibear
 	degree = rbound( degree )
-	call putval(6, 0,778,  4, 1, 8, rbound( degree ) )
-	call putval(8, 0,779,  1, iqx, iqy, isx, isy, 0 )
-	call addval(6, 0,780,  2, iqx, iqy, -1000 )
+	call putval(6, 0,803,  4, 1, 8, rbound( degree ) )
+	call putval(8, 0,804,  1, iqx, iqy, isx, isy, 0 )
+	call addval(6, 0,805,  2, iqx, iqy, -1000 )
 160	sx = sqwrap( iqx, isx, sx+smcos(degree)/2. )
 	sy = sqwrap( iqy, isy, sy+smsin(degree)/2. )
-	call getval(8, 0,783,  1, iqx, iqy, isx, isy, ival )
+	call getval(8, 0,808,  1, iqx, iqy, isx, isy, ival )
 	if( ival .gt. 0 ) goto 160
 	if( ival .lt. 0 ) inergy = inergy - 20
-	call putval(4, 0,786,  -1, 65 )
-	call addval(6, 0,787,  2, iqx, iqy, 1000 )
-	call putval(6, 0,788,  4, 1, 9, iqx )
-	call putval(6, 0,789,  4, 1, 10, iqy )
-	call putval(6, 0,790,  4, 1, 11, isx )
-	call putval(6, 0,791,  4, 1, 12, isy )
-	call getval(6, 0,792,  4, 1, 4, idam )
-	call putval(4, 0,793,  -4, 0 )
+	call putval(4, 0,811,  -1, 65 )
+	call addval(6, 0,812,  2, iqx, iqy, 1000 )
+	call putval(6, 0,813,  4, 1, 9, iqx )
+	call putval(6, 0,814,  4, 1, 10, iqy )
+	call putval(6, 0,815,  4, 1, 11, isx )
+	call putval(6, 0,816,  4, 1, 12, isy )
+	call getval(6, 0,817,  4, 1, 4, idam )
+	call putval(4, 0,818,  -4, 0 )
 	inergy = inergy - iabs( idam ) + 2
 	if( inergy .gt. 100 ) inergy = 100
-	call putval(5, 0,796,  3, 5, inergy )
+	call putval(5, 0,821,  3, 5, inergy )
 	if( inergy .gt. 0 ) goto 200
-	call putval(8, 0,798,  1, iqx, iqy, isx, isy, 0 )
-	call addval(6, 0,799,  2, iqx, iqy, -1000 )
+	call putval(8, 0,823,  1, iqx, iqy, isx, isy, 0 )
+	call addval(6, 0,824,  2, iqx, iqy, -1000 )
 	call nova( iqx, iqy, isx, isy )
-	call putval(6, 0,801,  4, 1, 16, 0 )
-	call getval(6, 0,802,  4, 1, 17, ival )
-	call addval(6, 0,803,  4, ival, 16, 1 )
-	call putval(6, 0,804,  4, 1, 1, 0 )
-	call putval(5, 0,805,  3, 4, 0 )
+	call putval(6, 0,826,  4, 1, 16, 0 )
+	call getval(6, 0,827,  4, 1, 17, ival )
+	call addval(6, 0,828,  4, ival, 16, 1 )
+	call putval(6, 0,829,  4, 1, 1, 0 )
+	call putval(5, 0,830,  3, 4, 0 )
 	return
 
 200	if( idam .eq. 0 ) return
-	call getval(6, 0,809,  4, 1, 17, ival )
+	call getval(6, 0,834,  4, 1, 17, ival )
 	if( ival .eq. ivictm ) return
 	call axisnd( ival, 48,
      &'Your attack on the axis will cost you your life.')
-	call putval(5, 0,813,  3, 4, ival )
+	call putval(5, 0,838,  3, 4, ival )
 	return
 	end
 C
@@ -831,12 +856,12 @@ C  --	SUBROUTINE SENDS A MESSAGE FROM THE AXIS SHIP
 C
 	integer idest, messag( length ), length, sara( 80 )
 C
-	call putval(5, 0,822,  3, 3, idest )
-	call putval(5, 0,823,  5, 1, length+2 )
-	call putval(5, 0,824,  5, 2, 1 )
+	call putval(5, 0,847,  3, 3, idest )
+	call putval(5, 0,848,  5, 1, length+2 )
+	call putval(5, 0,849,  5, 2, 1 )
 	call convrt( messag, length, 5, sara, 0 )
 	do 20 i = 1, length
-	    call putval(5, 0,827,  5, i+2, sara(i) )
+	    call putval(5, 0,852,  5, i+2, sara(i) )
 20	continue
 	return
 	end
@@ -952,7 +977,7 @@ C
 C  --	CHECK IF IT IS LEGAL AND IF THERE IS ONE ALREADY PRESENT
 C
 	if( iplayr .lt. 2 .or. iplayr .gt. 26 ) goto 15
-	call getval(6, 0,942,  4, iplayr, 1, ival )
+	call getval(6, 0,967,  4, iplayr, 1, ival )
 	if( ival .eq. 0 ) goto 20
 	call string
      &(1,'^M^JSomebody is already using that symbol.^M^J^E')
@@ -965,13 +990,13 @@ C
 20	continue
 	call enable
 	call lock
-	call putval(6, 0,955,  4, iplayr, 1, job(0) )
-	call putval(6, 0,956,  4, iplayr, 2, sname(1) )
-	call putval(6, 0,957,  4, iplayr, 3, sname(2) )
-	call putval(6, 0,958,  4, iplayr, 4, 0 )
-	call putval(6, 0,959,  4, iplayr, 7, 0 )
-	call putval(6, 0,960,  4, iplayr, 16, 0 )
-	call addval(5, 0,961,  3, 1, 1 )
+	call putval(6, 0,980,  4, iplayr, 1, job(0) )
+	call putval(6, 0,981,  4, iplayr, 2, sname(1) )
+	call putval(6, 0,982,  4, iplayr, 3, sname(2) )
+	call putval(6, 0,983,  4, iplayr, 4, 0 )
+	call putval(6, 0,984,  4, iplayr, 7, 0 )
+	call putval(6, 0,985,  4, iplayr, 16, 0 )
+	call addval(5, 0,986,  3, 1, 1 )
 	do 59 j = 1, 7
 	    damage( j, 2 ) = crwnum
 59	continue
@@ -987,14 +1012,14 @@ C
 	    sy=isy
 	    iqx = iran(10)
 	    iqy = iran(10)
-	    call getval(8, 0,977,  1, iqx, iqy, isx, isy, ival )
+	    call getval(8, 0,1002,  1, iqx, iqy, isx, isy, ival )
 	if( ival .ne. 0 )goto 60
 C
 C  --	PLACE FINAL RESULTS IN HISEGMENT
 C
-	call putval(4, 0,982,  -1, iplayr+64 )
+	call putval(4, 0,1007,  -1, iplayr+64 )
 	call unlock
-	call addval(6, 0,984,  2, iqx, iqy, 1000 )
+	call addval(6, 0,1009,  2, iqx, iqy, 1000 )
 	continue ! call ctrap
 c	call cease( iplayr, iqx, iqy, isx, isy, fault )
 	if( ichar .ne. 78 ) goto 65
@@ -1156,7 +1181,7 @@ C
 170	if( ichar .ne. 70 ) goto 175
 	i = icon( comara(2) ) - 64
 	if( i .lt. 1 .or. i .gt. 26 ) goto 174
-	call getval(6, 0,1146,  4, i, 1, j )
+	call getval(6, 0,1171,  4, i, 1, j )
 	if( j .eq. 0 ) goto 174
 	call colcur( 1, 2 )
 	if( i .ne. 1 ) goto 171
@@ -1175,13 +1200,13 @@ C
 C  --	RADIO CONTROL
 C
 175	if( ichar .ne. 82 ) goto 220
-	call getval(5, 0,1165,  3, 3, ival )
+	call getval(5, 0,1190,  3, 3, ival )
 	if( ival .eq. 0 ) goto 180
 	call nap( 1000, 4 )
 	call unlock
 180	j = icon( comara(2) ) - 64
 	if( j .lt. 1 .or. j .gt. 26 ) goto 220
-	call getval(6, 0,1171,  4, j, 1, ival )
+	call getval(6, 0,1196,  4, j, 1, ival )
 	if( ival .ne. 0 ) goto 200
 	call cursor( 26, 12 )
 	call colstr(iclyel,'No frequency found for that ship.  ^E')
@@ -1189,13 +1214,13 @@ C
 	goto 440
 C
 200	call lock
-	call putval(5, 0,1179,  3, 3, j )
-	call putval(5, 0,1180,  5, 1, index )
+	call putval(5, 0,1204,  3, 3, j )
+	call putval(5, 0,1205,  5, 1, index )
 	do 210 i1= 2, index
 	    i = i1
-	    call putval(5, 0,1183,  5, i, icon(comara(i)) )
+	    call putval(5, 0,1208,  5, i, icon(comara(i)) )
 210	continue
-	call putval(5, 0,1185,  5, 2, iplayr )
+	call putval(5, 0,1210,  5, 2, iplayr )
 	call unlock
 	goto 440
 C
@@ -1325,13 +1350,13 @@ C
 	if( hyper ) goto 360
 	i = icon( comara(2) ) - 64
 	if( i .lt. 1 .or. i .gt. 26 ) goto 370
-	call getval(6, 0,1315,  4, i, 1, ival )
+	call getval(6, 0,1340,  4, i, 1, ival )
 	if( ival .eq. 0 .or. i .eq. iplayr ) goto 395
-	call getval(6, 0,1317,  4, i, 9, ix1 )
-	call getval(6, 0,1318,  4, i, 10, iy1 )
-	call getval(6, 0,1319,  4, i, 11, ix2 )
-	call getval(6, 0,1320,  4, i, 12, iy2 )
-	call getval(8, 0,1321,  1, ix1, iy1, ix2, iy2, ival )
+	call getval(6, 0,1342,  4, i, 9, ix1 )
+	call getval(6, 0,1343,  4, i, 10, iy1 )
+	call getval(6, 0,1344,  4, i, 11, ix2 )
+	call getval(6, 0,1345,  4, i, 12, iy2 )
+	call getval(8, 0,1346,  1, ix1, iy1, ix2, iy2, ival )
 	if( ival .ne. i+64 ) goto 395
 	if( ix1-iqx .gt. 5 ) ix1 = ix1 - 10
 	if( iqx-ix1 .gt. 5 ) ix1 = ix1 + 10
@@ -1346,13 +1371,13 @@ C	IVAL = I1 / (DIST^0.25)
 	call colcur( 26, 12 )
 	call number(2, ival, 3 )
 	call string(1,'% hit on the ^E')
-	call getval(6, 0,1336,  4, i, 2, iship )
+	call getval(6, 0,1361,  4, i, 2, iship )
 	call string(3, iship, 6, 6 )
-	call getval(6, 0,1338,  4, i, 3, iship )
+	call getval(6, 0,1363,  4, i, 3, iship )
 	call string(3, iship, 6, 6 )
 	call string(1,'       ^E')
-	call putval(6, 0,1341,  4, i, 4, ival )
-	call putval(6, 0,1342,  4, i, 17, iplayr )
+	call putval(6, 0,1366,  4, i, 4, ival )
+	call putval(6, 0,1367,  4, i, 17, iplayr )
 	erase2 = .true.
 	goto 440
 C
@@ -1445,9 +1470,9 @@ C
      &                             ^E')
 	call cease( iplayr, iqx, iqy, isx, isy, fault )
 C
-450	call getval(6, 0,1434,  4, iplayr, 7, othspd )
+450	call getval(6, 0,1459,  4, iplayr, 7, othspd )
 	if( othspd .eq. 0 ) goto 460
-	call putval(4, 0,1436,  -4, 0 )
+	call putval(4, 0,1461,  -4, 0 )
 	call colcur( 26, 12 )
 	erase2 = .true.
 	if( othspd .lt. 0 ) goto 455
@@ -1456,21 +1481,21 @@ C
      &	    call colstr(iclred,'* Collision with the ^E')
 	if( othspd .le. 0.2 )
      &	    call colstr(icllbl,'* Docking with the ^E')
-	call getval(6, 0,1445,  4, iplayr, 6, j )
-	call getval(6, 0,1446,  4, j, 2, iship )
+	call getval(6, 0,1470,  4, iplayr, 6, j )
+	call getval(6, 0,1471,  4, j, 2, iship )
 	call string(3, iship, 6, 6 )
-	call getval(6, 0,1448,  4, j, 3, iship )
+	call getval(6, 0,1473,  4, j, 3, iship )
 	call string(3, iship, 6, 6 )
 	if( othspd .gt. 0.2 ) call string(1,' *^E')
 	if( othspd .le. 0.2 ) call string(1,' *  ^E')
 	speed = 0
 	if( othspd .gt. 0.2 ) fault = j
 	if( othspd .gt. 0.2 ) goto 456
-	call putval(6, 0,1455,  4, j, 13, denrgy )
+	call putval(6, 0,1480,  4, j, 13, denrgy )
 	denrgy = 0
-	call putval(6, 0,1457,  4, j, 14, dtorp )
+	call putval(6, 0,1482,  4, j, 14, dtorp )
 	dtorp = 0
-	call putval(6, 0,1459,  4, j, 15, dcrew )
+	call putval(6, 0,1484,  4, j, 15, dcrew )
 	dcrew = 0
 	inergy = inergy + isheld
 	isheld = 0
@@ -1485,12 +1510,12 @@ C
 C
 C  --	UPDATE DOCKING INFORMATION
 C
-460	call getval(6, 0,1474,  4, iplayr, 13, i1 )
-	call putval(4, 0,1475,  -4, 0 )
-	call getval(6, 0,1476,  4, iplayr, 14, i2 )
-	call putval(4, 0,1477,  -4, 0 )
-	call getval(6, 0,1478,  4, iplayr, 15, j )
-	call putval(4, 0,1479,  -4, 0 )
+460	call getval(6, 0,1499,  4, iplayr, 13, i1 )
+	call putval(4, 0,1500,  -4, 0 )
+	call getval(6, 0,1501,  4, iplayr, 14, i2 )
+	call putval(4, 0,1502,  -4, 0 )
+	call getval(6, 0,1503,  4, iplayr, 15, j )
+	call putval(4, 0,1504,  -4, 0 )
 	if( i1 + i2 + j .eq. 0 ) goto 466
 	isheld = 0
 	denrgy = 0
@@ -1549,7 +1574,7 @@ C
 C
 C  --	LOOP THROUGH SHIP'S JOURNEY TO SEE IF IT HITS ANYTHING
 C
-	call getval(6, 0,1538,  4, iplayr, 1, ival )
+	call getval(6, 0,1563,  4, iplayr, 1, ival )
 	if( ival .eq. 0 ) call exprog
 	call lock
 C
@@ -1562,7 +1587,7 @@ C	FIXED LOGIC TO RUN ON MODERN COMPILERS
 	    sx = sqwrap( iqx, isx, osx + dist*unitx )
 	    sy = sqwrap( iqy, isy, osy + dist*unity )
 	    if( hyper ) goto 480
-	    call getval(8, 0,1551,  1, iqx, iqy, isx, isy, ival )
+	    call getval(8, 0,1576,  1, iqx, iqy, isx, isy, ival )
 	    if( ival .eq. 0 .or. ival .eq. iplayr+64 .or.
      & ival .eq. -iplayr) goto 480
 	    if( ival .ne. 4 ) goto 490
@@ -1615,23 +1640,23 @@ C
 	goto 480
 C
 530	ival1 = ival - 64
-	call getval(6, 0,1604,  4, ival1, 5, othspd )
+	call getval(6, 0,1629,  4, ival1, 5, othspd )
 	othspd = othspd + speed
 	if( othspd .gt. 0.2 )
      &	    call colstr(iclred,'* Collision with the ^E')
 	if( othspd .le. 0.2 )
      &	    call colstr(icllbl,'* Docking with the ^E')
-	call getval(6, 0,1610,  4, ival1, 2, iship )
+	call getval(6, 0,1635,  4, ival1, 2, iship )
 	call string(3, iship, 6, 6 )
-	call getval(6, 0,1612,  4, ival1, 3, iship )
+	call getval(6, 0,1637,  4, ival1, 3, iship )
 	call string(3, iship, 6, 6 )
-	call putval(6, 0,1614,  4, ival1, 6, iplayr )
-	call putval(6, 0,1615,  4, ival1, 7, speed )
+	call putval(6, 0,1639,  4, ival1, 6, iplayr )
+	call putval(6, 0,1640,  4, ival1, 7, speed )
 	if( othspd .gt. 0.3 ) goto 539
 	call string(1,' *  ^E')
-	call putval(6, 0,1618,  4, ival1, 13, denrgy )
-	call putval(6, 0,1619,  4, ival1, 14, dtorp )
-	call putval(6, 0,1620,  4, ival1, 15, dcrew )
+	call putval(6, 0,1643,  4, ival1, 13, denrgy )
+	call putval(6, 0,1644,  4, ival1, 14, dtorp )
+	call putval(6, 0,1645,  4, ival1, 15, dcrew )
 	inergy = inergy + isheld
 	isheld = 0
 	pdist = -0.9
@@ -1649,9 +1674,9 @@ C
 C  --	IF HE HIT A BLACK HOLE, DISORIENT HIM.
 C
 	if( ival .ne. 3 ) goto 550
-	call getval(8, 0,1638,  1, ioqx, ioqy, iosx, iosy, ival )
-	if( ival .eq. iplayr+64 ) call putval(4, 0,1639,  -1, 0 )
-	call addval(6, 0,1640,  2, ioqx, ioqy, -1000 )
+	call getval(8, 0,1663,  1, ioqx, ioqy, iosx, iosy, ival )
+	if( ival .eq. iplayr+64 ) call putval(4, 0,1664,  -1, 0 )
+	call addval(6, 0,1665,  2, ioqx, ioqy, -1000 )
 	goto 60
 C
 C  --	UPDATE CRASH POSITION
@@ -1666,21 +1691,21 @@ C
 C
 C  --	PUT NEW POSITION IN HISEGMENT
 C
-560	call getval(8, 0,1655,  1, ioqx, ioqy, iosx, iosy, ival )
-	if( ival .eq. iplayr+64 ) call putval(4, 0,1656,  -1, 0 )
+560	call getval(8, 0,1680,  1, ioqx, ioqy, iosx, iosy, ival )
+	if( ival .eq. iplayr+64 ) call putval(4, 0,1681,  -1, 0 )
 	if( .not. hyper )
-     &call putval(8, 0,1658,  1, iqx, iqy, isx, isy, iplayr+64 )
+     &call putval(8, 0,1683,  1, iqx, iqy, isx, isy, iplayr+64 )
 C
 C  --	UPDATE SHIP'S ROSTER
 C
 	call upship( iplayr, ichar )
 	call unlock
-	call addval(6, 0,1664,  2, ioqx, ioqy, -1000 )
-	call addval(6, 0,1665,  2, iqx, iqy, 1000 )
-	call putval(6, 0,1666,  4, iplayr, 9, iqx )
-	call putval(6, 0,1667,  4, iplayr, 10, iqy )
-	call putval(6, 0,1668,  4, iplayr, 11, isx )
-	call putval(6, 0,1669,  4, iplayr, 12, isy )
+	call addval(6, 0,1689,  2, ioqx, ioqy, -1000 )
+	call addval(6, 0,1690,  2, iqx, iqy, 1000 )
+	call putval(6, 0,1691,  4, iplayr, 9, iqx )
+	call putval(6, 0,1692,  4, iplayr, 10, iqy )
+	call putval(6, 0,1693,  4, iplayr, 11, isx )
+	call putval(6, 0,1694,  4, iplayr, 12, isy )
 C
 C  --	UPDATE HYPERSPACE FLAG
 C
@@ -1692,7 +1717,7 @@ C
 C
 C  --	UPDATE DATE
 C
-570	call getval(5, 0,1681,  3, 2, idat )
+570	call getval(5, 0,1706,  3, 2, idat )
 	if( idat .eq. iodat )goto 580
 	iodat = idat
 	call colcur( 37, 23 )
@@ -1730,7 +1755,7 @@ C
 C
 C  --	UPDATE DEGREE
 C
-610	call putval(6, 0,1719,  4, iplayr, 8, degree )
+610	call putval(6, 0,1744,  4, iplayr, 8, degree )
 	if( int( degree*100. ) .eq. int( odegre*100. ) .and.
      & ichar .ne. 78 ) goto 620
 	odegre = degree
@@ -1747,7 +1772,7 @@ C
 C
 C  --	UPDATE SPEED
 C
-630	call putval(6, 0,1736,  4, iplayr, 5, speed )
+630	call putval(6, 0,1761,  4, iplayr, 5, speed )
 	if( int( speed*100. ) .eq. int( ospeed*100. ) .and.
      & ichar .ne. 78 ) goto 640
 	ospeed = speed
@@ -1833,9 +1858,9 @@ C
 681	do 682 i = 1, 10
 	    ix = iran( 10 )
 	    iy = iran( 10 )
-	    call getval(6, 0,1822,  2, ix, iy, ival1 )
-	    call getval(8, 0,1823,  1, ix, iy, iran(10), iran(10), ival )
-	    if( ival .eq. 4 .and. ival1 .le. 99 ) call putval(4, 0,1824,  -1, 0 )
+	    call getval(6, 0,1847,  2, ix, iy, ival1 )
+	    call getval(8, 0,1848,  1, ix, iy, iran(10), iran(10), ival )
+	    if( ival .eq. 4 .and. ival1 .le. 99 ) call putval(4, 0,1849,  -1, 0 )
 682	continue
 C
 C  --	UPDATE ANY TORPEDOS UNDER SHIPS CONTROL
@@ -1844,19 +1869,19 @@ C
 	do 750 i= 1,25
 	    if( torpx(i) .eq. 0.0 ) goto 750
 	    call getval
-     &(8, 0,1833, 1, itx(i), ity(i), int(torpx(i)+0.5),
+     &(8, 0,1858, 1, itx(i), ity(i), int(torpx(i)+0.5),
      &int(torpy(i)+0.5), ival)
-	    if( ival .eq. -iplayr ) call putval(4, 0,1835,  -1, 0 )
+	    if( ival .eq. -iplayr ) call putval(4, 0,1860,  -1, 0 )
 	    itdist(i) = itdist(i) + 1
 	    if( ( ival .gt. 0 .and. ival .ne. iplayr+64 ) .or.
      &	    itdist(i) .gt. 40 ) goto 740
 	    torpx(i) = sqwrap( itx(i), ix1, torpxs(i)+torpx(i) )
 	    torpy(i) = sqwrap( ity(i), iy1, torpys(i)+torpy(i) )
-	    call getval(8, 0,1841,  1, itx(i), ity(i), ix1, iy1, ival )
+	    call getval(8, 0,1866,  1, itx(i), ity(i), ix1, iy1, ival )
 C
 	    if( ival .gt. 0 .and. ival .ne. -iplayr .and. ival .ne. 4 )
      & goto 690
-	    call putval(4, 0,1845,  -1, -iplayr )
+	    call putval(4, 0,1870,  -1, -iplayr )
 	    goto 750
 C
 690	if( ival .eq. -iplayr .or. ival .eq. iplayr+64 ) goto 750
@@ -1865,25 +1890,25 @@ C
 C
 	    if( ival .ne. 1 .and. ival .ne. 2 ) goto 730
 	    if( iran(10) .gt.3 ) goto 740
-	    call putval(4, 0,1854,  -1, 0 )
+	    call putval(4, 0,1879,  -1, 0 )
 	    call nova( itx(i), ity(i), ix1, iy1 )
-	    if( ival .eq. 1 ) call addval(6, 0,1856,  2, itx(i), ity(i), -1 )
-	    if( ival .eq. 2 ) call addval(6, 0,1857,  2, itx(i), ity(i), -10 )
+	    if( ival .eq. 1 ) call addval(6, 0,1881,  2, itx(i), ity(i), -1 )
+	    if( ival .eq. 2 ) call addval(6, 0,1882,  2, itx(i), ity(i), -10 )
 	    if( ival .eq. 1 ) goto 740
 725	    istx = iran(10)
 	    isty = iran(10)
-	    call getval(6, 0,1861,  2, istx, isty, ival1 )
+	    call getval(6, 0,1886,  2, istx, isty, ival1 )
 	    if( ival1 .gt. 9 ) goto 725
-	    call addval(4, 0,1863,  -2, 10 )
+	    call addval(4, 0,1888,  -2, 10 )
 726	    istx1 = iran(10)
 	    isty1 = iran(10)
-	    call getval(8, 0,1866,  1, istx, isty, istx1, isty1, ival1 )
+	    call getval(8, 0,1891,  1, istx, isty, istx1, isty1, ival1 )
 	    if( ival1 .ne. 0 ) goto 726
-	    call addval(4, 0,1868,  -1, 2 )
+	    call addval(4, 0,1893,  -1, 2 )
 	    goto 740
 C
-730	    call putval(6, 0,1871,  4, ival-64, 4, -20 )
-	    call putval(6, 0,1872,  4, ival-64, 17, iplayr )
+730	    call putval(6, 0,1896,  4, ival-64, 4, -20 )
+	    call putval(6, 0,1897,  4, ival-64, 17, iplayr )
 C
 740	    torpx(i) = 0.0
 C
@@ -1892,8 +1917,8 @@ C
 C
 C  --	FIND OUT IF HIT BY ENEMY
 C
-	call getval(6, 0,1881,  4, iplayr, 4, i1 )
-	call putval(4, 0,1882,  -4, 0 )
+	call getval(6, 0,1906,  4, iplayr, 4, i1 )
+	call putval(4, 0,1907,  -4, 0 )
 	if( i1 .eq. 0 ) goto 780
 	call colcur( 26, 12 )
 	if( i1 .lt. 0 ) goto 760
@@ -1904,30 +1929,30 @@ C
 C
 760	call colstr(iclred,'Ship hit by photon torpedo.        ^E')
 C
-770	call getval(6, 0,1893,  4, iplayr, 17, ival )
+770	call getval(6, 0,1918,  4, iplayr, 17, ival )
 	fault = ival
 	call damagm( damage, iabs(i1), isheld )
 	erase2 = .true.
 C
 C  --	GET ANY MESSAGES
 C
-780	call getval(5, 0,1900,  3, 3, ival )
+780	call getval(5, 0,1925,  3, 3, ival )
 	if( ival .ne. iplayr ) goto 70
 	call colcur( 1, 2 )
 	call irepeat(32,78)
         call cursor( 1, 2 )
-	call getval(5, 0,1905,  5, 1, index )
+	call getval(5, 0,1930,  5, 1, index )
 	do 790 i1= 2, index
 	    i = i1
-	    call getval(5, 0,1908,  5, i, commar(i-1) )
+	    call getval(5, 0,1933,  5, i, commar(i-1) )
 790	continue
-	call putval(5, 0,1910,  3, 3, 0 )
+	call putval(5, 0,1935,  3, 3, 0 )
 	call chrout( commar(1)+64 )
 	call chrout(40)
-	call getval(6, 0,1913,  4, commar(1), 9, ival )
+	call getval(6, 0,1938,  4, commar(1), 9, ival )
 	call number(1, ival )
 	call chrout(44)
-	call getval(6, 0,1916,  4, commar(1), 10, ival )
+	call getval(6, 0,1941,  4, commar(1), 10, ival )
 	call number(1, ival )
 	call string(1,'): - ^E')
 	if( index-2 .gt. 0 )call string(3, commar(2), 0, index-2 )
@@ -1975,7 +2000,7 @@ C
 808	call select( 2 )
 	call string(1,'
      &                                                  Stardate: ^E')
-	call getval(5, 0,1964,  3, 2, idat )
+	call getval(5, 0,1989,  3, 2, idat )
 	call number(4, idat/100.0, 8, 10, 2 )
 	call string(1,'^M^J^J^J^E')
 	do 820 i1 = 10, 1, -1
@@ -1988,7 +2013,7 @@ C
 	    do 810 i2 = 1, 10
 		iqx = i2
 		call string(1,':::^E')
-		call getval(6, 0,1977,  2, iqx, iqy, ival )
+		call getval(6, 0,2002,  2, iqx, iqy, ival )
 		call number(2, ival, 5 )
 		call string(1,' ::^E')
 810	    continue
@@ -2007,7 +2032,7 @@ C
 			call chrout(58)
 			do 815 i = 1, 10
 			    isx = i
-			    call getval(8, 0,1996,  1, iqx, iqy, isx, isy, ival )
+			    call getval(8, 0,2021,  1, iqx, iqy, isx, isy, ival )
 			    if( ival .lt. 0 ) ival = 5
 			    if( ival .le. 6 ) ival = objval( ival+1 )
 			    call chrout( ival )
@@ -2030,13 +2055,13 @@ C  --	MAP DONE, PRINT OUT SHIP STATISTICS
 C
 	do 900 i1 = 1, 26
 	    i = i1
-	    call getval(6, 0,2019,  4, i, 1, j )
+	    call getval(6, 0,2044,  4, i, 1, j )
 	    if( j .eq. 0 ) goto 900
 	    call chrout( i+64 )
 	    call string(1,' - ^E')
-	    call getval(6, 0,2023,  4, i, 2, ival )
+	    call getval(6, 0,2048,  4, i, 2, ival )
 	    call string(3, ival, 6, 6 )
-	    call getval(6, 0,2025,  4, i, 3, ival )
+	    call getval(6, 0,2050,  4, i, 3, ival )
 	    call string(3, ival, 6, 6 )
 	    if( i .ne. 1 ) goto 899
 	    call string(1,'  Computer controlled ship^M^J^E')
