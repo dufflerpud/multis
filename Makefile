@@ -137,10 +137,10 @@ else
 endif
 
 ifneq ($(call libsearch,socket),)
-    USE_SOCKET=-lsocket
+    USE_SOCKET=-lsocket -lnsl
 endif
 ifneq ($(call libsearch,nsl),)
-    USE_NSL=-lnsl
+    USE_NSL_TURNED_OFF=-lnsl
 endif
 ifneq ($(call libsearch,network),)
     USE_NETWORK=-lnetwork
