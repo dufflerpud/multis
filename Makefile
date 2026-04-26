@@ -347,18 +347,18 @@ $(F77S_DIR)/%:		%
 			@$(MKDIR) -p $(dir $@)
 			$(CP) $^ $@
 
-$(F77S_DIR)/%:		$(F77S_OBJ)/%.o $(F77S_OBJ)/hipak.o
+$(F77S_DIR)/%.exe:	$(F77S_OBJ)/%.o $(F77S_OBJ)/hipak.o
 			@$(MKDIR) -p $(dir $@)
 			$(CC) $(LDFLAGS) \
 			    $(F77S_OBJ)/hipak.o \
-			    $(F77S_OBJ)/$(notdir $@).o \
+			    $(F77S_OBJ)/$(subst .exe,,$(notdir $@)).o \
 			    $(CURSES) $(SOCKETLIBS) -lm \
-			    -o $@
-			@$(RM) -f $(UNV_DIR)/$(notdir $@).memory $(LOG_DIR)/$(notdir $@).log
+			    -o $(subst .exe,,$@)
+			@$(RM) -f $(UNV_DIR)/$(subst .exe,,$(notdir $@)).memory $(LOG_DIR)/$(subst .exe,,$(notdir $@)).log
 
 $(call support_rules,$(F77S_DIR),$(WEBSERVER_EXTS), multis.js multis.html )
 
-$(F77S_DIR)/%.cluster:	$(F77S_DIR)/% $(F77S_DIR)/%.support
+$(F77S_DIR)/%.cluster:	$(F77S_DIR)/%.exe $(F77S_DIR)/%.support
 			@true
 
 $(F2CS_OBJ)/hipak.o:	hipak.c f2c.h
@@ -375,17 +375,17 @@ $(F2CS_OBJ)/%.o:	$(F2CCS_DIR)/%.c
 
 $(call support_rules,$(F2CS_DIR),$(WEBSERVER_EXTS), multis.js multis.html )
 
-$(F2CS_DIR)/%.cluster:	$(F2CS_DIR)/% $(F2CS_DIR)/%.support
+$(F2CS_DIR)/%.cluster:	$(F2CS_DIR)/%.exe $(F2CS_DIR)/%.support
 			@true
 
-$(F2CS_DIR)/%:		$(F2CS_OBJ)/hipak.o $(F2CS_OBJ)/%.o
+$(F2CS_DIR)/%.exe:	$(F2CS_OBJ)/hipak.o $(F2CS_OBJ)/%.o
 			@$(MKDIR) -p $(dir $@)
 			$(CC) $(LDFLAGS) \
 			    $(F2CS_OBJ)/hipak.o \
-			    $(F2CS_OBJ)/$(notdir $@).o \
+			    $(F2CS_OBJ)/$(subst .exe,,$(notdir $@)).o \
 			    $(CURSES) $(SOCKETLIBS) -lm \
-			    -o $@
-			@$(RM) -f $(UNV_DIR)/$(notdir $@).memory $(LOG_DIR)/$(notdir $@).log
+			    -o $(subst .exe,,$@)
+			@$(RM) -f $(UNV_DIR)/$(subst .exe,,$(notdir $@)).memory $(LOG_DIR)/$(subst .exe,,$(notdir $@)).log
 
 $(F2CS_DIR)/%:		%
 			@$(MKDIR) -p $(dir $@)
