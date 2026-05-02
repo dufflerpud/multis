@@ -107,9 +107,31 @@ BACKUP_ARCHIVE=$(dir $(UNIQUE_ARCHIVE))$(DEFAULT_ARCHIVE)
 TARARGS=projects/$(PROJECT)
 INSTALL_DIR=$(USRLOCAL)/multis
 INSTALLED_UNIVERSES=$(INSTALL_DIR)/universes
-F77VER=$(shell f77 -v 2>&1 | grep f2c | grep version)
-F2CVER=$(shell f2c -v 2>&1 | grep version)
 ROOT_PRIVS=$(shell id | grep uid=0)
+
+FORTRANS=f77 g77 gfortran
+FORTRANBINS=$(wildcard $(addprefix $(SYSTEMBIN),$(FORTRANS))) $(shell command -v $(FORTRANS))
+F77BIN=$(word 1,$(FORTRANBINS))
+ifneq (,$(F77BIN))
+    F77VER=$(shell $(F77BIN) -v 2>&1 | grep f2c | grep version)
+endif
+
+ifneq (,$(wildcard $(SYSTEMBIN)/f2c))
+    F2CBIN=$(SYSTEMBIN)/f2c
+else
+    F2CBIN=$(shell command -v f2c)
+endif
+ifneq (,$(F2CBIN))
+    F2CVER=$(shell $(F2CBIN) -v 2>&1 | grep version)
+endif
+
+fido:
+	@echo "FORTRANS=$(FORTRANS)"
+	@echo "FORTRANBINS=$(FORTRANBINS)"
+	@echo "F77BIN=$(F77BIN)"
+	@echo "F77VER=$(F77VER)"
+	@echo "F2CBIN=$(F2CBIN)"
+	@echo "F2CVER=$(F2CVER)"
 
 BINARY_FOR_TEST=$(F2CSDIR)/$(TEST)
 
@@ -154,10 +176,10 @@ SOCKETLIBS=$(USE_SOCKET) $(USE_NSL) $(USE_NETWORK)
 #CC=gcc
 CFLAGS=-Isrc/shared -g
 
-#FC=g77
+FC?=$(F77BIN)
 FFLAGS=-ff77 -fugly-logint -Wno-globals -fonetrip -finit-local-zero -fno-automatic -C
 
-F2C=f2c
+F2C?=$(F2CBIN)
 F2CFLAGS=-w -c -kr -NL800 -f -K
 F2CCFLAGS=-std=c99 -Isrc/shared
 
@@ -208,8 +230,8 @@ vars:
 		@echo "TARARGS			$(TARARGS)"
 		@echo "INSTALL_DIR		$(INSTALL_DIR)"
 		@echo "INSTALLED_UNIVERSES	$(INSTALLED_UNIVERSES)"
-		@echo "F77VER			$(F77VER)"
-		@echo "F2CVER			$(F2CVER)"
+		@echo "F77BIN			$(F77BIN)"
+		@echo "F2CBIN			$(F2CBIN)"
 		@echo "ROOT_PRIVS		$(ROOT_PRIVS)"
 		@echo "BINARY_FOR_TEST		$(BINARY_FOR_TEST)"
 		@echo "CURSES			$(CURSES)"
@@ -239,17 +261,17 @@ again:
 # at least in one case, the f77 comes WITH f2c, but it's a shell
 # script and it doesn't work.  I considered rejecting it if it
 # was a shell script but I think that's getting needlessly fancy.
-ifneq ($(F2CVER),)
+ifneq ($(F2CBIN),)
     INSTALL_DEPS=f2cs
     INSTALL_FROM=$(F2CS_DIR)
 else
-ifneq ($(F77VER),)
+ifneq ($(F77BIN),)
     INSTALL_DEPS=f77s
     INSTALL_FROM=$(F77S_DIR)
 endif
 endif
 
-ifeq ($(F77VER),)
+ifeq ($(F77BIN),)
     f77s:;		@echo "Cannot create $@ on $(OS) (no f77)."
 else
     f77s:
@@ -257,7 +279,7 @@ else
 			$(MAKE) $(foreach F,$(BASIC_PROGS),$(F77S_DIR)/$(F).cluster)
 endif
 
-ifeq ($(F2CVER),)
+ifeq ($(F2CBIN),)
     f2cs:;		@echo "Cannot create $@ on $(OS) (no f2c)."
     f2ccs:;		@echo "Cannot create $@ on $(OS) (no f2c)."
 else
