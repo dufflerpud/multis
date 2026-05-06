@@ -78,6 +78,13 @@ HOMEHOST=www.brightsands.com
 SHELL=/bin/sh
 CHECKLIBS=/lib /lib64 /usr/lib /usr/lib64 /usr/ccs/lib /usr/ccs/lib64 %A/lib /boot/home/config/non-packaged/lib /boot/home/config/lib /boot/system/non-packaged/lib /boot/system/lib
 OS=$(shell uname -o 2>/dev/null || uname -s)
+
+ifeq ($(OS),Cygwin)
+    CC=x86_64-w64-mingw32-gcc
+else
+    CC=gcc
+endif
+
 #COMPILER_TARGET=$(shell $(CC) -v 2>&1 | awk '/Target:/ { print $$2 }')
 #COMPILER_VERSION=$(shell $(CC) -v 2>&1 | awk '/ version / { print $$3 }')
 BUILDFOR=$(COMPILER_TARGET)-$(COMPILER_VERSION)
@@ -173,8 +180,13 @@ ifneq ($(call libsearch,network),)
 endif
 SOCKETLIBS=$(USE_SOCKET) $(USE_NSL) $(USE_NETWORK)
 
-#CC=gcc
-CFLAGS=-Isrc/shared -g
+CC?=gcc
+ifeq ($(OS),Cygwin)
+    #CFLAGS=-Isrc/shared -g -mno-cygwin
+    CFLAGS=-Isrc/shared -g
+else
+    CFLAGS=-Isrc/shared -g
+endif
 
 FC?=$(F77BIN)
 FFLAGS=-ff77 -fugly-logint -Wno-globals -fonetrip -finit-local-zero -fno-automatic -C
@@ -184,9 +196,10 @@ F2CFLAGS=-w -c -kr -NL800 -f -K
 F2CCFLAGS=-std=c99 -Isrc/shared
 
 #LD=gcc
-ifeq ( $(OS), Cygwin )
+ifeq ($(OS),Cygwin)
     #LDFLAGS=-DLDFLAGS -mswindows
-    LDFLAGS=$(LDFLAGS) -mswindows
+    #LDFLAGS=$(LDFLAGS) -mswindows
+    #LDFLAGS=-mswindows
 else
     #LDFLAGS=-DLDFLAGS
 endif
@@ -407,7 +420,7 @@ $(F2CS_DIR)/%.exe:	$(F2CS_OBJ)/hipak.o $(F2CS_OBJ)/%.o
 			    $(F2CS_OBJ)/$(subst .exe,,$(notdir $@)).o \
 			    $(CURSES) $(SOCKETLIBS) -lm \
 			    -o $(subst .exe,,$@)
-			@$(RM) -f $(UNV_DIR)/$(subst .exe,,$(notdir $@)).memory $(LOG_DIR)/$(subst .exe,,$(notdir $@)).log
+			#@$(RM) -f $(UNV_DIR)/$(subst .exe,,$(notdir $@)).memory $(LOG_DIR)/$(subst .exe,,$(notdir $@)).log
 
 $(F2CS_DIR)/%:		%
 			@$(MKDIR) -p $(dir $@)
