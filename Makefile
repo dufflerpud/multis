@@ -107,7 +107,7 @@ BACKUP_ARCHIVE=$(dir $(UNIQUE_ARCHIVE))$(DEFAULT_ARCHIVE)
 TARARGS=projects/$(PROJECT)
 INSTALL_DIR=$(USRLOCAL)/multis
 INSTALLED_UNIVERSES=$(INSTALL_DIR)/universes
-ROOT_PRIVS=$(shell id | grep uid=0)
+ROOT_PRIVS=$(shell [ `id -u` = 0 -o `id -un` = 'Administrator' ] && echo "yes")
 
 FORTRANS=f77 g77 gfortran
 FORTRANBINS=$(wildcard $(addprefix $(SYSTEMBIN),$(FORTRANS))) $(shell command -v $(FORTRANS))
