@@ -40,7 +40,11 @@
 #undef	DEBUG_COLOR
 
 #define USE_COLOR
+
+/* One or the other.  Not both! */
 #define USE_MMAP
+#undef USE_SHMIPC
+
 #define USE_COMPRESSION
 #define MEDIUM_BUFSIZE	1024
 
@@ -79,7 +83,8 @@
 
 #ifdef USE_MMAP
 #include <sys/mman.h>
-#else
+#endif
+#ifdef USE_SHMIPC
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #endif
@@ -240,7 +245,8 @@ static struct shared_memory *shmp = NULL;
 
 #ifdef USE_MMAP
 int allocated_shmem = 0;
-#else
+#endif
+#ifdef USE_SHMIPC
 static int shmid;
 #endif
 
@@ -3691,7 +3697,8 @@ void exprog_()
 #ifdef USE_MMAP
 	if( munmap( shmp, allocated_shmem ) < 0 )
 	    printf("munmap(%d) failed:  %s",allocated_shmem,strerror(errno));
-#else
+#endif
+#ifdef USE_SHMIPC
 	if( shmdt( shmp ) < 0 )
 	    printf("\r\nFailed to detach from database:  %s",strerror(errno));
 	else if( shmctl(shmid,IPC_RMID,NULL) < 0 )
@@ -4381,7 +4388,8 @@ static void *allocate_shmem( const char *memory_file, size_t sz )
 	close( fd );
 	allocated_shmem = sz;
 	}
-#else
+#endif
+#ifdef SHMIPC
 	{
 	int shm_key = ftok( memory_file, 1 );
 	if( shm_key < 0 )
@@ -4408,6 +4416,14 @@ static void *allocate_shmem( const char *memory_file, size_t sz )
 	    }
 	}
 #endif
+
+    if( ! ret )
+	{
+	fprintf(stderr,
+	    "%s:%d: allocate_shmem(%s,%d) failed:  %s\n",
+	    __FILE__, __LINE__, memory_file, sz, strerror(errno) );
+	final_exit(1);
+	}
 
     return ret;
     }
