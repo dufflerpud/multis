@@ -40,10 +40,15 @@
 #undef	DEBUG_COLOR
 
 #define USE_COLOR
+#define HAVE_MMAN
 
-/* One or the other.  Not both! */
-#define USE_MMAP
-#undef USE_SHMIPC
+#if defined HAVE_MMAN
+#define USE_MMAN
+#elif defined HAVE_SHMIPC
+#define USE_SHMIPC
+#else
+#define USE_MALLOC
+#endif
 
 #define USE_COMPRESSION
 #define MEDIUM_BUFSIZE	1024
@@ -62,15 +67,18 @@
  ************************************************************************/
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
-#ifdef __sun
+#if defined USE_NATIVE_WINDOWS
+#include <windows.h>
+#include <PDCurses.h>
+/* #include <conio.h> Not included due to conflicts with PDCurses.h */
+#elif defined __sun
 #include <ncurses/ncurses.h>
-#else
-#ifdef __HAIKU__
+#elif defined __HAIKU__
 #include <ncurses.h>
 #else
 #include <curses.h>
-#endif
 #endif
 
 #include <string.h>
@@ -81,82 +89,85 @@
 #include <errno.h>
 #include <time.h>
 
-#ifdef USE_MMAP
+#if defined USE_MMAN
 #include <sys/mman.h>
-#endif
-#ifdef USE_SHMIPC
+#elif defined USE_SHMIPC
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #endif
 
 #include <sys/time.h>
 #include <unistd.h>
+
+#ifndef int32_t
+#include <stdint.h>
+#endif
+
+/* #define ninteger uint32_t */
+#define ninteger int32_t
+
+#if defined USE_NATIVE_WINDOWS
+#include <winsock2.h>
+#include <windows.h>
+#include <ws2tcpip.h>
+#else
 #include <sys/select.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#endif
+
 #include <math.h>
 #include <fcntl.h>
 #include <signal.h>
 
-#ifdef F2C
+#if defined F2C
 #include <f2c.h>
 #else
 typedef int integer;
 #endif
-/* #define ninteger uint32_t */
-#define ninteger int32_t
 
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <fcntl.h>
-#include <netdb.h>
-#include <arpa/inet.h>
 
+#if ! defined USE_NATIVE_WINDOWS
 #include <pwd.h>
 #include <grp.h>
+#endif
 
 #define DEBUG_CHAN			stdout
 #undef DEBUG_CHAN
 #define DEBUG_FILE			"/tmp/%s.log"
 FILE *debug_file = 0;
 
-#ifdef linux				/* For FIONREAD */
+#if defined linux				/* For FIONREAD */
 #include <asm/ioctls.h>
-#else					/* for ifdef linux */
-#ifdef __CYGWIN__
+#elif defined __CYGWIN__
 #include <asm/socket.h>
-#else					/* else __CYGWIN__ */
-#ifdef __QHAIKU__
-#include <socket.h>
-#else					/* else __HAIKU__ */
-#ifndef __HAIKU__
+#elif defined __HAIKU__
+	/* Nothing */
+#elif ! defined USE_NATIVE_WINDOWS
 #include <sys/filio.h>
-#endif					/* else endif __HAIKU__ */
-#endif					/* else endif __QHAIKU__ */
-#endif					/* else endif __CYGWIN__ */
-#endif					/* endif else linux */
-
-#ifdef linux
-#define HAS_STRERROR
 #endif
 
-#ifdef __sun
-#define HAS_STRERROR
+#if defined linux || defined __sun || defined __HAIKU__
+#define HAVE_STRERROR
 #endif
 
-#ifdef __HAIKU__
-#define HAS_STRERROR
-#endif
-
-#ifdef HAS_STRERROR			/* For STRERROR */
+#ifdef HAVE_STRERROR                     /* For STRERROR */
 #include <errno.h>
 #define STRERROR(x) strerror(x)
 extern char *strerror(int);
 #else
-#ifndef __CYGWIN__
+#if ! defined __CYGWIN__ && ! defined USE_NATIVE_WINDOWS
 extern const char * const sys_errlist[];
-#endif
+#endif  
 #define STRERROR(x) sys_errlist[x]
 #endif
+
+#ifndef USE_NATIVE_WINDOWS
 extern int errno;
+#endif
 
 #ifndef linux
 extern void *realloc(), *malloc(), *calloc();
@@ -167,6 +178,10 @@ extern char *strchr();
 #include <stdarg.h>
 #else
 #define HAVE_ASSUME_DEFAULT_COLORS
+#endif
+
+#ifndef caddr_t
+#define caddr_t void*
 #endif
 
 extern void fmain_();
@@ -232,7 +247,7 @@ struct shared_memory
     int		sm_numdims[MAX_SHM_TABLES];
     int		sm_dims[MAX_SHM_TABLES][MAX_SHM_DIMS];
     int		sm_member_size[MAX_SHM_TABLES];
-#ifdef USE_COMPRESSION
+#if defined USE_COMPRESSION
     int		sm_member_mask[MAX_SHM_TABLES];
     int		sm_members_per_word[MAX_SHM_TABLES];
 #endif
@@ -243,10 +258,10 @@ struct shared_memory
     };
 static struct shared_memory *shmp = NULL;
 
-#ifdef USE_MMAP
+#if defined USE_MMAN
 int allocated_shmem = 0;
 #endif
-#ifdef USE_SHMIPC
+#if defined USE_SHMIPC
 static int shmid;
 #endif
 
@@ -278,7 +293,7 @@ struct requester
 struct requester	*head_requester = NULL;
 struct requester	*tail_requester = NULL;
 
-#ifdef USE_COLOR
+#if defined USE_COLOR
 
 #define NCOLORS		8
 /* Map between ISC colors and ncurses colors */
@@ -358,7 +373,7 @@ void progress( const char *filename, int linenum, const char *fmt, ... )
  * Print out a progress string.						*
  ************************************************************************/
     {
-#ifdef DEBUG_PROGRESS
+#if defined DEBUG_PROGRESS
     if( debug_file )
 	{
 	va_list ap;
@@ -402,7 +417,7 @@ void dump_buf(
  * Print out a progress string.						*
  ************************************************************************/
     {
-#ifdef DEBUG_PROGRESS
+#if defined DEBUG_PROGRESS
     va_list ap;
     /* fprintf(debug_file,"%s",port_mode_types[port_mode]); */
     if( filename && filename[0] )
@@ -434,9 +449,9 @@ void dump_buf(
  * Easy way to refer to control characters without numbers.		*
  ************************************************************************/
 #define CONTROL(x)			((x)-'@')
-#define BEEP				CONTROL('G')
-#define DELETE				0177
-#define BACKSPACE			'\b'
+#define CHR_BEEP			CONTROL('G')
+#define CHR_DELETE			0177
+#define CHR_BACKSPACE			'\b'
 
 static int error_flag = FALSE;
 /************************************************************************/
@@ -484,7 +499,7 @@ int put_packet(int lnum, int chan, const void *buf, int len )
 		    chan,to_write,nbytes,STRERROR(errno));
 	    }
 	}
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
     dump_buf(__FILE__,__LINE__,buf,written_so_far,
         "put_packet(%d,%d) at %d returned %d (%s)",
         chan, len, lnum, written_so_far, STRERROR(errno) );
@@ -506,7 +521,7 @@ int get_packet( int chan, void *buf, int buf_size, gp_flag flag )
  *	GP_CHECK_BUF		Check for chars in buffer and read them	*
  ************************************************************************/
     {
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
     progress(__FILE__,__LINE__,"get_packet(%d,%d,%d)", chan, buf_size, flag );
 #endif
 
@@ -528,7 +543,7 @@ int get_packet( int chan, void *buf, int buf_size, gp_flag flag )
 	        chan,STRERROR(errno),read_so_far);
 	    return read_so_far;
 	    }
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 	dump_buf(__FILE__,__LINE__,buf,read_so_far,"wait read:");
 #endif
 	read_so_far += nread;
@@ -572,7 +587,7 @@ int get_packet( int chan, void *buf, int buf_size, gp_flag flag )
 		}
 	    else
 	        {
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 		dump_buf(__FILE__,__LINE__,
 		    buf+read_so_far,nread,"read so far");
 #endif
@@ -586,7 +601,7 @@ int get_packet( int chan, void *buf, int buf_size, gp_flag flag )
 	}
 #endif
 
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
     dump_buf(__FILE__,__LINE__,buf,read_so_far,
         "get_packet(%d,%d,%d) returns %d",
         chan, buf_size, flag, read_so_far );
@@ -641,7 +656,7 @@ const char *int_to_string(int string_num)
 	nblock[0] = htoninteger(AC_ITS);
 	nblock[1] = htoninteger(string_num);
 	int nbytes;
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 	progress(__FILE__,__LINE__,"int_to_string(%d)",string_num);
 #endif
 	nbytes = put_packet(__LINE__, remote_chan, nblock, to_write );
@@ -656,7 +671,7 @@ const char *int_to_string(int string_num)
 	    }
 	else
 	    {
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 	    progress(__FILE__,__LINE__,"ITS returned [%s]",buf);
 #endif
 	    if( string_cache_size <= string_num )
@@ -707,7 +722,7 @@ static int lookup_string( const char *str )
 		l4ind = 0;
 	    else if( str[l4ind] == 0 )
 		{
-#ifdef DEBUG_STRINGS
+#if defined DEBUG_STRINGS
 		progress(__FILE__,__LINE__,"lookup_string(%s) returned %d.",
 		    str, found_so_far );
 #endif
@@ -719,7 +734,7 @@ static int lookup_string( const char *str )
 	while( (heap_ptr[i++] = str[l4ind++]) );
 	shmp->sm_end_string_heap = i;
 	shmp->sm_number_strings++;
-#ifdef DEBUG_STRINGS
+#if defined DEBUG_STRINGS
 	progress(__FILE__,__LINE__,"lookup_string(%s) returned new %d.",
 	    str, last_string );
 #endif
@@ -736,7 +751,7 @@ static int lookup_string( const char *str )
 	*intp = htoninteger( AC_STI );
 	strcpy( bp, str );
 
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 	progress(__FILE__,__LINE__,
 	    "Sending STI [%s] of length %d to %d",str,to_write,remote_chan);
 #endif
@@ -752,7 +767,7 @@ static int lookup_string( const char *str )
 		    sizeof(nres), nbytes, STRERROR(errno));
 	    else
 		{
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 		progress(__FILE__,__LINE__,
 		    "STI reply from %d was %d",remote_chan,htoninteger(nres));
 #endif
@@ -763,6 +778,14 @@ static int lookup_string( const char *str )
 	return -1;
 	}
     }
+
+#ifdef USE_NATIVE_WINDOWS
+/************************************************************************
+ * The following don't have meaning under Windows but are harmless.	*
+ ************************************************************************/
+int getuid()	{ return 0; }		int geteuid()	{ return 0; }
+int getgid()	{ return 0; }		int getegid()	{ return 0; }
+#endif
 
 /************************************************************************/
 void settty_(
@@ -903,10 +926,10 @@ void fwmove( struct display_struct *curd, int row, int col )
 	}
     }
 
-#ifdef USE_COLOR
+#if defined USE_COLOR
 static int single_to_pair_map[NCOLORS][NCOLORS];
 
-#ifdef DEBUG_COLOR
+#if defined DEBUG_COLOR
 /************************************************************************/
 /*	Dump the color table.						*/
 /************************************************************************/
@@ -952,7 +975,7 @@ void init_colors( struct display_struct *curd )
 		    fatal(__FILE__,__LINE__,"max_pair >= %d.",COLOR_PAIRS);
 		}
 	    }
-#ifdef DEBUG_COLOR
+#if defined DEBUG_COLOR
     dump_colors();
 #endif
     }
@@ -974,7 +997,7 @@ struct display_struct *get_display( int screen_num )
     struct display_struct *curd = &displays[screen_num];
     if( !curd->d_nrows )
 	{
-#ifdef WHY_IS_THIS_HERE
+#if defined WHY_IS_THIS_HERE
 	if( curd->d_table && curd->d_data )
 	    {
 	    free( curd->d_data );
@@ -987,7 +1010,7 @@ struct display_struct *get_display( int screen_num )
 	curd->d_fg = COLOR_WHITE;
 	curd->d_bg = COLOR_BLACK;
 
-#ifdef DEBUG_WINDOWS
+#if defined DEBUG_WINDOWS
 	progress(__FILE__,__LINE__,"get_display called.\n");
 #endif
 
@@ -1005,7 +1028,7 @@ struct display_struct *get_display( int screen_num )
 		curd->d_win = initscr();
 		}
 
-#ifdef USE_COLOR
+#if defined USE_COLOR
 	    init_colors( curd );
 #endif
 
@@ -1019,7 +1042,7 @@ struct display_struct *get_display( int screen_num )
 		    intrflush(curd->d_win,FALSE);
 		    keypad(curd->d_win,TRUE);
 		    wattron( curd->d_win, get_current_color_pair( curd ) );
-#ifdef HAVE_ASSUME_DEFAULT_COLORS
+#if defined HAVE_ASSUME_DEFAULT_COLORS
 		    assume_default_colors( curd->d_fg, curd->d_bg );
 #endif
 		    wbkgdset( curd->d_win, get_current_color_pair( curd ) );
@@ -1092,7 +1115,7 @@ void fwaddpch( struct display_struct *curd, chtype cell )
 /************************************************************************/
     {
     int chr = cell & A_CHARTEXT;
-#ifdef DEBUG_IO
+#if defined DEBUG_IO
     progress(__FILE__,__LINE__,"fwaddpch(%d:%d:%c) at %d,%d", cell, chr,
         ( chr >= ' ' ? chr : '=' ), curd->d_row, curd->d_col );
 #endif
@@ -1133,7 +1156,7 @@ void fwaddch( struct display_struct *curd, chtype cell )
     {
     chtype chr = cell & A_CHARTEXT;
     int goto_next_position = 0;
-#ifdef DEBUG_IO
+#if defined DEBUG_IO
 	progress(__FILE__,__LINE__,"fwaddch(%d:%c) at %d,%d",
 	    chr, chr, curd->d_row, curd->d_col );
 #endif
@@ -1207,7 +1230,7 @@ int get_fg( chtype c )
     int res = NCOLORS-1 - PAIR_NUMBER(c)/NCOLORS;
     /* int res = PAIR_NUMBER(c)/NCOLORS; */
     /* int res = NCOLORS-1 - PAIR_NUMBER(c)/NCOLORS; */
-#ifdef DEBUG_COLOR
+#if defined DEBUG_COLOR
     progress(__FILE__,__LINE__,"get_fg(%d:%c)=%d(%s) pn=%o.",
         c,c&A_CHARTEXT,res,curses_color_to_html[res%NCOLORS],
 	PAIR_NUMBER(c));
@@ -1222,7 +1245,7 @@ int get_bg( chtype c )
     int res = PAIR_NUMBER(c)%NCOLORS;
     /* int res = NCOLORS-1 - PAIR_NUMBER(c)%NCOLORS; */
     /* int res = PAIR_NUMBER(c)%NCOLORS; */
-#ifdef DEBUG_COLOR
+#if defined DEBUG_COLOR
     progress(__FILE__,__LINE__,"get_bg(%d:%c)=%d(%s) pn=%o.",
         c,c&A_CHARTEXT,res,curses_color_to_html[res%NCOLORS],
 	PAIR_NUMBER(c));
@@ -1239,7 +1262,7 @@ void grafon_( /* No arguments */ )
  * Used in: greebl risk							*
  ************************************************************************/
     {
-#ifdef DEBUG_WINDOWS
+#if defined DEBUG_WINDOWS
     progress(__FILE__,__LINE__,"grafon called with in_graphics_mode=%d.",
         in_graphics_mode );
 #endif
@@ -1300,9 +1323,9 @@ void clrscr_( /* No arguments */ )
         {
 	case DT_curses:
 	    {
-#ifdef USE_COLOR
+#if defined USE_COLOR
 	    wattron( curd->d_win, get_current_color_pair( curd ) );
-#ifdef HAVE_ASSUME_DEFAULT_COLORS
+#if defined HAVE_ASSUME_DEFAULT_COLORS
 	    assume_default_colors( curd->d_fg, curd->d_bg );
 #endif
 	    /* wbkgdset( curd->d_win, get_current_color_pair( curd ) ); */
@@ -1331,7 +1354,7 @@ void update_( integer *winnum )
 	{
 	struct display_struct *fromdp = get_display(*winnum);
 	int row, col;
-#ifdef DEBUG_IO
+#if defined DEBUG_IO
 	progress(__FILE__,__LINE__,"Update begins...");
 #endif
 	for( row=0; row<fromdp->d_nrows; row++ )
@@ -1340,7 +1363,7 @@ void update_( integer *winnum )
 	    for( col=0; col<fromdp->d_ncols; col++ )
 		fwaddch( todp, chrat( fromdp, row, col ) );
 	    }
-#ifdef DEBUG_IO
+#if defined DEBUG_IO
 	progress(__FILE__,__LINE__,"Update ends...");
 #endif
 	}
@@ -1411,14 +1434,14 @@ void cursor_( integer *x, integer *y )
 /************************************************************************
  * Used in: greebl ocean risk star war					*
  * Move the cursor:  Translate x & y coordinates for row * column for	*
- # curses.								*
+ * curses.								*
  ************************************************************************/
     {
     struct display_struct *curd = get_display(default_display);
 
     if( ! in_graphics_mode ) grafon_();
     in_crlf = 0;
-#ifdef DEBUG_WINDOWS
+#if defined DEBUG_WINDOWS
     progress(__FILE__,__LINE__,"cursor(%d,%d) translates to (%d,%d)",
         (int)*x,(int)*y,curd->d_nrows-(int)*y,(int)*x-1);
 #endif
@@ -1503,7 +1526,7 @@ integer ichrat_( integer *x, integer *y )
     return chrat( curd, curd->d_nrows-*y, *x-1 ) & A_CHARTEXT;
     }
 
-#ifdef notdef
+#if defined notdef
 /************************************************************************/
 void ctrap_( /* No arguments */ )
 /************************************************************************
@@ -1558,7 +1581,7 @@ static void gchrout( chtype chr )
 #else
     chtype ccode = get_current_color_pair( curd );
     chtype res = ( chr | ccode );
-#ifdef DEBUG_COLOR
+#if defined DEBUG_COLOR
     progress(__FILE__,__LINE__,"%d/%o/%c + %o/%o = %d/%o.",
 	chr, chr, chr, ccode, (ccode>>8), res, res );
 #endif
@@ -1577,7 +1600,7 @@ static void ichrout( int chr )
  * Used internally							*
  ************************************************************************/
     {
-#ifdef DEBUG_IO
+#if defined DEBUG_IO
     progress(__FILE__,__LINE__,"ichrout(%d:%c) chan=%d display=%d.",chr,chr,(int)default_output_channel,(int)default_display);
 #endif
 
@@ -1590,7 +1613,7 @@ static void ichrout( int chr )
     if( open_channels[default_output_channel]!=stdout || !in_graphics_mode )
 	fputc( (chr == 023 ? '\n' : chr ),
 	    open_channels[default_output_channel] );
-    else if( chr == BEEP )
+    else if( chr == CHR_BEEP )
 	{
         switch( get_display(default_display)->d_display_type )
 	    {
@@ -1649,7 +1672,7 @@ static char *oneline( const char *cmd )
 	while( (ret=fgets(buf,100,p))==NULL && errno==EINTR )
 	    ;
 	if( ret == NULL )
-	    perror("fgets");
+	    perror("hipac oneline fgets");
 	else
 	    {
 	    for( cp=ret; *cp; cp++ )
@@ -1699,7 +1722,7 @@ void string_( integer *numargs, ... )
 	    {
 	    chrp = int_to_string( (int)(*intp) );
 	    if( length == 0 ) length = strlen( chrp );
-#ifdef DEBUG_STRINGS
+#if defined DEBUG_STRINGS
 	    progress(__FILE__,__LINE__,
 	        "Using string %d, strlen=%d length now %d.\r\n",
 		*intp,strlen(chrp),length);
@@ -2153,11 +2176,11 @@ void getstr_( integer *numargs, ... )
 		if( ich == '\r' || ich == '\n' ) break;
 		switch( ich )
 		    {
-		    case BACKSPACE:
-		    case DELETE:
+		    case CHR_BACKSPACE:
+		    case CHR_DELETE:
 		    case 263:			/* MacOS Delete key! */
 		        if( ind <= 0 )
-			    ichrout( BEEP );
+			    ichrout( CHR_BEEP );
 			else
 			    {
 			    outstring("\b \b");
@@ -2166,14 +2189,14 @@ void getstr_( integer *numargs, ... )
 			break;
 		    case CONTROL('U'):
 		        if( ind <= 0 )
-			    ichrout( BEEP );
+			    ichrout( CHR_BEEP );
 			else
 			    while( ind-- > 0 )
 				outstring("\b \b");
 			break;
 		    case CONTROL('W'):
 		        if( ind <= 0 )
-			    ichrout( BEEP );
+			    ichrout( CHR_BEEP );
 			else
 			    {
 			    while( ind>0 && dest[ind-1]==' ' )
@@ -2368,7 +2391,7 @@ void lock_()
  * Used in: greebl ocean risk star					*
  ************************************************************************/
     {
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
     progress(0,0,"Entering lock...");
 #endif
     if( !remote_host_name )
@@ -2376,7 +2399,7 @@ void lock_()
 	    sleep(1);
     else
         (void)wait_for_daemon( AC_LCK, "AC_LCK" );
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
     progress(0,0,"Ending lock...");
 #endif
     }
@@ -2389,14 +2412,14 @@ void unlock_()
  * Used in: greebl ocean risk star war					*
  ************************************************************************/
     {
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
     progress(0,0,"Entering unlock...");
 #endif
     if( !remote_host_name )
 	shmp->sm_lock_flag = 0;
     else
         (void)wait_for_daemon( AC_UNL, "AC_UNL" );
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
     progress(0,0,"Ending unlock...");
 #endif
     if( initter && daemon_port ) sm_daemon();
@@ -2412,7 +2435,7 @@ void check_( integer *iniflg )
  * Used in: greebl ocean risk star war					*
  ************************************************************************/
     {
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
     progress(0,0,"Entering check...");
 #endif
     if( remote_host_name )
@@ -2432,7 +2455,7 @@ void check_( integer *iniflg )
 	    }
 	unlock_();
 	}
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
     progress(0,0,"End check...");
 #endif
     }
@@ -2444,7 +2467,7 @@ int nuser_()
  * Used in: greebl							*
  ************************************************************************/
     {
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
     progress(__FILE__,__LINE__,"nuser_ returns.");
 #endif
     if( ! remote_host_name )
@@ -2460,7 +2483,7 @@ void addusr_( integer *increment )
  * Used in: ocean							*
  ************************************************************************/
     {
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
     progress(__FILE__,__LINE__,"adduser_(%d)", (int)(*increment));
 #endif
     if( ! remote_host_name )
@@ -2512,12 +2535,12 @@ void init_( integer *numargs, ... )
     int linenum = *va_arg( ap, integer* );
     nargs -= 2;
 
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
     progress(filename,linenum,"Entering init.");
 #endif
 
     table_number = *va_arg( ap, integer* );
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
     progress(filename,linenum,"table_number=%d.",table_number);
 #endif
     if( table_number < 1 || table_number >= MAX_SHM_TABLES )
@@ -2528,7 +2551,7 @@ void init_( integer *numargs, ... )
     if( member_size > WORDSIZE ) member_size = WORDSIZE;
     shmp->sm_member_size[table_number] = member_size;
 
-#ifdef USE_COMPRESSION
+#if defined USE_COMPRESSION
     shmp->sm_member_mask[table_number] =
         ( shmp->sm_member_size[table_number] >= WORDSIZE
 	? (integer)-1
@@ -2537,7 +2560,7 @@ void init_( integer *numargs, ... )
     shmp->sm_members_per_word[table_number] =
         WORDSIZE / shmp->sm_member_size[table_number];
 
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
     progress(__FILE__,__LINE__,
 	    "init wordsize=%d member_size=%d mask=%lx members_per_word=%d",
 		WORDSIZE,
@@ -2550,11 +2573,11 @@ void init_( integer *numargs, ... )
     size = 1;
     for( dimind=0; dimind<shmp->sm_numdims[table_number]; dimind++ )
         {
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
 	progress(filename,linenum,"dimind=%d",dimind);
 #endif
 	int dimsize = *va_arg( ap, integer* );
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
 	progress(filename,linenum,"dimsize=%d",dimind);
 #endif
 	shmp->sm_dims[table_number][dimind] = dimsize;
@@ -2562,7 +2585,7 @@ void init_( integer *numargs, ... )
 	}
     shmp->sm_offset[table_number] = shmp->sm_end_int_heap;
     shmp->sm_size[table_number] = size;
-#ifdef USE_COMPRESSION
+#if defined USE_COMPRESSION
     if( size % shmp->sm_members_per_word[table_number] )
         { size = size / shmp->sm_members_per_word[table_number] + 1; }
     else
@@ -2570,7 +2593,7 @@ void init_( integer *numargs, ... )
 #endif
     shmp->sm_end_int_heap += size;
     va_end( ap );
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
 	{
 	char msgbuf[100];
 	int i;
@@ -2611,7 +2634,7 @@ integer local_address_calculator(
     int table_number = *block++;
 
 	{
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
 	char msgbuf[100];
 	sprintf(msgbuf,"val(%d, ", table_number );
 #endif
@@ -2636,12 +2659,12 @@ integer local_address_calculator(
 		        "table %d, dim %d, %d > %d\r\n",
 			table_number, dimind, ind+1, dimsize );
 		offset = offset*dimsize + ind;
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
 		if( dimind ) strcat(msgbuf,",");
 		sprintf(msgbuf+strlen(msgbuf),"%d",ind+1);
 #endif
 		}
-#ifdef USE_COMPRESSION
+#if defined USE_COMPRESSION
 	    int mpw = shmp->sm_members_per_word[table_number];
 	    last_member_offset = offset % mpw;
 	    last_addr = shmp->sm_offset[table_number]+(offset / mpw);
@@ -2653,13 +2676,13 @@ integer local_address_calculator(
 		fatal(ac_filename,ac_linenum,
 		    "table %d offset=%d last_addr=%d heap=%d.\n",
 		    table_number, offset, last_addr, shmp->sm_end_int_heap );
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
 	    strcat(msgbuf,", ");
 #endif
 	    }
 
 	integer t0, val;
-#ifdef USE_COMPRESSION
+#if defined USE_COMPRESSION
 	integer shift_dist
 	    = shmp->sm_member_size[last_table_number] * last_member_offset;
 	integer mask = shmp->sm_member_mask[last_table_number];
@@ -2670,12 +2693,12 @@ integer local_address_calculator(
 	switch( fnc )
 	    {
 	    case AC_GET:
-#ifdef USE_COMPRESSION
+#if defined USE_COMPRESSION
 		val = (( shmp->sm_data[last_addr] >> shift_dist ) & mask );
 #else
 		val = shmp->sm_data[last_addr];
 #endif
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
 		progress(ac_filename,ac_linenum, "get%s%d) [%d/%d]",
 		    msgbuf,val,last_addr,last_member_offset);
 #endif
@@ -2683,11 +2706,11 @@ integer local_address_calculator(
 
 	    case AC_PUT:
 		val = *block++;
-#ifdef USE_COMPRESSION
+#if defined USE_COMPRESSION
 		t0 = (shmp->sm_data[last_addr] & ~shifted_mask);
 		t1 = ((val & mask) << shift_dist);
 		shmp->sm_data[last_addr] = (t0 | t1);
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
 		progress(__FILE__,__LINE__,
 		    "t0=%d t1=%d val=%d mask=%d sd=%d sm=%d res=%d",
 		    t0, t1, val, mask, shift_dist, shifted_mask,
@@ -2696,7 +2719,7 @@ integer local_address_calculator(
 #else
 		shmp->sm_data[last_addr] = val;
 #endif
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
 		progress(ac_filename,ac_linenum, "put%s%d) [%d/%d]",
 		    msgbuf,val,last_addr,last_member_offset);
 #endif
@@ -2704,7 +2727,7 @@ integer local_address_calculator(
 
 	    case AC_ADD:
 		val = *block++;
-#ifdef USE_COMPRESSION
+#if defined USE_COMPRESSION
 		t0 = ( shmp->sm_data[last_addr] >> shift_dist );
 		t0 = ((t0 + val) & mask);
 		t1 = (~shifted_mask & shmp->sm_data[last_addr]);
@@ -2713,7 +2736,7 @@ integer local_address_calculator(
 		t0 = shmp->sm_data[last_addr] + val;
 		shmp->sm_data[last_addr] = t0;
 #endif
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
 		progress(ac_filename,ac_linenum, "add%s%d) => %d [%d/%d]",
 		    msgbuf,shmp->sm_data[last_addr],val,t0,
 		    last_addr,last_member_offset);
@@ -2777,7 +2800,7 @@ void address_calculator( hiseg_func fnc, int numargs, va_list ap )
     ac_linenum		= *va_arg( ap, integer*		);
     int table_number	= *va_arg( ap, integer*		);
 
-#ifdef DEBUG_HISEG
+#if defined DEBUG_HISEG
     progress(__FILE__,__LINE__,"ln=%d fnc=%d tn=%d.",ac_linenum,fnc,table_number);
 #endif
 
@@ -2808,7 +2831,7 @@ void address_calculator( hiseg_func fnc, int numargs, va_list ap )
 	block[0] = fnc;
 	}
 
-#ifdef HISEG
+#if defined HISEG
     {
     char msgbuf[MEDIUM_BUFSIZE];
     int i;
@@ -2883,7 +2906,10 @@ void addval_( integer *numargs, ... )
     va_end( ap );
     }
 
+#ifndef USE_NATIVE_WINDOWS
 extern struct servent *getservbyname(const char *name, const char *proto);
+#endif
+
 /************************************************************************/
 struct hostent *string_to_host( const char *hname )
 /************************************************************************/
@@ -2925,13 +2951,13 @@ u_short string_to_port( const char *str )
     if( (hport = atoi(str)) <= 0 )
 	{
         if( ( (sp = getservbyname( str, "tcp" )) != NULL )
-#ifdef SERVIENAME
+#if defined SERVIENAME
 	    || ( (sp = getservbyname( SERVICENAME, "tcp" )) != NULL )
 #endif
 	    )
 	    hport = ntohs(sp->s_port);
 	else
-#ifdef SERVICEPORT
+#if defined SERVICEPORT
 	    hport = SERVICEPORT;
 #else
 	    hport = -1;
@@ -2973,7 +2999,7 @@ int setup_net_connect( const char *hstring, const char *pstring )
 	net = socket(AF_INET, SOCK_STREAM, 0);
 	if (net < 0)
 	    fprintf(stderr,"Socket call failed:  %s\n",STRERROR(errno));
-#ifdef notdef
+#if defined notdef
 	if( debug &&
 #ifndef	NOT43
 	    setsockopt(net, SOL_SOCKET, SO_DEBUG, (char *)&debug, sizeof(debug))
@@ -2989,14 +3015,14 @@ int setup_net_connect( const char *hstring, const char *pstring )
 #ifndef	NOT43
 	    if (host && host->h_addr_list[1])
 		{
-#ifdef DEBUG
+#if defined DEBUG
 		fprintf(stderr, "connect to address %s:  %s\n",
 		    inet_ntoa(sin.sin_addr),STRERRORerrno));
 #endif
 		host->h_addr_list++;
 		memcpy((caddr_t)&sin.sin_addr,
 		    host->h_addr_list[0], host->h_length);
-#ifdef DEBUG
+#if defined DEBUG
 		fprintf(stderr, "Trying %s...\n", inet_ntoa(sin.sin_addr));
 #endif
 		(void) close(net);
@@ -3017,7 +3043,7 @@ void bad_channel( int chan, fd_set *defreadfds, const char *msg )
  *	Close a channel down and log why.				*
  ************************************************************************/
     {
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
     progress(__FILE__,__LINE__,"Closing channel %d:  %s",chan,msg);
 #endif
     close( chan );
@@ -3048,7 +3074,7 @@ void check_daemon_locks( fd_set *defreadfds )
 	int wake_up_chan = old_requester->requester_chan;
 	head_requester = old_requester->requester_next;
 	free( old_requester );
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 	progress(__FILE__,__LINE__,"Replying to lock request on channel %d",
 	    wake_up_chan);
 #endif
@@ -3079,10 +3105,12 @@ void open_listener(
 	}
 
     if (options & SO_DEBUG)
-#ifndef NOT43
-	if (setsockopt(finet, SOL_SOCKET, SO_DEBUG, &one, sizeof(one)) < 0)
-#else /* NOT43 */
+#ifdef NOT43
 	if (setsockopt(finet, SOL_SOCKET, SO_DEBUG, 0, 0 ) < 0)
+#elif USE_NATIVE_WINDOWS
+	if (setsockopt(finet, SOL_SOCKET, SO_DEBUG, (void*)&one, sizeof(one)) < 0)
+#else
+	if (setsockopt(finet, SOL_SOCKET, SO_DEBUG, &one, sizeof(one)) < 0)
 #endif
 	    {
 	    fprintf(stderr,
@@ -3133,17 +3161,19 @@ void sm_daemon()
     open_listener( daemon_port, &portnum, &finet, &defreadfds );
     int topchan = finet;
 
+#ifndef USE_NATIVE_WINDOWS
     if( 0 && fork() )
         {
 	grafof_();
 	exit(0);
 	}
+#endif
 
     while( 1 )
 	{
 	struct timeval tv;
         fd_set readfds;
-#ifdef FD_COPY
+#if defined FD_COPY
 	FD_COPY( &defreadfds, &readfds );
 #else
 	readfds = defreadfds;
@@ -3151,12 +3181,12 @@ void sm_daemon()
 	check_daemon_locks( &defreadfds );
 	tv.tv_sec = 1;
 	tv.tv_usec = 0;
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 	progress(__FILE__,__LINE__,
 	    "Calling select with topchan=%d and readfds=%x.",topchan,readfds);
 #endif
 	int nfds = select( topchan+1, &readfds, 0, 0, &tv );
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 	progress(__FILE__,__LINE__,"Waiting completed with nfds=%d and readfds=%x.",nfds,readfds);
 #endif
 	int chan;
@@ -3167,7 +3197,7 @@ void sm_daemon()
 	        if( chan == finet )
                     {
 		    int nc;
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 		    progress(__FILE__,__LINE__,"Incoming open request.");
 #endif
                     if( (nc = accept(finet, (struct sockaddr *)&frominet,
@@ -3175,7 +3205,7 @@ void sm_daemon()
 			{
 			FD_SET( nc, &defreadfds );
 			if( nc > topchan ) topchan = nc;
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 		    progress(__FILE__,__LINE__,"Adding channel %d (topchan=%d)",
 		        nc, topchan );
 #endif
@@ -3195,12 +3225,12 @@ void sm_daemon()
 			{
 			case AC_STI:
 			    {
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 			    progress(__FILE__,__LINE__,
 			        "Incoming STI on %d",chan);
 #endif
 			    integer res = lookup_string( (char*)(nblock+1) );
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 			    progress(__FILE__,__LINE__,
 				"STI res = %d, writing %d",res,sizeof(res));
 #endif
@@ -3210,7 +3240,7 @@ void sm_daemon()
 			    break;
 			case AC_ITS:
 			    {
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 			    progress(__FILE__,__LINE__,
 			        "Incoming ITS on %d",chan);
 #endif
@@ -3222,7 +3252,7 @@ void sm_daemon()
 			    break;
 			case AC_LCK:
 			    {
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 			    progress(__FILE__,__LINE__,
 			        "Incoming LCK on %d",chan);
 #endif
@@ -3239,7 +3269,7 @@ void sm_daemon()
 			    break;
 			case AC_UNL:
 			    {
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 			    progress(__FILE__,__LINE__,
 			        "Incoming UNL on %d",chan);
 #endif
@@ -3249,7 +3279,7 @@ void sm_daemon()
 			    break;
 			case  AC_ADDUSR:
 			    {
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 			    progress(__FILE__,__LINE__,
 			        "Incoming ADDUSR on %d",chan);
 #endif
@@ -3261,7 +3291,7 @@ void sm_daemon()
 			    break;
 			case AC_NUSER:
 			    {
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 			    progress(__FILE__,__LINE__,
 			        "Incoming NUSERS on %d",chan);
 #endif
@@ -3274,7 +3304,7 @@ void sm_daemon()
 			    {
 			    int ninteger_size = sizeof(ninteger);
 			    int size = nbytes / ninteger_size;
-#ifdef DEBUG_DAEMON
+#if defined DEBUG_DAEMON
 			    progress(__FILE__,__LINE__,
 				"Incoming on %d:  nbytes=%d ninteger_size=%d size=%d fnc=%d",
 				chan,nbytes,ninteger_size,size,
@@ -3427,9 +3457,11 @@ void webserver_logic()
     socklen_t fromlen = sizeof(frominet);
     static int new_serial = 1;
 
+#ifndef USE_NATIVE_WINDOWS
     (void)signal( SIGPIPE, SIG_IGN );
+#endif
 
-#ifdef DEBUG_WEBSERVER
+#if defined DEBUG_WEBSERVER
     progress(__FILE__,__LINE__,"webserver_logic:  webserver_fds=%s",
         fds_map( &webserver_fds) );
 #endif
@@ -3438,20 +3470,20 @@ void webserver_logic()
 	{
 	struct timeval tv;
         fd_set readfds;
-#ifdef FD_COPY
+#if defined FD_COPY
 	FD_COPY( &webserver_fds, &readfds );
 #else
 	readfds = webserver_fds;
 #endif
 	tv.tv_sec = 0;
 	tv.tv_usec = 10000;
-#ifdef DEBUG_WEBSERVER
+#if defined DEBUG_WEBSERVER
 	progress(__FILE__,__LINE__,
 	    "Calling select with topchan=%d and readfds=%s.",
 	        webserver_top_chan,fds_map(&readfds));
 #endif
 	int nfds = select( webserver_top_chan+1, &readfds, 0, 0, &tv );
-#ifdef DEBUG_WEBSERVER
+#if defined DEBUG_WEBSERVER
 	progress(__FILE__,__LINE__,
 	    "Waiting completed with nfds=%d and readfds=%s.",
 	    nfds,fds_map(&readfds));
@@ -3467,7 +3499,7 @@ void webserver_logic()
 	        if( chan == webserver_chan )
                     {
 		    int nc;
-#ifdef DEBUG_WEBSERVER
+#if defined DEBUG_WEBSERVER
 		    progress(__FILE__,__LINE__,"Incoming open request.");
 #endif
                     if( (nc = accept(webserver_chan, (struct sockaddr *)&frominet,
@@ -3475,7 +3507,7 @@ void webserver_logic()
 			{
 			FD_SET( nc, &webserver_fds );
 			if( nc > webserver_top_chan ) webserver_top_chan = nc;
-#ifdef DEBUG_WEBSERVER
+#if defined DEBUG_WEBSERVER
 		    progress(__FILE__,__LINE__,"Adding channel %d (webserver_top_chan=%d)",
 		        nc, webserver_top_chan );
 #endif
@@ -3486,7 +3518,7 @@ void webserver_logic()
 		    char buf[MEDIUM_BUFSIZE];
 		    int nbytes;
 		    
-#ifdef DEBUG_WEBSERVER
+#if defined DEBUG_WEBSERVER
 		progress(__FILE__,__LINE__,"Pre get_packet(%d) logic.",chan);
 #endif
 		    if( (nbytes=
@@ -3507,7 +3539,7 @@ void webserver_logic()
 			url += 4;
 			for( cp=url; *cp && !strchr(" \t\r\n",*cp); cp++ ) {}
 			*cp = 0;
-#ifdef DEBUG_WEBSERVER
+#if defined DEBUG_WEBSERVER
 			progress(__FILE__,__LINE__,"Incoming URL:  [%s]",url);
 #endif
 			if( strcmp( url, "/" ) == 0 )
@@ -3570,7 +3602,7 @@ void webserver_logic()
 			    {
 			    close( chan );
 			    FD_CLR( chan, &webserver_fds );
-#ifdef DEBUG_WEBSERVER
+#if defined DEBUG_WEBSERVER
 			progress(__FILE__,__LINE__,"Discarding URL:  [%s]",url);
 #endif
 			    }
@@ -3611,7 +3643,7 @@ void webserver_logic()
 			    curd->d_last_serial = new_serial;
 			    strcat( resp, "\");</script>\n");
 			    put_packet( __LINE__, chan, resp, strlen(resp) );
-#ifdef DEBUG_WEBSERVER
+#if defined DEBUG_WEBSERVER
 			    progress(__FILE__,__LINE__,"Update:[%s]",
 				resp);
 #endif
@@ -3631,6 +3663,7 @@ static void final_exit( int code )
  * Used internally							*
  ************************************************************************/
     {
+#ifndef USE_NATIVE_WINDOWS
     int ppid = getppid();
     char buf[100];
     char *cp;
@@ -3639,6 +3672,7 @@ static void final_exit( int code )
     while( *cp )
         if( strncmp(cp++,"gdb",3) == 0 )
 	    abort();
+#endif
     exit( code );
     }
 
@@ -3682,7 +3716,7 @@ void exprog_()
 	}
 
     grafof_();
-#ifdef notdef
+#if defined notdef
     abort();
 #endif
     if( remote_host_name )
@@ -3694,11 +3728,11 @@ void exprog_()
 	    memset( (void*)shmp, 0, sizeof( struct shared_memory ) );
 	    printf("\r\n[Database flags reset]\r\n");
 	    }
-#ifdef USE_MMAP
+#if defined USE_MMAN
 	if( munmap( shmp, allocated_shmem ) < 0 )
 	    printf("munmap(%d) failed:  %s",allocated_shmem,strerror(errno));
 #endif
-#ifdef USE_SHMIPC
+#if defined USE_SHMIPC
 	if( shmdt( shmp ) < 0 )
 	    printf("\r\nFailed to detach from database:  %s",strerror(errno));
 	else if( shmctl(shmid,IPC_RMID,NULL) < 0 )
@@ -3737,7 +3771,7 @@ integer igtab_( integer *ind, integer *table )
 	    {
 	    integer iiuid, iigid;
 	    int iuid, igid;
-#ifdef __CYGWIN__
+#if defined __CYGWIN__
 	    sprintf(buf,"ps -p %d | tail -1 | awk '{print $6,$6}'",
 		(int)(*ind));
 #else
@@ -3759,7 +3793,7 @@ integer igtab_( integer *ind, integer *table )
 		}
 	    break;
 	case 031:
-#ifdef __CYGWIN__
+#if defined __CYGWIN__
 	    sprintf(buf,"ps -p %d -f | tail -1 | awk '{print $1}'",
 		(int)(*ind));
 #else
@@ -3773,7 +3807,7 @@ integer igtab_( integer *ind, integer *table )
 	    return lookup_string( "" );
 	    break;
 	case 0137:
-#ifdef __CYGWIN__
+#if defined __CYGWIN__
 	    sprintf(buf,"ps -p %d | sed -e '!$d' -e 's+.*/++'",(int)(*ind));
 #else
 	    sprintf(buf,"ps -p %d -o ucomm | tail -1",(int)(*ind));
@@ -3810,7 +3844,7 @@ integer job_( integer *jnum )
 	case -1:	return 0;		break;
 	case 0:		return getpid();	break;
 	default:
-#ifdef __CYGWIN__
+#if defined __CYGWIN__
 	    sprintf( cmdbuf, "ps -p %d | sed -e '$!d' -e 's/  */ /g' -e 's+/.*/++'", (int)(*jnum));
 #else
 	    sprintf( cmdbuf,
@@ -3839,7 +3873,7 @@ integer itty_( integer *job )
     char buf[100], *ret;
     int ttynum;
     int ijob = *job;
-#ifdef __CYGWIN__
+#if defined __CYGWIN__
     sprintf(buf,"ps -p %d | awk '{print $5}'",ijob);
 #else
     sprintf(buf,"ps -p %d -o tty | sed -e 1d -e 's+.*/++'",ijob);
@@ -3881,11 +3915,11 @@ integer jstat_( integer *job )
  * Used in: ocean star war						*
  ************************************************************************/
     {
-#ifdef JSTAT_NOT_TOO_SLOW
+#if defined JSTAT_NOT_TOO_SLOW
     char buf[100], *cp;
     int ret;
     int ijob = *job;
-#ifdef __CYGWIN__
+#if defined __CYGWIN__
     sprintf( buf, "ps -p %d | sed -e '$!d' -e 's/./&Q/' -e 's/Q.*//'", ijob );
 #else
     sprintf( buf, "ps -p %d -o stat | tail -1", ijob );
@@ -3906,7 +3940,11 @@ integer logdin_( integer *job )
  * Used in: star							*
  ************************************************************************/
     {
+#ifdef USE_NATIVE_WINDOWS
+    return TRUE;
+#else
     return logical( kill( *job, 0 ) >= 0 );
+#endif
     }
 
 /************************************************************************/
@@ -4227,6 +4265,14 @@ void nap_( integer *ms_to_sleep, integer *flags )
  * Used in: greebl ocean risk star war					*
  ************************************************************************/
     {
+#ifdef USE_NATIVE_WINDOWS
+    int time_left = *ms_to_sleep;
+    while( time_left > 0 && ! _kbhit() )
+        {
+	Sleep( 200 );	/* Milliseconds */
+	time_left -= 200;
+	}
+#else
     struct timeval timeout;
     fd_set readfds;
     FD_ZERO( &readfds );
@@ -4238,6 +4284,7 @@ void nap_( integer *ms_to_sleep, integer *flags )
 	FD_SET( ( webserver_chan ? webserver_chan : fileno(stdin) ), &readfds );
 
     select( 1, &readfds, NULL, NULL, &timeout );	/* Perchance to dream */
+#endif
     }
 
 
@@ -4262,7 +4309,12 @@ void usrset_( integer *tbl, integer *val )
 	    switch( *val )
 		{
 	        case 0:			system("stty echo");	break;
-		case 1:			system("stty -echo");	break;
+		case 1:
+#ifdef USE_NATIVE_WINDOWS
+		noecho();		break;
+#else
+		system("stty -echo");	break;
+#endif
 		default:		error_flag=TRUE;
 		}
 	    break;
@@ -4371,13 +4423,17 @@ static void *allocate_shmem( const char *memory_file, size_t sz )
     {
     void *ret = (void*)NULL;
 
-#ifdef USE_MMAP
+#if defined USE_MMAN
 	{
 	char zero = 0;
 	int fd = open( memory_file, O_RDWR|O_CREAT, 0666 );
 	if( fd < 0 )
 	    usage("Cannot create %s:  %s",memory_file,strerror(errno));
-	fchmod(fd,0666);	/* May fail for non-creators */
+#ifdef USE_NATIVE_WINDOWS
+	chmod(memory_file,0666);	/* May fail for non-creators */
+#else
+	fchmod(fd,0666);		/* May fail for non-creators */
+#endif
 	if( lseek( fd, (off_t)sz, SEEK_SET ) != (off_t)sz )
 	    usage("Cannot seek %s:  %s",memory_file,strerror(errno));
 	if( write( fd, (void*)&zero, 1 ) < 1 )
@@ -4389,7 +4445,8 @@ static void *allocate_shmem( const char *memory_file, size_t sz )
 	allocated_shmem = sz;
 	}
 #endif
-#ifdef SHMIPC
+
+#if defined USE_SHMIPC
 	{
 	int shm_key = ftok( memory_file, 1 );
 	if( shm_key < 0 )
@@ -4415,6 +4472,10 @@ static void *allocate_shmem( const char *memory_file, size_t sz )
 	    final_exit(1);
 	    }
 	}
+#endif
+
+#if defined USE_MALLOC
+    ret = malloc( sz );
 #endif
 
     if( ! ret )
@@ -4483,7 +4544,7 @@ static void dump_shmem( const char *keybase )
     if( linepos > 0 ) printf("\n");
     }
 
-#ifdef ANYONE_USE_POW_DD_ANYMORE
+#if defined ANYONE_USE_POW_DD_ANYMORE
 /************************************************************************/
 double pow_dd( float *x, float *n )
 /************************************************************************
@@ -4770,7 +4831,7 @@ void showln_( integer *where )	/* Indicate we've just executed a line	*/
 /************************************************************************/
     {
     int iwhere = *where;
-#ifdef DEBUG_PROGRESS
+#if defined DEBUG_PROGRESS
 #endif
     }
 
@@ -4787,6 +4848,11 @@ int main( int argc, const char *argv[] )
     int random_mode = TRUE;
     const char *memory_file = NULL;
     int i;
+
+#if defined USE_NATIVE_WINDOWS
+    WSADATA wsaData;
+    int err = WSAStartup( MAKEWORD(2,2), &wsaData );
+#endif
 
     full_progname = argv[0];
     if( ( progname = strrchr( full_progname, '/' ) ) )
@@ -4829,10 +4895,10 @@ int main( int argc, const char *argv[] )
 	else
 	    usage("Unknown argument \"%s\".",*argv);
 
-#ifdef DEBUG_CHAN
+#if defined DEBUG_CHAN
     debug_file = DEBUG_CHAN;
 #else
-#ifdef DEBUG_FILE
+#if defined DEBUG_FILE
     {
     char debug_file_name[100];
     sprintf( debug_file_name, DEBUG_FILE, progname, getpid() );
@@ -4844,6 +4910,7 @@ int main( int argc, const char *argv[] )
     progress(__FILE__,__LINE__,"Started as %d/%d (%d/%d).",
         geteuid(), getegid(), getuid(), getgid() );
 
+#if ! defined USE_NATIVE_WINDOWS
     if( getuid() != PRIVILEGED_UID || ! run_as_uid )
 	{
 	if( run_as_uid )
@@ -4886,11 +4953,12 @@ int main( int argc, const char *argv[] )
 	progress(__FILE__,__LINE__,"Done reading password file (uid=%d)...",
 	    mypw->pw_uid );
 	}
+#endif
 
     progress(__FILE__,__LINE__,"Running as %d/%d (%d/%d).",
         geteuid(), getegid(), getuid(), getgid() );
 
-#ifdef __APPLE__
+#if defined __APPLE__
     /* The "Terminal" application claims it can emulate xterm, but it	*/
     /* cannot.  If we think we're on an xterm on a mac, use ANSI logic.	*/
     if( getenv("TERM") && strcmp(getenv("TERM"),"xterm")==0 )
@@ -4902,8 +4970,25 @@ int main( int argc, const char *argv[] )
     else
 	{
 	if( memory_file == NULL )
-#ifdef USE_MMAP
-	    asprintf((char**)(&memory_file),"/tmp/%s.memory",progname);
+#if defined USE_MMAN
+	    {
+	    const char *pname = strrchr(progname,'/');
+	    if( pname )
+	        pname++;
+	    else if( pname = strrchr(progname,'\\') )
+	        pname++;
+	    else
+	        pname = progname;
+	    char *namebuf = malloc( strlen(pname)+1 );
+	    strcpy( namebuf, pname );
+	    char *ext = strchr(namebuf,'.');
+	    if( ext ) *ext = 0;
+#ifdef USE_NATIVE_WINDOWS
+	    asprintf((char**)(&memory_file),"%s.mem",namebuf);
+#else
+	    asprintf((char**)(&memory_file),"/tmp/%s.memory",namebuf);
+#endif
+	    }
 #else
 	    memory_file = save_argv[0];
 #endif
@@ -4948,12 +5033,14 @@ int main( int argc, const char *argv[] )
 		"Please stand by to be redirected!\n",
 		http_host, webserver_portnum );
 	    fflush(stdout);
+#ifndef USE_NATIVE_WINDOWS
 	    if( fork() )
 	        exit(0);
+#endif
 	    close( fileno(stdout) );	open("/dev/null",O_WRONLY);
 	    close( fileno(stderr) );	open("/dev/null",O_WRONLY);
 	    }
-#ifdef DEBUG_WEBSERVER
+#if defined DEBUG_WEBSERVER
 	progress(__FILE__,__LINE__,"webserver_port=%s chan=%d",
 	    webserver_port, webserver_chan );
 #endif

@@ -76,11 +76,11 @@ HOMEHOST=www.brightsands.com
 PROJECT=$(notdir $(shell pwd))
 HOMEHOST=www.brightsands.com
 SHELL=/bin/sh
-CHECKLIBS=/lib /lib64 /usr/lib /usr/lib64 /usr/ccs/lib /usr/ccs/lib64 %A/lib /boot/home/config/non-packaged/lib /boot/home/config/lib /boot/system/non-packaged/lib /boot/system/lib
+CHECKLIBS=$(USRLOCAL)/lib /lib /lib64 /usr/lib /usr/lib64 /usr/ccs/lib /usr/ccs/lib64 %A/lib /boot/home/config/non-packaged/lib /boot/home/config/lib /boot/system/non-packaged/lib /boot/system/lib
 OS=$(shell uname -o 2>/dev/null || uname -s)
 
 ifeq ($(OS),Cygwin)
-    CC=x86_64-w64-mingw32-gcc
+    CC=x86_64-w64-mingw32-gcc.exe
 else
     CC=gcc
 endif
@@ -148,22 +148,26 @@ ifneq ($(call libsearch,tinfo),)
     TINFO=-ltinfo
 endif
 
-CURSES0=curses
-CURSES1=ncurses
-
-ifneq ($(call libsearch,$(CURSES1)),)
-    CURSES=-l$(CURSES1) $(TINFO)
+ifneq (,$(wildcard $(USRLOCAL)/lib/PDCurses.a))
+    CURSES=$(USRLOCAL)/lib/PDCurses.a
 else
-    ifneq ($(call libsearch,$(CURSES0)),)
-        CURSES=-l$(CURSES0) $(TINFO)
+    CURSES0=curses
+    CURSES1=ncurses
+
+    ifneq ($(call libsearch,$(CURSES1)),)
+	CURSES=-l$(CURSES1) $(TINFO)
     else
-	ifneq ($(shell ldconfig -p | grep $(CURSES1)),)
-	    CURSES=-l$(CURSES1) $(TINFO)
+	ifneq ($(call libsearch,$(CURSES0)),)
+	    CURSES=-l$(CURSES0) $(TINFO)
 	else
-	    ifneq ($(shell ldconfig -p | grep $(CURSES0)),)
-        	CURSES=-l$(CURSES0) $(TINFO)
+	    ifneq ($(shell ldconfig -p | grep $(CURSES1)),)
+		CURSES=-l$(CURSES1) $(TINFO)
 	    else
-		# Curses, failed again!
+		ifneq ($(shell ldconfig -p | grep $(CURSES0)),)
+		    CURSES=-l$(CURSES0) $(TINFO)
+		else
+		    # Curses, failed again!
+		endif
 	    endif
 	endif
     endif
@@ -182,8 +186,8 @@ SOCKETLIBS=$(USE_SOCKET) $(USE_NSL) $(USE_NETWORK)
 
 CC?=gcc
 ifeq ($(OS),Cygwin)
-    #CFLAGS=-Isrc/shared -g -mno-cygwin
-    CFLAGS=-Isrc/shared -g
+    #CFLAGS=-Isrc/shared -g -mno-cygwin -DNCURSES_STATIC
+    CFLAGS=-Isrc/shared -I$(USRLOCAL)/include -g -DUSE_NATIVE_WINDOWS
 else
     CFLAGS=-Isrc/shared -g
 endif
@@ -200,6 +204,9 @@ ifeq ($(OS),Cygwin)
     #LDFLAGS=-DLDFLAGS -mswindows
     #LDFLAGS=$(LDFLAGS) -mswindows
     #LDFLAGS=-mswindows
+    #LDFLAGS=-static /usr/lib/crt0.o /usr/lib/gcrt0.o -l:libcygwin.a
+    LDFLAGS=-static
+    WINDOWSLIBS=-lws2_32 -lwsock32 $(USRLOCAL)/lib/libmman.a
 else
     #LDFLAGS=-DLDFLAGS
 endif
@@ -342,14 +349,15 @@ spotless:		clean_tmps
 %:			%.o
 %.o:			%.c
 
-.PRECIOUS:		$(F2CS_OBJ)/%.o
-.PRECIOUS:		$(F77S_OBJ)/%.o
-.PRECIOUS:		$(F2CS_DIR)/%
-.PRECIOUS:		$(F77S_DIR)/%
-.PRECIOUS:		$(F2CCS_DIR)/%.c
-.PRECIOUS:		$(F2CCS_DIR)/%
-.PRECIOUS:		$(DEC10_DIR)/%
-.PRECIOUS:		$(FIXED_FS_DIR)/%
+#.PRECIOUS:		$(F2CS_OBJ)/%.o
+#.PRECIOUS:		$(F77S_OBJ)/%.o
+#.PRECIOUS:		$(F2CS_DIR)/%
+#.PRECIOUS:		$(F77S_DIR)/%
+#.PRECIOUS:		$(F2CCS_DIR)/%.c
+#.PRECIOUS:		$(F2CCS_DIR)/%
+#.PRECIOUS:		$(DEC10_DIR)/%
+#.PRECIOUS:		$(FIXED_FS_DIR)/%
+.SECONDARY:
 
 $(F77S_OBJ)/hipak.o:	src/shared/hipak.c
 			@$(MKDIR) -p $(dir $@) $(UNV_DIR) $(LOG_DIR)
@@ -387,7 +395,7 @@ $(F77S_DIR)/%.exe:	$(F77S_OBJ)/%.o $(F77S_OBJ)/hipak.o
 			$(CC) $(LDFLAGS) \
 			    $(F77S_OBJ)/hipak.o \
 			    $(F77S_OBJ)/$(subst .exe,,$(notdir $@)).o \
-			    $(CURSES) $(SOCKETLIBS) -lm \
+			    $(CURSES) $(SOCKETLIBS) $(WINDOWSLIBS) -lm \
 			    -o $(subst .exe,,$@)
 			@$(RM) -f $(UNV_DIR)/$(subst .exe,,$(notdir $@)).memory $(LOG_DIR)/$(subst .exe,,$(notdir $@)).log
 
@@ -418,7 +426,7 @@ $(F2CS_DIR)/%.exe:	$(F2CS_OBJ)/hipak.o $(F2CS_OBJ)/%.o
 			$(CC) $(LDFLAGS) \
 			    $(F2CS_OBJ)/hipak.o \
 			    $(F2CS_OBJ)/$(subst .exe,,$(notdir $@)).o \
-			    $(CURSES) $(SOCKETLIBS) -lm \
+			    $(CURSES) $(SOCKETLIBS) $(WINDOWSLIBS) -lm \
 			    -o $(subst .exe,,$@)
 			#@$(RM) -f $(UNV_DIR)/$(subst .exe,,$(notdir $@)).memory $(LOG_DIR)/$(subst .exe,,$(notdir $@)).log
 
