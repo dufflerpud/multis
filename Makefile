@@ -79,10 +79,14 @@ SHELL=/bin/sh
 CHECKLIBS=$(USRLOCAL)/lib /lib /lib64 /usr/lib /usr/lib64 /usr/ccs/lib /usr/ccs/lib64 %A/lib /boot/home/config/non-packaged/lib /boot/home/config/lib /boot/system/non-packaged/lib /boot/system/lib
 OS=$(shell uname -o 2>/dev/null || uname -s)
 
-ifeq ($(OS),Cygwin)
-    CC=x86_64-w64-mingw32-gcc.exe
+ifeq (,$(CROSS_COMPILER))
+    CC?=gcc
 else
-    CC=gcc
+ifeq (1,$(CROSS_COMPILER))
+    CC?=x86_64-w64-mingw32-gcc
+else
+    CC?=$(CROSS_COMPILER)
+endif
 endif
 
 #COMPILER_TARGET=$(shell $(CC) -v 2>&1 | awk '/Target:/ { print $$2 }')
@@ -112,7 +116,11 @@ UNIQUE_ARCHIVE=$(shell unique_name $(ARCHIVES)/$(PROJECT).%3.$(REASON).tbz2)
 UNIQUE_BASENAME=$(notdir $(UNIQUE_ARCHIVE))
 BACKUP_ARCHIVE=$(dir $(UNIQUE_ARCHIVE))$(DEFAULT_ARCHIVE)
 TARARGS=projects/$(PROJECT)
-INSTALL_DIR=$(USRLOCAL)/multis
+ifeq (,$(CROSS_COMPILER))
+    INSTALL_DIR?=$(USRLOCAL)/multis
+else
+    INSTALL_DIR?=$(USRLOCAL)/wccmultis
+endif
 INSTALLED_UNIVERSES=$(INSTALL_DIR)/universes
 ROOT_PRIVS=$(shell [ `id -u` = 0 -o `id -un` = 'Administrator' ] && echo "yes")
 
@@ -185,9 +193,8 @@ endif
 SOCKETLIBS=$(USE_SOCKET) $(USE_NSL) $(USE_NETWORK)
 
 CC?=gcc
-ifeq ($(OS),Cygwin)
-    #CFLAGS=-Isrc/shared -g -mno-cygwin -DNCURSES_STATIC
-    CFLAGS=-Isrc/shared -I$(USRLOCAL)/include -g -DUSE_NATIVE_WINDOWS
+ifneq ($(CROSS_COMPILER),)
+    CFLAGS=-Isrc/shared -g -I$(USRLOCAL)/wccinclude -DUSE_NATIVE_WINDOWS
 else
     CFLAGS=-Isrc/shared -g
 endif
@@ -200,13 +207,9 @@ F2CFLAGS=-w -c -kr -NL800 -f -K
 F2CCFLAGS=-std=c99 -Isrc/shared
 
 #LD=gcc
-ifeq ($(OS),Cygwin)
-    #LDFLAGS=-DLDFLAGS -mswindows
-    #LDFLAGS=$(LDFLAGS) -mswindows
-    #LDFLAGS=-mswindows
-    #LDFLAGS=-static /usr/lib/crt0.o /usr/lib/gcrt0.o -l:libcygwin.a
+ifneq (,$(CROSS_COMPILER))
     LDFLAGS=-static
-    WINDOWSLIBS=-lws2_32 -lwsock32 $(USRLOCAL)/lib/libmman.a
+    WINDOWSLIBS=-lws2_32 -lwsock32 $(USRLOCAL)/wcclib/libmman.a
 else
     #LDFLAGS=-DLDFLAGS
 endif
@@ -528,13 +531,19 @@ webserver:		clean_prog $(BINARY_FOR_TEST).cluster \
 build:			clean_prog $(BINARY_FOR_TEST).cluster
 			gdb $(BINARY_FOR_TEST)
 
-ifeq ($(INSTALL_DEPS),)
 install:
+			$(MAKE) install_one
+ifneq (,$(shell command -v x86_64-w64-mingw32-gcc))
+			$(MAKE) install_one CROSS_COMPILER=x86_64-w64-mingw32-gcc INSTALL_DIR=$(USRLOCAL)/wccmultis
+endif
+
+ifeq ($(INSTALL_DEPS),)
+install_one:
 			@echo "No binaries built on $(OS) (no f77 or f2c)."
 			@false
 else
 
-install:		$(INSTALL_DEPS)
+install_one:		$(INSTALL_DEPS)
 ifeq ($(ROOT_PRIVS),)
 			sudo $(MAKE) $@
 else
