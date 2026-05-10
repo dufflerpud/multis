@@ -277,8 +277,8 @@ all:		bins
 		@: Done
 
 again:
-		$(MAKE) spotless
-		$(MAKE) all
+		$(MAKE) spotless CROSS_COMPILER=$(CROSS_COMPILER) INSTALL_DIR=$(INSTALL_DIR)
+		$(MAKE) all CROSS_COMPILER=$(CROSS_COMPILER) INSTALL_DIR=$(INSTALL_DIR)
 
 # For now, we're going to depend on f2c rather than f77 because
 # at least in one case, the f77 comes WITH f2c, but it's a shell
@@ -299,7 +299,7 @@ ifeq ($(F77BIN),)
 else
     f77s:
 			@echo "Attempting to build $@:"
-			$(MAKE) $(foreach F,$(BASIC_PROGS),$(F77S_DIR)/$(F).cluster)
+			$(MAKE) $(foreach F,$(BASIC_PROGS),$(F77S_DIR)/$(F).cluster) CROSS_COMPILER=$(CROSS_COMPILER) INSTALL_DIR=$(INSTALL_DIR)
 endif
 
 ifeq ($(F2CBIN),)
@@ -308,21 +308,21 @@ ifeq ($(F2CBIN),)
 else
     f2cs:
 			@echo "Attempting to build $@:"
-			$(MAKE) $(foreach F,$(BASIC_PROGS),$(F2CS_DIR)/$(F).cluster)
+			$(MAKE) $(foreach F,$(BASIC_PROGS),$(F2CS_DIR)/$(F).cluster) CROSS_COMPILER=$(CROSS_COMPILER) INSTALL_DIR=$(INSTALL_DIR)
 
     f2ccs:
 			date
 			@echo "Attempting to build $@:"
-			$(MAKE) $(foreach F,$(BASIC_PROGS),$(F2CCS_DIR)/$(F).cluster)
+			$(MAKE) $(foreach F,$(BASIC_PROGS),$(F2CCS_DIR)/$(F).cluster) CROSS_COMPILER=$(CROSS_COMPILER) INSTALL_DIR=$(INSTALL_DIR)
 endif
 
 dec10:
 			@echo "Attempting to build $@:"
-			$(MAKE) $(foreach F,$(BASIC_PROGS),$(DEC10_DIR)/$(F).cluster)
+			$(MAKE) $(foreach F,$(BASIC_PROGS),$(DEC10_DIR)/$(F).cluster) CROSS_COMPILER=$(CROSS_COMPILER) INSTALL_DIR=$(INSTALL_DIR)
 
 fixed_fs:
 			@echo "Attempting to build $@:"
-			$(MAKE) $(foreach F,$(BASIC_PROGS),$(FIXED_FS_DIR)/$(F).f)
+			$(MAKE) $(foreach F,$(BASIC_PROGS),$(FIXED_FS_DIR)/$(F).f) CROSS_COMPILER=$(CROSS_COMPILER) INSTALL_DIR=$(INSTALL_DIR)
 
 links:
 			@$(RM) -f $(LINKS)
@@ -497,7 +497,7 @@ uploadlive:		upload
 			ssh $(HOMEHOST) "makelive $(PROJECT)"
 
 export:			clean
-			$(MAKE) f2ccs
+			$(MAKE) f2ccs CROSS_COMPILER=$(CROSS_COMPILER) INSTALL_DIR=$(INSTALL_DIR)
 			(cd $(HOME); $(TAR) cf - $(TARARGS) | bzip2 -9 > export.tbz2)
 
 download:
@@ -532,7 +532,7 @@ build:			clean_prog $(BINARY_FOR_TEST).cluster
 			gdb $(BINARY_FOR_TEST)
 
 install:
-			$(MAKE) install_one
+			$(MAKE) install_one CROSS_COMPILER=$(CROSS_COMPILER) INSTALL_DIR=$(INSTALL_DIR)
 ifneq (,$(shell command -v x86_64-w64-mingw32-gcc))
 			$(MAKE) install_one CROSS_COMPILER=x86_64-w64-mingw32-gcc INSTALL_DIR=$(USRLOCAL)/wccmultis
 endif
@@ -545,7 +545,7 @@ else
 
 install_one:		$(INSTALL_DEPS)
 ifeq ($(ROOT_PRIVS),)
-			sudo $(MAKE) $@
+			sudo $(MAKE) $@ CROSS_COMPILER=$(CROSS_COMPILER) INSTALL_DIR=$(INSTALL_DIR)
 else
 			$(RM) -rf $(INSTALL_DIR)
 			$(MKDIR) -p $(INSTALL_DIR) $(INSTALLED_UNIVERSES)
@@ -576,4 +576,4 @@ endif
 
 %:
 		@echo "Invoking std_$@ rule:"
-		@$(MAKE) ORIGINAL_TARGET=$@ std_$@
+		@$(MAKE) ORIGINAL_TARGET=$@ std_$@ CROSS_COMPILER=$(CROSS_COMPILER) INSTALL_DIR=$(INSTALL_DIR)
