@@ -156,8 +156,8 @@ ifneq ($(call libsearch,tinfo),)
     TINFO=-ltinfo
 endif
 
-ifneq (,$(wildcard $(USRLOCAL)/lib/PDCurses.a))
-    CURSES=$(USRLOCAL)/lib/PDCurses.a
+ifneq (,$(CROSS_COMPILE))
+    CURSES=$(USRLOCAL)/wcclib/libPDCurses.a
 else
     CURSES0=curses
     CURSES1=ncurses
