@@ -156,7 +156,7 @@ ifneq ($(call libsearch,tinfo),)
     TINFO=-ltinfo
 endif
 
-ifneq (,$(CROSS_COMPILE))
+ifneq (,$(CROSS_COMPILER))
     CURSES=$(USRLOCAL)/wcclib/libPDCurses.a
 else
     CURSES0=curses
