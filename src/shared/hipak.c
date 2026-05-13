@@ -167,6 +167,8 @@ extern const char * const sys_errlist[];
 
 #ifndef USE_NATIVE_WINDOWS
 extern int errno;
+extern int _kbhit();
+extern int asprintf(char **restrict strp, const char *restrict fmt, ...);
 #endif
 
 #if ! defined linux && ! defined USE_NATIVE_WINDOWS
