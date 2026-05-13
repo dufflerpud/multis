@@ -165,7 +165,7 @@ extern const char * const sys_errlist[];
 #define STRERROR(x) sys_errlist[x]
 #endif
 
-#ifndef USE_NATIVE_WINDOWS
+#ifdef USE_NATIVE_WINDOWS
 extern int errno;
 extern int _kbhit();
 extern int asprintf(char **restrict strp, const char *restrict fmt, ...);
