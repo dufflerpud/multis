@@ -169,7 +169,7 @@ extern const char * const sys_errlist[];
 extern int errno;
 #endif
 
-#ifndef linux
+#if ! defined linux && ! defined USE_NATIVE_WINDOWS
 extern void *realloc(), *malloc(), *calloc();
 extern char *strchr();
 #endif
