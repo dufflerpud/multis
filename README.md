@@ -631,7 +631,7 @@ C version of original Macro-10 assembler support for multi-user games</div>
 | [OpenSUSE.tbz2](https://www.brightsands.com/download/multis/OpenSUSE.tbz2) | 82a3bbd9903a56462c6dc620a81c491444467089424bc63aa6b4f1c518fd3794 |
 | [PopOS.tbz2](https://www.brightsands.com/download/multis/PopOS.tbz2) | a9b3b1334ea2bb4ba0d64132ebd045ac332ee3da62a23800a5da1540cb44b8f8 |
 | [Slackware.tbz2](https://www.brightsands.com/download/multis/Slackware.tbz2) | 9c78a76af95fa6914a3f428ec0fc7daedd2f37a2bde522945621c1628c5df67e |
-| [Ubuntu.tbz2](https://www.brightsands.com/download/multis/Ubuntu.tbz2) | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 |
+| [Ubuntu.tbz2](https://www.brightsands.com/download/multis/Ubuntu.tbz2) | c1b35d99b3691e86f8a661e56e144645bf3c5f7dc7b9dcaeb4aaac6544eac5ba |
 | Windows-10 [Cygwin-wcc.tbz2](https://www.brightsands.com/download/multis/Cygwin-wcc.tbz2) | 976213d0a82996509d84ed6e28eaea8622887393634a537eda4e8490c7cc40a8 |
 | Windows-10 [Cygwin.tbz2](https://www.brightsands.com/download/multis/Cygwin.tbz2) | 6a2785bd11dc6edd2006faf91d5d41fb4cb0b758d35601a783d882000200ffdc |
 | Windows-10 [WSL-wcc.tbz2](https://www.brightsands.com/download/multis/WSL-wcc.tbz2) | 4121d038de62e30a2afce15716609fca25eb3c7cd77a74a8805c7d6ad364e42a |
