@@ -611,6 +611,34 @@ Can also be compiled to usrpak.rel.
 ## <a id='dt_8702msMeI'>hipak.c</a>
 C version of original Macro-10 assembler support for multi-user games</div>
 
+### Downloads for different OSs.
+
+| File | sha256sum |
+|:-|:-|
+| [Cygwin.tbz2](https://www.brightsands.com/download/multis/Cygwin.tbz2) | 6a2785bd11dc6edd2006faf91d5d41fb4cb0b758d35601a783d882000200ffdc |
+| [Manjaro.tbz2](https://www.brightsands.com/download/multis/Manjaro.tbz2) | 71ab9947a97f17f2ddfbd4949a3f542d97f38dfc96ffdfc9b72a9f1a4a9c5303 |
+| [link_sum_table.pl](https://www.brightsands.com/download/multis/link_sum_table.pl) | 26d2c8c33b9a0b273877335a6dfbe7021dae2b6996290bc965aa5aa41435894e |
+| [Cygwin-wcc.tbz2](https://www.brightsands.com/download/multis/Cygwin-wcc.tbz2) | 976213d0a82996509d84ed6e28eaea8622887393634a537eda4e8490c7cc40a8 |
+| [Kali.tbz2](https://www.brightsands.com/download/multis/Kali.tbz2) | cfe7140f64a16d91b02ec0bca5b24e07fec19468c2933ae06bcb67f1ee3b07d5 |
+| [Gentoo.tbz2](https://www.brightsands.com/download/multis/Gentoo.tbz2) | c4711e021a52a0bc62af60d121f76c2d70ce34b51f74ac8ab9f61a38dc4915b1 |
+| [Mint.tbz2](https://www.brightsands.com/download/multis/Mint.tbz2) | c7cf055589f257961494f2e61125d8c5b489e1f5b9b7ba386c655e853e7992d8 |
+| [Ubuntu.tbz2](https://www.brightsands.com/download/multis/Ubuntu.tbz2) | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 |
+| [FreeBSD.tbz2](https://www.brightsands.com/download/multis/FreeBSD.tbz2) | f1042bcd80b6260765268296829e5c1613c7f8538e5d67663f786ed3ed24a8af |
+| [WSL.tbz2](https://www.brightsands.com/download/multis/WSL.tbz2) | 174f555357a6352d9a73b2f25f5ee648c41686b73cd9554736412c646c42aa62 |
+| [Almalinux.tbz2](https://www.brightsands.com/download/multis/Almalinux.tbz2) | 79997d6150ccb9cc5108ef1622df6ceef0864e7607b47a71832587b21d74adf2 |
+| [Haiku.tbz2](https://www.brightsands.com/download/multis/Haiku.tbz2) | 9b73783b78e1c48846dece8ad437e341acb2c5878a5a122075273b795ac67b5a |
+| [Slackware.tbz2](https://www.brightsands.com/download/multis/Slackware.tbz2) | 9c78a76af95fa6914a3f428ec0fc7daedd2f37a2bde522945621c1628c5df67e |
+| [MacOS.tbz2](https://www.brightsands.com/download/multis/MacOS.tbz2) | 5c43b280babe49607c8cde65535ab748c9860eb047f7dd93c2f3f9305281d9de |
+| [OpenSUSE.tbz2](https://www.brightsands.com/download/multis/OpenSUSE.tbz2) | 82a3bbd9903a56462c6dc620a81c491444467089424bc63aa6b4f1c518fd3794 |
+| [Debian.tbz2](https://www.brightsands.com/download/multis/Debian.tbz2) | eb74f05644fa143032c8442dbc0c33a2af8e90fea84eadc1735647406ec3376e |
+| [Arch.tbz2](https://www.brightsands.com/download/multis/Arch.tbz2) | ebcc26b95fd3664538b0082743f48da687095b40d0444a8d75e732a88d087497 |
+| [ZorinOS.tbz2](https://www.brightsands.com/download/multis/ZorinOS.tbz2) | 526378c69b086f5e1f4090c5d0da24fe6c1abee7f8fc09a846eeebc59c7093f1 |
+| [Fedora.tbz2](https://www.brightsands.com/download/multis/Fedora.tbz2) | 1eddbfd33d088d662cf8227755dbe8ddba407f56bcf5a4c11868c270d0a79bdd |
+| [Alpine.tbz2](https://www.brightsands.com/download/multis/Alpine.tbz2) | ded3e0ab8054a700700fcff1537cae33a51bc879eb66bc51d79302dceefebf00 |
+| [OpenIndiana.tbz2](https://www.brightsands.com/download/multis/OpenIndiana.tbz2) | 515092dbe478ecaf712a36d93f40dbef42c279f9cd2ab1944ed6932e35ada532 |
+| [WSL-wcc.tbz2](https://www.brightsands.com/download/multis/WSL-wcc.tbz2) | 4121d038de62e30a2afce15716609fca25eb3c7cd77a74a8805c7d6ad364e42a |
+| [PopOS.tbz2](https://www.brightsands.com/download/multis/PopOS.tbz2) | a9b3b1334ea2bb4ba0d64132ebd045ac332ee3da62a23800a5da1540cb44b8f8 |
+
 <hr>
 These games are still kind of fun, but no, they don't hold up to modern graphics.
 
