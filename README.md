@@ -637,7 +637,6 @@ C version of original Macro-10 assembler support for multi-user games</div>
 | Windows-10 [WSL-wcc.tbz2](https://www.brightsands.com/download/multis/WSL-wcc.tbz2) | 4121d038de62e30a2afce15716609fca25eb3c7cd77a74a8805c7d6ad364e42a |
 | Windows-10 [WSL.tbz2](https://www.brightsands.com/download/multis/WSL.tbz2) | 174f555357a6352d9a73b2f25f5ee648c41686b73cd9554736412c646c42aa62 |
 | [ZorinOS.tbz2](https://www.brightsands.com/download/multis/ZorinOS.tbz2) | 526378c69b086f5e1f4090c5d0da24fe6c1abee7f8fc09a846eeebc59c7093f1 |
-| [link_sum_table.pl](https://www.brightsands.com/download/multis/link_sum_table.pl) | 4e78de3c658bd210b56b6073cd28510d3080b8df9ef9db2582fc78be634b7868 |
 
 <hr>
 These games are still kind of fun, but no, they don't hold up to modern graphics.
