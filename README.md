@@ -629,6 +629,7 @@ C version of original Macro-10 assembler support for multi-user games</div>
 | [Mint.tbz2](https://www.brightsands.com/download/multis/Mint.tbz2) | c7cf055589f257961494f2e61125d8c5b489e1f5b9b7ba386c655e853e7992d8 |
 | [OpenIndiana.tbz2](https://www.brightsands.com/download/multis/OpenIndiana.tbz2) | 515092dbe478ecaf712a36d93f40dbef42c279f9cd2ab1944ed6932e35ada532 |
 | [OpenSUSE.tbz2](https://www.brightsands.com/download/multis/OpenSUSE.tbz2) | 82a3bbd9903a56462c6dc620a81c491444467089424bc63aa6b4f1c518fd3794 |
+| [PearOS.tbz2](https://www.brightsands.com/download/multis/PearOS.tbz2) | 15aef80022f8ab977f5d991e6f719981d7b857f9f38c51f2adf51e5a4b74ee2d |
 | [PopOS.tbz2](https://www.brightsands.com/download/multis/PopOS.tbz2) | a9b3b1334ea2bb4ba0d64132ebd045ac332ee3da62a23800a5da1540cb44b8f8 |
 | [Slackware.tbz2](https://www.brightsands.com/download/multis/Slackware.tbz2) | 9c78a76af95fa6914a3f428ec0fc7daedd2f37a2bde522945621c1628c5df67e |
 | [Tops10.tbz2](https://www.brightsands.com/download/multis/Tops10.tbz2) | b750e5fedc779ceeacbd426027773b4c83ea5768d5fdd5301cc3172dc54a3608 |
