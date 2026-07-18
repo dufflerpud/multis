@@ -39,7 +39,10 @@
 #undef	DEBUG_STRINGS
 #undef	DEBUG_COLOR
 
+#ifndef __DECC
 #define USE_COLOR
+#endif
+
 #define HAVE_MMAN
 
 #if defined HAVE_MMAN
@@ -81,6 +84,50 @@
 #include <curses.h>
 #endif
 
+#ifdef __DECC
+int strncasecmp( const char *s0, const char *s1, int ctr )
+    {
+    while( ctr-- > 0 )
+	{
+	char c0 = *s0++;	c0=isupper(c0)?tolower(c0):c0;
+	char c1 = *s1++;	c1=isupper(c1)?tolower(c1):c1;
+	if( c0 != c1 ) return 0;
+	if( c0==0 ) break;
+	}
+    return 1;
+    }
+
+int strcasecmp( const char *s0, const char *s1 )
+    { return strncasecmp(s0,s1,1000); }
+
+int setegid( int x ) { return 0; }
+
+	/* From stdio.h */
+	extern FILE *popen( const char *command, const char *type );
+	extern int pclose( FILE *stream );
+	extern int kill( int pid, int sig );
+	extern char *strdup( const char * );
+	extern int fileno( FILE *stream );
+#endif /* __DECC */
+
+#ifndef A_CHARTEXT
+	typedef unsigned chtype;
+	typedef unsigned bool;
+
+	/* From curses.h */
+	void timeout(int delay);
+	extern int cbreak(void);
+	extern int intrflush(WINDOW *win, bool cf);
+	extern int keypad(WINDOW *win, bool bf);
+	extern int wattron(WINDOW *win,int attrs);
+	extern void wbkgdset(WINDOW *win, chtype ch);
+	extern int wbkgd(WINDOW *win, chtype ch);
+	extern int redrawwin(WINDOW *win);
+	extern int flash(void);
+
+#define A_CHARTEXT 0x7f
+#endif
+
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
@@ -111,7 +158,9 @@
 #include <windows.h>
 #include <ws2tcpip.h>
 #else
+#ifndef __DECC
 #include <sys/select.h>
+#endif
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -147,7 +196,9 @@ FILE *debug_file = 0;
 #elif defined __HAIKU__
 	/* Nothing */
 #elif ! defined USE_NATIVE_WINDOWS
+#ifndef __DECC
 #include <sys/filio.h>
+#endif
 #endif
 
 #if defined linux || defined __sun || defined __HAIKU__
@@ -322,7 +373,9 @@ static const char *curses_color_to_html[ NCOLORS ] =
     "cyan",		/* COLOR_CYAN			*/
     "white"		/* COLOR_WHITE			*/
     };
-#endif
+#endif /* USE_COLOR */
+
+#define logical( truefalse )		( (truefalse) ? -1 : 0 )
 
 /************************************************************************/
 void usage( const char *fmt, ... )
@@ -440,7 +493,6 @@ void dump_buf(
 #endif
     }
 
-#define logical( truefalse )		( (truefalse) ? -1 : 0 )
 /************************************************************************
  * Used to map C's idea of TRUE and FALSE to fortran's.  In both cases	*
  * FALSE is 0, but TRUE is 1 in C and -1 (all 1s) in fortran.		*
@@ -485,7 +537,7 @@ int put_packet(int lnum, int chan, const void *buf, int len )
     while( written_so_far < len )
 	{
 	int to_write = len - written_so_far;
-	int nbytes = write( chan, buf+written_so_far, len );
+	int nbytes = write( chan, (char*)buf+written_so_far, len );
 	if( nbytes <= 0 )
 	    {
 	    progress(__FILE__,__LINE__,"write(%d,%d) wrote %d, returned %s",
@@ -951,7 +1003,7 @@ void dump_colors()
     printf("fg\n");
     fflush(stdout);
     }
-#endif
+#endif /* DEBUG_COLOR */
 
 /************************************************************************
  *	Setup a 8x8 color table with all our standard colors.  Ick.	*
@@ -983,6 +1035,9 @@ void init_colors( struct display_struct *curd )
     }
 
 extern int get_current_color_pair( struct display_struct *curd );
+
+#endif /* USE_COLOR */
+
 /************************************************************************/
 struct display_struct *get_display( int screen_num )
 /************************************************************************
@@ -1009,8 +1064,10 @@ struct display_struct *get_display( int screen_num )
 
 	curd->d_nrows = MAXROW;
 	curd->d_ncols = MAXCOL;
+#ifdef COLOR_WHITE
 	curd->d_fg = COLOR_WHITE;
 	curd->d_bg = COLOR_BLACK;
+#endif
 
 #if defined DEBUG_WINDOWS
 	progress(__FILE__,__LINE__,"get_display called.\n");
@@ -1043,12 +1100,14 @@ struct display_struct *get_display( int screen_num )
 		    nonl();
 		    intrflush(curd->d_win,FALSE);
 		    keypad(curd->d_win,TRUE);
+#ifdef USE_COLOR
 		    wattron( curd->d_win, get_current_color_pair( curd ) );
 #if defined HAVE_ASSUME_DEFAULT_COLORS
 		    assume_default_colors( curd->d_fg, curd->d_bg );
 #endif
 		    wbkgdset( curd->d_win, get_current_color_pair( curd ) );
 		    wbkgd( curd->d_win, get_current_color_pair( curd ) );
+#endif
 		    }
 		    break;
 		default:
@@ -1218,6 +1277,7 @@ void grafof_( /* No arguments */ )
     in_graphics_mode = 0;
     }
 
+#ifdef USE_COLOR
 /************************************************************************/
 int get_current_color_pair( struct display_struct *curd )
 /************************************************************************/
@@ -1456,8 +1516,10 @@ void cursor_( integer *x, integer *y )
  ************************************************************************/
 void pcolor_( integer *col )
     {
+#ifdef USE_COLOR
     if( *col <= 0 || *col > NCOLORS ) abort();
     get_display(default_display)->d_fg = color_map[*col - 1];
+#endif
     }
 
 /************************************************************************/
@@ -1467,8 +1529,10 @@ void pback_( integer *col )
  * Used in star, ocean, cave, system, war, greebl, risk			*
  ************************************************************************/
     {
+#ifdef USE_COLOR
     if( *col <= 0 || *col > NCOLORS ) abort();
     get_display(default_display)->d_bg = color_map[*col - 1];
+#endif
     }
 
 /************************************************************************/
@@ -2950,7 +3014,7 @@ u_short string_to_port( const char *str )
     struct servent *sp;
     u_short hport = 0;
     
-    if( (hport = atoi(str)) <= 0 )
+    if( (hport = atoi(str)) == 0 )
 	{
         if( ( (sp = getservbyname( str, "tcp" )) != NULL )
 #if defined SERVIENAME
@@ -2988,13 +3052,15 @@ int setup_net_connect( const char *hstring, const char *pstring )
     if( (hport = string_to_port(pstring)) <= 0 )
 	fprintf(stderr,"\"%s\" has unknown port\n", pstring );
     sin.sin_family = host->h_addrtype;
-    memcpy((caddr_t)&sin.sin_addr,
 #ifndef	NOT43
+    memcpy((caddr_t)&sin.sin_addr,
 	host->h_addr_list[0],
-#else	/* NOT43 */
-	host->h_addr,
-#endif	/* NOT43 */
 	host->h_length);
+#else
+    memcpy((caddr_t)&sin.sin_addr,
+	host->h_addr,
+	host->h_length);
+#endif
     sin.sin_port = htons( hport );
 
     do  {
@@ -3164,12 +3230,14 @@ void sm_daemon()
     int topchan = finet;
 
 #ifndef USE_NATIVE_WINDOWS
+#ifndef __DECC
     if( 0 && fork() )
         {
 	grafof_();
 	exit(0);
 	}
-#endif
+#endif /* __DECC */
+#endif /* USE_NATIVE_WINDOWS */
 
     while( 1 )
 	{
@@ -3430,20 +3498,23 @@ void send_browser( struct display_struct *curd, int serial, char *cp )
 		    add_char( &cp, col+BASE_CHAR );
 		    move_next = 0;
 		    }
+#ifdef USE_COLOR
 		int pair_number = PAIR_NUMBER(newval);
 		int fg = NCOLORS-1 - pair_number/NCOLORS;
 		int bg = pair_number%NCOLORS;
+#endif
 
 		int ch = newval & A_CHARTEXT;
 		if( ch < ' ' )
 		    ch = '?';
+#ifdef USE_COLOR
 		else if( ch == ' ' )	/* Spaces wrong size even in	*/
 		    {			/* monospace on iPad.		*/
 		    ch = '_';
 		    fg = bg;
 		    }
-
 		add_char( &cp, fg*NCOLORS+bg+BASE_CHAR );
+#endif
 		add_char( &cp, ch );
 		}
 	    }
@@ -3459,7 +3530,7 @@ void webserver_logic()
     socklen_t fromlen = sizeof(frominet);
     static int new_serial = 1;
 
-#ifndef USE_NATIVE_WINDOWS
+#ifdef SIGPIPE
     (void)signal( SIGPIPE, SIG_IGN );
 #endif
 
@@ -4938,7 +5009,7 @@ int main( int argc, const char *argv[] )
 	    progress(__FILE__,__LINE__,"Setting gid to %d",
 	        gamers->gr_gid );
 	    setgid( gamers->gr_gid );
-	    setegid( gamers->gr_gid );
+	    (void)setegid( gamers->gr_gid );
 	    }
 
 	progress(__FILE__,__LINE__,"Reading password file for %s...",
@@ -5036,9 +5107,11 @@ int main( int argc, const char *argv[] )
 		http_host, webserver_portnum );
 	    fflush(stdout);
 #ifndef USE_NATIVE_WINDOWS
+#ifndef __DECC
 	    if( fork() )
 	        exit(0);
-#endif
+#endif /* __DECC */
+#endif /* USE_NATIVE_WINDOWS */
 	    close( fileno(stdout) );	open("/dev/null",O_WRONLY);
 	    close( fileno(stderr) );	open("/dev/null",O_WRONLY);
 	    }
@@ -5050,4 +5123,5 @@ int main( int argc, const char *argv[] )
     fmain_();
     fendwin( get_display(default_display) );
     exprog_();
+    return 0;
     }
