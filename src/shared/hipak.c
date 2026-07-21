@@ -72,6 +72,7 @@
 #include <ctype.h>
 #include <string.h>
 
+#define fe_select(nfs,rfds,wfds,efds,tmp) select(nfs,rfds,wfds,efds,tmp)
 #if defined USE_NATIVE_WINDOWS
 #include <windows.h>
 #include <PDCurses.h>
@@ -80,25 +81,32 @@
 #include <ncurses/ncurses.h>
 #elif defined __HAIKU__
 #include <ncurses.h>
+#elif defined __DECC
+#include <ansi_curses.h>
 #else
 #include <curses.h>
 #endif
 
 #ifdef __DECC
+#define fork() vfork()
+
+#ifdef notdef
 int strncasecmp( const char *s0, const char *s1, int ctr )
     {
     while( ctr-- > 0 )
 	{
 	char c0 = *s0++;	c0=isupper(c0)?tolower(c0):c0;
 	char c1 = *s1++;	c1=isupper(c1)?tolower(c1):c1;
-	if( c0 != c1 ) return 0;
+	if( c0 < c1 ) return -1;
+	if( c0 > c1 ) return 1;
 	if( c0==0 ) break;
 	}
-    return 1;
+    return 0;
     }
 
 int strcasecmp( const char *s0, const char *s1 )
     { return strncasecmp(s0,s1,1000); }
+#endif
 
 int setegid( int x ) { return 0; }
 
@@ -110,6 +118,7 @@ int setegid( int x ) { return 0; }
 	extern int fileno( FILE *stream );
 #endif /* __DECC */
 
+#ifdef notdef
 #ifndef A_CHARTEXT
 	typedef unsigned chtype;
 	typedef unsigned bool;
@@ -126,6 +135,7 @@ int setegid( int x ) { return 0; }
 	extern int flash(void);
 
 #define A_CHARTEXT 0x7f
+#endif
 #endif
 
 #include <string.h>
@@ -158,7 +168,9 @@ int setegid( int x ) { return 0; }
 #include <windows.h>
 #include <ws2tcpip.h>
 #else
-#ifndef __DECC
+#ifdef __DECC
+/* Sadly, there is no equivalent */
+#else
 #include <sys/select.h>
 #endif
 #include <sys/socket.h>
@@ -201,14 +213,16 @@ FILE *debug_file = 0;
 #endif
 #endif
 
-#if defined linux || defined __sun || defined __HAIKU__
+#if defined linux || defined __sun || defined __HAIKU__ || __DECC
 #define HAVE_STRERROR
 #endif
 
 #ifdef HAVE_STRERROR                     /* For STRERROR */
 #include <errno.h>
 #define STRERROR(x) strerror(x)
+#ifndef __DECC
 extern char *strerror(int);
+#endif
 #else
 #if ! defined __CYGWIN__ && ! defined USE_NATIVE_WINDOWS
 extern const char * const sys_errlist[];
@@ -3230,13 +3244,11 @@ void sm_daemon()
     int topchan = finet;
 
 #ifndef USE_NATIVE_WINDOWS
-#ifndef __DECC
     if( 0 && fork() )
         {
 	grafof_();
 	exit(0);
 	}
-#endif /* __DECC */
 #endif /* USE_NATIVE_WINDOWS */
 
     while( 1 )
@@ -3255,7 +3267,7 @@ void sm_daemon()
 	progress(__FILE__,__LINE__,
 	    "Calling select with topchan=%d and readfds=%x.",topchan,readfds);
 #endif
-	int nfds = select( topchan+1, &readfds, 0, 0, &tv );
+	int nfds = fe_select( topchan+1, &readfds, 0, 0, &tv );
 #if defined DEBUG_DAEMON
 	progress(__FILE__,__LINE__,"Waiting completed with nfds=%d and readfds=%x.",nfds,readfds);
 #endif
@@ -3502,17 +3514,21 @@ void send_browser( struct display_struct *curd, int serial, char *cp )
 		int pair_number = PAIR_NUMBER(newval);
 		int fg = NCOLORS-1 - pair_number/NCOLORS;
 		int bg = pair_number%NCOLORS;
+#else
+		int fg = 0;
+		int bg = 0;
 #endif
 
 		int ch = newval & A_CHARTEXT;
 		if( ch < ' ' )
 		    ch = '?';
-#ifdef USE_COLOR
 		else if( ch == ' ' )	/* Spaces wrong size even in	*/
 		    {			/* monospace on iPad.		*/
 		    ch = '_';
 		    fg = bg;
 		    }
+
+#ifdef USE_COLOR
 		add_char( &cp, fg*NCOLORS+bg+BASE_CHAR );
 #endif
 		add_char( &cp, ch );
@@ -3555,7 +3571,7 @@ void webserver_logic()
 	    "Calling select with topchan=%d and readfds=%s.",
 	        webserver_top_chan,fds_map(&readfds));
 #endif
-	int nfds = select( webserver_top_chan+1, &readfds, 0, 0, &tv );
+	int nfds = fe_select( webserver_top_chan+1, &readfds, 0, 0, &tv );
 #if defined DEBUG_WEBSERVER
 	progress(__FILE__,__LINE__,
 	    "Waiting completed with nfds=%d and readfds=%s.",
@@ -4346,17 +4362,17 @@ void nap_( integer *ms_to_sleep, integer *flags )
 	time_left -= 200;
 	}
 #else
-    struct timeval timeout;
+    struct timeval timeoutvar;
     fd_set readfds;
     FD_ZERO( &readfds );
 
-    timeout.tv_sec = *ms_to_sleep / 1000;
-    timeout.tv_usec = (*ms_to_sleep % 1000) * 1000;
+    timeoutvar.tv_sec = *ms_to_sleep / 1000;
+    timeoutvar.tv_usec = (*ms_to_sleep % 1000) * 1000;
 
     if( *flags & 010 )
 	FD_SET( ( webserver_chan ? webserver_chan : fileno(stdin) ), &readfds );
 
-    select( 1, &readfds, NULL, NULL, &timeout );	/* Perchance to dream */
+    fe_select( 1, &readfds, NULL, NULL, &timeoutvar );	/* Perchance to dream */
 #endif
     }
 
@@ -5107,10 +5123,8 @@ int main( int argc, const char *argv[] )
 		http_host, webserver_portnum );
 	    fflush(stdout);
 #ifndef USE_NATIVE_WINDOWS
-#ifndef __DECC
 	    if( fork() )
 	        exit(0);
-#endif /* __DECC */
 #endif /* USE_NATIVE_WINDOWS */
 	    close( fileno(stdout) );	open("/dev/null",O_WRONLY);
 	    close( fileno(stderr) );	open("/dev/null",O_WRONLY);
