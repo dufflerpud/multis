@@ -72,7 +72,6 @@
 #include <ctype.h>
 #include <string.h>
 
-#define fe_select(nfs,rfds,wfds,efds,tmp) select(nfs,rfds,wfds,efds,tmp)
 #if defined USE_NATIVE_WINDOWS
 #include <windows.h>
 #include <PDCurses.h>

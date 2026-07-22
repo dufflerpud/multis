@@ -44,7 +44,7 @@
 /* Function extern prototypes */
 typedef unsigned chtype;
 
-#ifdef notdef
+#ifdef __DECC
 typedef unsigned bool;
 #endif
 

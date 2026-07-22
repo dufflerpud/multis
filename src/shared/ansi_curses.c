@@ -8,6 +8,10 @@
 /************************************************************************/
 #include <ansi_curses.h>
 
+#ifdef __DECC
+#include <ioctl.h>
+#endif
+
 WINDOW *curwin, *diswin;
 
 /************************************************************************/
@@ -33,8 +37,9 @@ int so_select( int nfds, fd_set *rfds, fd_set *wfds, fd_set *efds, struct timeva
     if( !rfds || select_return>=0 || errno!=ENOTSOCK ) return select_return;
 
     struct timeval poll_time = { 0, 100000 };
-    struct timeval done_after;
-    fd_set new_rfsd;
+    struct timeval done_after, now;
+    fd_set new_rfds;
+    int num_in_buf;
 
     if( tmp )
         {
@@ -58,19 +63,19 @@ int so_select( int nfds, fd_set *rfds, fd_set *wfds, fd_set *efds, struct timeva
 		else if( ioctl(fd,FIONREAD,&num_in_buf)==0 && num_in_buf>0 )
 		    {
 		    FD_ZERO( rfds );
-		    if( wfds ) FD_ZERO(wfds)
+		    if( wfds ) FD_ZERO(wfds);
 		    if( efds ) FD_ZERO(efds);
 		    FD_SET(fd,&new_rfds);
 		    return 1;
 		    }
 		}
 	    }
-	if( (return_select = select(nfds,&new_rfds,wfds,efds,poll_time)) < 0 )
+	if( (select_return = select(nfds,&new_rfds,wfds,efds,&poll_time)) < 0 )
 	    perror("select returned:");
-	else if( return_select > 0 )
+	else if( select_return > 0 )
 	    {
 	    memcpy( (void*)rfds, (void*)&new_rfds, sizeof(new_rfds) );
-	    return return_select;
+	    return select_return;
 	    }
 	}
     return 0;
